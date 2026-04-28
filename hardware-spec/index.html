@@ -149,6 +149,30 @@ textarea{resize:none}
 .modal p{font-size:13px;color:var(--fg-3);line-height:1.6;margin-bottom:20px}
 .modal-actions{display:flex;gap:8px}
 
+/* ─── PRINT / PDF ─── */
+@media print{
+  body{overflow:visible;background:#fff;color:#000;font-size:11pt}
+  .nav,.preview-panel,.overlay{display:none!important}
+  .split{display:block;overflow:visible}
+  .form-panel{overflow:visible}
+  .form-panel-inner{max-width:none;padding:0}
+  .step-block{page-break-inside:avoid;margin-bottom:32pt}
+  .step-tag{color:#00aa66;font-size:8pt}
+  .step-title{font-size:16pt;color:#000}
+  .step-desc{color:#444;font-size:9pt}
+  .step-progress{display:none}
+  .q-card{border:1pt solid #ccc;background:#fff;margin-bottom:8pt;page-break-inside:avoid}
+  .q-num{color:#00aa66}
+  .q-title{color:#000}
+  .q-guide{color:#666;font-size:8pt}
+  .q-answer textarea{border:none;background:transparent;color:#000;font-size:10pt;min-height:auto;padding:4pt 0}
+  .q-stars .star{color:#ccc}
+  .q-stars .star.lit{color:#00aa66}
+  .q-footer{border-top:0.5pt solid #eee;padding-top:4pt}
+  .q-confidence-label{color:#888;font-size:8pt}
+  .q-wordcount{display:none}
+}
+
 /* ─── MOBILE ─── */
 @media(max-width:900px){
   body{overflow:auto}
@@ -178,7 +202,7 @@ textarea{resize:none}
       <span class="saved-badge" id="saved-badge">Saved</span>
     </div>
     <div class="nav-actions">
-      <button class="btn btn-primary" onclick="exportBrief()">Export Brief ↓</button>
+      <button class="btn btn-primary" onclick="window.print()">Export PDF ↓</button>
       <button class="btn btn-outline" onclick="downloadTool()">Save Offline</button>
       <button class="btn btn-danger" onclick="showReset()">Reset</button>
     </div>
@@ -346,7 +370,7 @@ function renderForm() {
             >${s.answer||''}</textarea>
           </div>
           <div class="q-footer">
-            <span class="q-confidence-label${s.stars?' rated'':''}">${s.stars ? ['','Low','Fair','Good','High','Locked'][s.stars]+' confidence' : 'Rate your confidence →'}</span>
+            <span class="q-confidence-label${s.stars ? ' rated' : ''}">${s.stars ? ['','Low','Fair','Good','High','Locked'][s.stars]+' confidence' : 'Rate your confidence →'}</span>
             <span class="q-wordcount" id="wc-${q.id}">${wordCount>0?wordCount+' words':''}</span>
           </div>
         </div>`;
