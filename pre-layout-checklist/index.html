@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Layout Review Checklist - Fresu Electronics</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=JetBrains+Mono:wght@400;600&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; line-height: 1.6; color: #1a1a1a; background: #0a0a0a; }
+        
+        /* Cover Page */
+        .cover { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2d2d2d 100%); color: white; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px 40px; position: relative; overflow: hidden; }
+        .cover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80'); background-size: cover; background-position: center; opacity: 0.08; filter: blur(2px); }
+        .cover::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at top, rgba(0, 255, 148, 0.12) 0%, transparent 50%); }
+        .circuit-pattern { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 148, 0.03) 2px, rgba(0, 255, 148, 0.03) 4px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 255, 148, 0.03) 2px, rgba(0, 255, 148, 0.03) 4px); opacity: 0.6; animation: slide 20s linear infinite; }
+        @keyframes slide { 0% { transform: translate(0, 0); } 100% { transform: translate(20px, 20px); } }
+        @keyframes glow { from { filter: drop-shadow(0 0 20px rgba(0, 255, 148, 0.5)); } to { filter: drop-shadow(0 0 40px rgba(0, 255, 148, 0.8)); } }
+        
+        .logo-area { text-align: center; margin-bottom: 60px; position: relative; z-index: 1; }
+        .logo-icon { width: 140px; height: 140px; margin: 0 auto 25px; filter: drop-shadow(0 20px 60px rgba(0, 255, 148, 0.20)); }
+        .logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+        .brand-name { font-size: 32px; font-weight: 900; color: white; letter-spacing: 3px; margin-bottom: 12px; }
+        .brand-tagline { font-size: 13px; color: #00FF94; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; }
+        
+        .title-container { text-align: center; max-width: 900px; position: relative; z-index: 1; }
+        .main-title { font-size: 56px; font-weight: 900; line-height: 1.1; margin-bottom: 30px; background: linear-gradient(135deg, #00FF94 0%, #00cc77 50%, #00FF94 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-transform: uppercase; letter-spacing: -2px; animation: glow 3s ease-in-out infinite alternate; }
+        .subtitle { font-size: 18px; color: #e0e0e0; font-weight: 300; margin-bottom: 40px; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+        .author { font-size: 24px; color: #00FF94; font-weight: 600; margin-top: 40px; font-style: italic; }
+        
+        /* Content Pages */
+        .content-page { background: #fff; position: relative; }
+        .pcb-background { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: url('https://images.unsplash.com/photo-1530819568329-97653eafbbfa?w=1920&q=80'); background-size: cover; background-position: center; background-attachment: fixed; opacity: 0.02; filter: blur(1px); z-index: 0; }
+        .content-wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 50px 60px; background: rgba(17, 17, 17, 0.98); backdrop-filter: blur(20px); color: #e8edf5; min-height: 100vh; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; padding-bottom: 20px; border-bottom: 2px solid #00FF94; }
+        .header-brand { font-size: 20px; font-weight: 900; color: #ffffff; letter-spacing: 2px; }
+        .header-accent { color: #00FF94; }
+        .progress-container { display: flex; align-items: center; gap: 12px; }
+        .progress-label { font-size: 12px; color: #a0aab8; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .progress-bar { width: 180px; height: 4px; background: #383838; border-radius: 2px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #00FF94 0%, #00cc77 100%); width: 0%; transition: width 0.5s ease; border-radius: 2px; }
+        .progress-percent { font-size: 15px; font-weight: 700; color: #00FF94; min-width: 40px; }
+        
+        .intro-box { background: #181818; border: 1px solid #383838; border-left: 4px solid #00FF94; padding: 25px 30px; margin-bottom: 40px; border-radius: 2px; box-shadow: 0 2px 15px rgba(0, 255, 148, 0.10); }
+        .intro-text { font-size: 16px; color: #c8d0dc; line-height: 1.8; margin-bottom: 12px; }
+        .intro-author { font-size: 18px; color: #ffffff; font-weight: 700; margin-top: 15px; text-align: right; }
+        
+        .category-section { margin-bottom: 50px; page-break-inside: avoid; }
+        .category-header { margin-bottom: 25px; }
+        .category-title { font-size: 20px; font-weight: 800; color: white; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); padding: 18px 25px; border-radius: 2px; text-transform: uppercase; letter-spacing: 1.2px; position: relative; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1); }
+        .category-title::before { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 5px; background: linear-gradient(180deg, #00FF94 0%, #00cc77 100%); border-radius: 0 10px 10px 0; }
+        .category-count { color: #00FF94; font-size: 13px; }
+        
+        .checklist-item { display: flex; align-items: flex-start; padding: 16px 20px; margin-bottom: 12px; background: #181818; border-left: 3px solid #383838; border-radius: 2px; transition: all 0.3s ease; page-break-inside: avoid; }
+        .checklist-item:hover { background: #1e1e1e; border-left-color: #00FF94; box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06); transform: translateX(3px); }
+        .checklist-item.checked { background: rgba(0, 255, 148, 0.07); border-left-color: #00FF94; }
+        
+        .checkbox-container { margin-right: 16px; flex-shrink: 0; margin-top: 2px; }
+        .checkbox { width: 24px; height: 24px; border: 2px solid #555555; border-radius: 3px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; background: #181818; }
+        .checklist-item:hover .checkbox { border-color: #00FF94; }
+        .checkbox.checked { background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%); border-color: #4CAF50; }
+        .checkbox.checked::after { content: '✓'; color: white; font-size: 16px; font-weight: 900; }
+        
+        .checklist-content { flex: 1; }
+        .checklist-text { font-size: 15px; color: #e8edf5; line-height: 1.6; }
+        
+        .sub-items { margin-top: 10px; padding-left: 20px; }
+        .sub-item { display: flex; align-items: flex-start; margin-bottom: 6px; font-size: 14px; color: #c8d0dc; }
+        .bullet { color: #00FF94; font-weight: 700; margin-right: 10px; flex-shrink: 0; }
+        
+        .info-toggle { display: inline-flex; align-items: center; gap: 6px; color: #00FF94; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; padding: 5px 10px; border-radius: 2px; transition: all 0.2s ease; }
+        .info-toggle:hover { background: rgba(0, 255, 148, 0.10); }
+        .info-icon { width: 16px; height: 16px; background: #00FF94; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+        .info-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; margin-top: 0; }
+        .info-content.expanded { max-height: 800px; margin-top: 12px; }
+        .info-box { background: #1a1a1a; border-left: 3px solid #00FF94; padding: 14px 16px; border-radius: 2px; font-size: 13px; color: #c8d0dc; line-height: 1.7; }
+        .info-title { font-weight: 700; color: #ffffff; margin-bottom: 8px; font-size: 13px; }
+        
+        .notes-section { margin-top: 12px; }
+        .notes-label { font-size: 12px; color: #666; font-weight: 600; margin-bottom: 5px; display: block; }
+        .notes-input { width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 2px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical; min-height: 70px; transition: border-color 0.3s ease; }
+        .notes-input:focus { outline: none; border-color: #00FF94; }
+        .notes-input::placeholder { color: #555; }
+        
+        .next-step-box { background: rgba(0, 255, 148, 0.06); border: 1px solid rgba(0, 255, 148, 0.3); padding: 30px; margin: 50px 0 30px 0; border-radius: 2px; box-shadow: 0 8px 30px rgba(76, 175, 80, 0.15); }
+        .next-step-title { font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 15px; display: flex; align-items: center; gap: 12px; }
+        .next-step-icon { font-size: 28px; }
+        .next-step-text { font-size: 16px; color: #c8d0dc; line-height: 1.8; font-weight: 500; }
+        
+        .signature-section { background: #181818; padding: 30px; border-radius: 2px; margin-top: 40px; border: 1px dashed #383838; }
+        .signature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-top: 20px; }
+        .signature-field { }
+        .signature-label { font-size: 12px; color: #a0aab8; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .signature-line { border-bottom: 1px solid #383838; color: #e8edf5; padding: 10px 0; min-height: 40px; }
+        
+        .export-controls { position: fixed; bottom: 25px; right: 25px; display: flex; flex-direction: column; gap: 12px; z-index: 1000; }
+        .export-btn { background: linear-gradient(135deg, #00FF94 0%, #00cc77 100%); color: white; border: none; padding: 14px 22px; border-radius: 2px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 20px rgba(0, 255, 148, 0.20); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; }
+        .export-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0, 255, 148, 0.28); }
+        
+        .footer-section { background: #1a1a1a; color: white; padding: 50px 60px; text-align: center; }
+        .footer-brand { font-size: 26px; font-weight: 900; margin-bottom: 12px; letter-spacing: 2px; }
+        .footer-tagline { color: #00FF94; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; }
+        .footer-links { margin: 25px 0; font-size: 13px; color: #999; }
+        .footer-copyright { font-size: 11px; color: #666; margin-top: 25px; padding-top: 25px; border-top: 1px solid #333; }
+        
+        @media print {
+            .export-controls, .pcb-background { display: none !important; }
+            .content-wrapper { background: white !important; padding: 30px; box-shadow: none; color: #000 !important; }
+            .checklist-item, .category-section { page-break-inside: avoid; }
+            body { background: #181818; }
+            .cover { display: none; }
+            @page { margin: 2cm; size: A4; }
+            .checkbox { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cover">
+        <div class="circuit-pattern"></div>
+        <div class="logo-area">
+            <div class="logo-icon">
+                <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAQ4BDgDASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAgJBgcBAgUEA//EAFQQAQABAwICBAgKBwYEBAUDBQABAgMEBQYHEQgSITETQVFWYZGU0RQWGCJSVXGBk7EVFyMyQqHBCTNTYnKSJESy0jd1gsIlNENjczU2RkVUdISk/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AIZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/9k=" alt="Fresu Electronics Logo">
+            </div>
+            <div class="brand-name">FRESU ELECTRONICS</div>
+            <div class="brand-tagline">EMI Control · PCB Design Excellence</div>
+        </div>
+        <div class="title-container">
+            <h1 class="main-title">Pre-Layout Review Checklist</h1>
+            <p class="subtitle">This handy checklist ensures your schematics are all set and ready for the layout phase. Using this checklist is simple and easy to understand.</p>
+            <p class="author">— Dario</p>
+        </div>
+    </div>
+
+    <div class="content-page">
+        <div class="pcb-background"></div>
+        <div class="content-wrapper">
+            <div class="header">
+                <div class="header-brand">FRESU <span class="header-accent">ELECTRONICS</span></div>
+                <div class="progress-container">
+                    <span class="progress-label">Progress</span>
+                    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                    <span class="progress-percent" id="progressPercent">0%</span>
+                </div>
+            </div>
+            
+            <div class="intro-box">
+                <p class="intro-text">Just go through the items listed below and mark them as done when you've completed each step.</p>
+                <p class="intro-text">I've noticed that as I gained more experience, I sometimes overlooked the basics while focusing on the more critical aspects. This checklist is designed to help you avoid such common mistakes.</p>
+                <p class="intro-text">As you become more experienced, you'll probably develop your unique style and create a personalized checklist.</p>
+                <p class="intro-author">Now, let's begin the review process.</p>
+            </div>
+            <!-- CATEGORY 1: PROJECT IDENTIFICATION AND OVERVIEW -->
+            <div class="category-section" id="cat1">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span>Project Identification and Overview</span>
+                        <span class="category-count">0/4 Items</span>
+                    </div>
+                </div>
+                
+                <div class="checklist-item" data-category="cat1">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">My Overview Page has a clear title that illustrates the name of the project</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                A clear project title prevents confusion during reviews and helps everyone immediately understand what the project is about.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat1">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I have added a revision number to identify the project version I am working with</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Without proper version tracking, you risk manufacturing the wrong version or losing track of critical design changes.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat1">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">Other Project details are updated, including the Title, revision, and version number, file name</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Complete metadata ensures everyone works with the correct file and prevents costly version control mistakes.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat1">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">My contact details are displayed on each page</div>
+                        <div class="sub-items">
+                            <div class="sub-item"><span class="bullet">✓</span><span>Name and surname of the designer</span></div>
+                            <div class="sub-item"><span class="bullet">✓</span><span>Email address</span></div>
+                            <div class="sub-item"><span class="bullet">✓</span><span>Logo / Company name</span></div>
+                        </div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Contact information enables quick resolution of questions during layout, manufacturing, and debugging.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORY 2: SCHEMATIC ORGANIZATION AND CLARITY -->
+            <div class="category-section" id="cat2">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span>Schematic Organization and Clarity</span>
+                        <span class="category-count">0/6 Items</span>
+                    </div>
+                </div>
+                
+                <div class="checklist-item" data-category="cat2">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that I have included a block diagram of the connections between components and systems</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                A system-level view helps identify signal flow, power distribution architecture, and potential issues before detailed work begins.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat2">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm the title is displayed on each page and is descriptive of the functional block</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Descriptive page titles enable quick navigation and make reviews more efficient for both you and your team.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat2">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">The pages of the schematics are numbered for easy block location</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Page numbers are essential for cross-referencing and discussions during design reviews.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat2">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">Each block has an intuitive name and a page number for easy identification</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Self-explanatory block names reduce confusion and speed up troubleshooting when issues arise.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat2">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">The status of the schematic is clearly reported</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Clear status marking prevents accidentally using outdated versions in production.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat2">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">The date of the last update is clearly visible on each page</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Timestamps help track design evolution and ensure you're working with the latest revision.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORY 3: DESIGN DETAILS AND ANNOTATIONS -->
+            <div class="category-section" id="cat3">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span>Design Details and Annotations</span>
+                        <span class="category-count">0/4 Items</span>
+                    </div>
+                </div>
+                
+                <div class="checklist-item" data-category="cat3">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that each module of my schematic is subdivided into clear blocks</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Logical organization improves readability and makes it easier to isolate problems during debugging.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat3">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that each net has a net label assigned for easy identification</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Descriptive net names prevent layout errors and make debugging infinitely easier than auto-generated names like 'N$42'.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat3">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that each symbol has consistent directionality to avoid confusion</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Maintaining left-to-right signal flow reduces cognitive load and prevents connection mistakes.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat3">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that sensitive traces are labeled for attention during the layout phase</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Marking critical signals alerts the layout engineer to apply special routing rules and constraints.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORY 4: PROTECTION AND DEBUGGING FEATURES -->
+            <div class="category-section" id="cat4">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span>Protection and Debugging Features</span>
+                        <span class="category-count">0/14 Items</span>
+                    </div>
+                </div>
+                
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that each input and output connector has appropriate protections and/or filters</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Every I/O needs protection against ESD, overvoltage, and transients. This is essential for product reliability.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that I added testing points and other tools for easy debugging and bring-up where necessary</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Test points enable efficient bring-up, debugging, and field troubleshooting. Add them to all critical signals.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that each IC has bypass capacitors</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Local decoupling is fundamental to power integrity and EMC compliance. Every IC needs bypass caps close to power pins.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that all unused pins are terminated</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Floating inputs can cause oscillation, excessive power consumption, and EMI problems.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that polarized components are placed correctly according to their polarity</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Reversed polarity causes immediate failure or damage. Always double-check orientation.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that the design includes necessary safety features such as overvoltage, overcurrent, and thermal protection</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Protection against overvoltage, overcurrent, and thermal events prevents catastrophic failures and safety hazards.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that the design adheres to relevant industry standards and regulatory requirements (such as IEC standards for electronic equipment)</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Compliance verification during design prevents expensive re-spins discovered during certification testing.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that all necessary power decoupling and filtering strategies are incorporated in the design</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Document your decoupling and filtering strategy clearly so the layout engineer implements it correctly.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that user interface elements, if any (like LEDs, switches, and display interfaces), have been correctly implemented and documented</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                UI components need proper current limiting, debouncing, and signal levels. Document the requirements clearly.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that ESD protection measures are in place for all sensitive components and interfaces</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Verify this item carefully during your schematic review.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that RF components and circuits (if any) have been reviewed for frequency, impedance matching, and interference issues</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Verify this item carefully during your schematic review.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that provisions for calibration, if required, are incorporated into the design</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                If calibration is needed, plan for it now. Adding test points and access later is difficult or impossible.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that each subsystem (e.g., power supply, microcontroller unit, communication interfaces) has been individually verified for its functionality</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Verify each major functional block independently before integration to catch issues early.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat4">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that any identified issues from previous design reviews have been addressed</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Address all feedback from earlier reviews. Unresolved issues have a way of coming back.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORY 5: POWER AND SIGNAL INTEGRITY -->
+            <div class="category-section" id="cat5">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span>Power and Signal Integrity</span>
+                        <span class="category-count">0/7 Items</span>
+                    </div>
+                </div>
+                
+                <div class="checklist-item" data-category="cat5">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that each power net has its voltage value and polarity clearly indicated</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Clearly labeled power nets (+3V3, +5V, GND) prevent catastrophic wiring errors during layout.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat5">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that signal traces with high harmonic content have a series Zero-ohm resistor for prompt replacement if necessary</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Verify this item carefully during your schematic review.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat5">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that I added terminations where necessary for impedance matching</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Proper termination prevents reflections and ringing on high-speed signals. Document the termination strategy.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat5">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that power components have the correct power ratings</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Component derating (typically 50-100%) ensures reliability under worst-case conditions.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat5">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that there are no crossing nets or wires on the schematics</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Wire crossings create ambiguity and connection errors. Use net labels and proper connections instead.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat5">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that all external interfaces (connectors, ports) have been correctly defined and meet the requirements for signal, power, and mechanical robustness</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Verify all connector pinouts, signal levels, and mechanical specifications against interface standards.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat5">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that inter-board or intra-board communication protocols and connections are correctly implemented</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Verify proper implementation including pull-ups, terminations, and signal level compatibility.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORY 6: COMPONENT AND CONNECTION VERIFICATION -->
+            <div class="category-section" id="cat6">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span>Component and Connection Verification</span>
+                        <span class="category-count">0/8 Items</span>
+                    </div>
+                </div>
+                
+                <div class="checklist-item" data-category="cat6">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that all components used in the design are readily available or have identified substitutes to avoid supply chain issues</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Component availability issues can delay production. Identify alternates for critical parts now.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat6">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that all components used in the design are sourced from reliable suppliers and are not at risk of becoming obsolete in the near future</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Check manufacturer lifecycle status. Avoid parts marked NRND (Not Recommended for New Designs).
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat6">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that I double-checked each pin of major components for correct connections</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Manual verification of critical IC connections catches pin-swap errors before they become expensive.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat6">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that RX and TX pins are connected to the correct pins</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Verify this item carefully during your schematic review.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat6">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that I added net ties for tracks with the same voltages but different roles</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Net ties (0Ω resistors or ferrites) separate domains with the same voltage but different noise characteristics.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat6">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that each block is interconnected to the right block on the block diagram</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                A system-level view helps identify signal flow, power distribution architecture, and potential issues before detailed work begins.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat6">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that the design has been checked for interoperability with other systems or modules it will interface with</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Confirm signal levels, timing, protocols, and connector compatibility with mating systems.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat6">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that key components such as microcontrollers, memory, and power regulators have been correctly implemented as per their datasheets</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Read the complete datasheet and errata documents. Many design errors stem from incomplete datasheet review.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORY 7: LAYOUT AND MECHANICAL CONSIDERATIONS -->
+            <div class="category-section" id="cat7">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span>Layout and Mechanical Considerations</span>
+                        <span class="category-count">0/4 Items</span>
+                    </div>
+                </div>
+                
+                <div class="checklist-item" data-category="cat7">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that the input and output ports are designed according to the left-to-right convention</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Following standard conventions significantly improves schematic readability and reduces errors.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat7">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that I added extra footprint between mounting holes and board return Ground</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Copper keepout around mounting holes prevents unintended chassis ground connections.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat7">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that I added fiducials and mounting holes to the mechanical page</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Copper keepout around mounting holes prevents unintended chassis ground connections.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat7">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that a component represents the PCB in the Bill of Material</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Verify this item carefully during your schematic review.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORY 8: COMPLIANCE AND DOCUMENTATION -->
+            <div class="category-section" id="cat8">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span>Compliance and Documentation</span>
+                        <span class="category-count">0/6 Items</span>
+                    </div>
+                </div>
+                
+                <div class="checklist-item" data-category="cat8">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that I added symbols for labels like CE mark, ESD, Hot surface, High-Voltage, UL certification, RoHS compliance etc.</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Regulatory markings (CE, FCC, RoHS) should be schematic symbols so they're not forgotten during layout.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat8">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that differential nets are labeled and annotated accordingly</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Differential pairs must be clearly labeled with consistent naming to ensure proper routing.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat8">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that the schematic looks clean and orderly</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                A clean, well-organized schematic reflects attention to detail and professionalism.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat8">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I have confirmed that I studied the datasheet of each IC and checked the errata files</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Read the complete datasheet and errata documents. Many design errors stem from incomplete datasheet review.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat8">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that all critical signal paths (like clock lines, high-speed data) are optimized for minimal interference and delay</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                High-speed signals need direct routing with minimal vias and stubs. Document constraints in the schematic.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat8">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that a basic FMEA has been performed to identify potential failure modes and their impact on the circuit's performance</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Verify this item carefully during your schematic review.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORY 9: FINAL CHECKS -->
+            <div class="category-section" id="cat9">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span>Final Checks</span>
+                        <span class="category-count">0/7 Items</span>
+                    </div>
+                </div>
+                
+                <div class="checklist-item" data-category="cat9">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that I added notes for quick understanding or debugging where necessary</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Add explanatory notes for non-obvious design choices and critical constraints.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat9">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that modifications of previous versions are reported with special notes included</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Document all changes from previous revisions so reviewers can easily see what changed.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat9">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that I followed all signals and checked the entire connection path</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Trace every signal from source to destination. Verify the complete connection path is correct.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat9">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that the ERC rules are set according to the project and manufacturing requirements</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Verify this item carefully during your schematic review.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat9">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that I have reserved a special place for either the model of the PCB or real photos post-completion</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Verify this item carefully during your schematic review.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat9">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that a detailed bill of materials (BOM) is prepared and includes specifications for all components</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Complete BOM with manufacturer part numbers prevents procurement delays and ensures correct parts.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-category="cat9">
+                    <div class="checkbox-container"><div class="checkbox"></div></div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">I confirm that the Electrical Rule Checker complies without errors and warnings</div>
+                        <div class="info-toggle">
+                            <span class="info-icon">i</span>
+                            <span>Why this matters</span>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-box">
+                                <div class="info-title">Context</div>
+                                Verify this item carefully during your schematic review.
+                            </div>
+                        </div>
+                        <div class="notes-section">
+                            <label class="notes-label">Notes (optional):</label>
+                            <textarea class="notes-input" placeholder="Add your project-specific notes here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEXT STEP BOX -->
+            <div class="next-step-box">
+                <div class="next-step-title">
+                    <span class="next-step-icon">✅</span>
+                    <span>Next Step</span>
+                </div>
+                <div class="next-step-text">
+                    The schematic is now ready to be reviewed by another engineer or team member for a second opinion and to catch potential oversights.
+                </div>
+            </div>
+
+            <!-- SIGNATURE SECTION -->
+            <div class="signature-section">
+                <div class="signature-grid">
+                    <div class="signature-field">
+                        <div class="signature-label">Name and Surname</div>
+                        <div class="signature-line"></div>
+                    </div>
+                    <div class="signature-field">
+                        <div class="signature-label">Email</div>
+                        <div class="signature-line"></div>
+                    </div>
+                    <div class="signature-field">
+                        <div class="signature-label">Date</div>
+                        <div class="signature-line"></div>
+                    </div>
+                    <div class="signature-field">
+                        <div class="signature-label">Signature</div>
+                        <div class="signature-line"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="footer-section">
+        <div class="footer-brand">FRESU ELECTRONICS</div>
+        <div class="footer-tagline">EMI Control · PCB Design Excellence</div>
+        <div class="footer-links">Sardinia, Italy | www.fresuelectronics.com</div>
+        <div class="footer-copyright">
+            ©2026 Fresu Electronics LLC | All rights reserved<br>
+            Resale or redistribution of this material is strictly prohibited
+        </div>
+    </div>
+
+    <div class="export-controls">
+        <button class="export-btn" onclick="exportProgress()">📊 Export Progress</button>
+        <button class="export-btn" onclick="printPDF()">🖨️ Print PDF</button>
+    </div>
+
+    <script>
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            loadNotes();
+            updateProgress();
+            initializeInfoToggles();
+        });
+
+        // Checkbox functionality
+        document.querySelectorAll('.checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                this.classList.toggle('checked');
+                this.closest('.checklist-item').classList.toggle('checked');
+                updateProgress();
+                saveProgress();
+            });
+        });
+
+        // Info toggle functionality
+        function initializeInfoToggles() {
+            document.querySelectorAll('.info-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    if (content && content.classList.contains('info-content')) {
+                        content.classList.toggle('expanded');
+                        const textSpan = this.querySelector('span:last-child');
+                        if (textSpan) {
+                            textSpan.textContent = content.classList.contains('expanded') ? 'Hide details' : 'Why this matters';
+                        }
+                    }
+                });
+            });
+        }
+
+        // Notes auto-save functionality
+        document.querySelectorAll('.notes-input').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                saveNotes();
+            });
+        });
+
+        // Update progress tracking
+        function updateProgress() {
+            const categories = {};
+            const totalItems = document.querySelectorAll('.checkbox').length;
+            const checkedItems = document.querySelectorAll('.checkbox.checked').length;
+            const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
+            
+            const progressFill = document.getElementById('progressFill');
+            const progressPercent = document.getElementById('progressPercent');
+            if (progressFill) progressFill.style.width = percentage + '%';
+            if (progressPercent) progressPercent.textContent = percentage + '%';
+            
+            document.querySelectorAll('.checklist-item[data-category]').forEach(item => {
+                const category = item.getAttribute('data-category');
+                if (!categories[category]) {
+                    categories[category] = { total: 0, checked: 0 };
+                }
+                categories[category].total++;
+                if (item.querySelector('.checkbox.checked')) {
+                    categories[category].checked++;
+                }
+            });
+            
+            Object.keys(categories).forEach(cat => {
+                const firstItem = document.querySelector(`[data-category="${cat}"]`);
+                if (firstItem) {
+                    const categorySection = firstItem.closest('.category-section');
+                    if (categorySection) {
+                        const display = categorySection.querySelector('.category-count');
+                        if (display) {
+                            display.textContent = `${categories[cat].checked}/${categories[cat].total} Items`;
+                        }
+                    }
+                }
+            });
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            try {
+                const checkboxStates = [];
+                document.querySelectorAll('.checkbox').forEach((checkbox, index) => {
+                    checkboxStates[index] = checkbox.classList.contains('checked');
+                });
+                localStorage.setItem('preLayoutChecklistProgress', JSON.stringify(checkboxStates));
+            } catch (error) {
+                // Silent fail
+            }
+        }
+
+        // Load progress from localStorage
+        function loadProgress() {
+            try {
+                const saved = localStorage.getItem('preLayoutChecklistProgress');
+                if (saved) {
+                    const states = JSON.parse(saved);
+                    document.querySelectorAll('.checkbox').forEach((checkbox, index) => {
+                        if (states[index]) {
+                            checkbox.classList.add('checked');
+                            const item = checkbox.closest('.checklist-item');
+                            if (item) item.classList.add('checked');
+                        }
+                    });
+                }
+            } catch (error) {
+                // Silent fail
+            }
+        }
+
+        // Save notes to localStorage
+        function saveNotes() {
+            try {
+                const notes = [];
+                document.querySelectorAll('.notes-input').forEach((textarea, index) => {
+                    notes[index] = textarea.value;
+                });
+                localStorage.setItem('preLayoutChecklistNotes', JSON.stringify(notes));
+            } catch (error) {
+                // Silent fail
+            }
+        }
+
+        // Load notes from localStorage
+        function loadNotes() {
+            try {
+                const saved = localStorage.getItem('preLayoutChecklistNotes');
+                if (saved) {
+                    const notes = JSON.parse(saved);
+                    document.querySelectorAll('.notes-input').forEach((textarea, index) => {
+                        if (notes[index]) {
+                            textarea.value = notes[index];
+                        }
+                    });
+                }
+            } catch (error) {
+                // Silent fail
+            }
+        }
+
+        // Export progress to text file WITH NOTES
+        function exportProgress() {
+            try {
+                const categories = {};
+                const categoryNames = {
+                    'cat1': 'Project Identification and Overview',
+                    'cat2': 'Schematic Organization and Clarity',
+                    'cat3': 'Design Details and Annotations',
+                    'cat4': 'Protection and Debugging Features',
+                    'cat5': 'Power and Signal Integrity',
+                    'cat6': 'Component and Connection Verification',
+                    'cat7': 'Layout and Mechanical Considerations',
+                    'cat8': 'Compliance and Documentation',
+                    'cat9': 'Final Checks'
+                };
+
+                document.querySelectorAll('.checklist-item[data-category]').forEach(item => {
+                    const category = item.getAttribute('data-category');
+                    const textEl = item.querySelector('.checklist-text');
+                    const notesEl = item.querySelector('.notes-input');
+                    if (!textEl) return;
+                    
+                    const text = textEl.textContent.trim();
+                    const checked = item.querySelector('.checkbox.checked') !== null;
+                    const notes = notesEl ? notesEl.value.trim() : '';
+                    
+                    if (!categories[category]) {
+                        categories[category] = [];
+                    }
+                    categories[category].push({ text, checked, notes });
+                });
+                
+                const totalItems = document.querySelectorAll('.checkbox').length;
+                const checkedItems = document.querySelectorAll('.checkbox.checked').length;
+                const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
+                
+                let report = `PRE-LAYOUT REVIEW CHECKLIST - PROGRESS REPORT\n`;
+                report += `Fresu Electronics - EMC Design Excellence\n`;
+                report += `Generated: ${new Date().toLocaleString()}\n`;
+                report += `${'='.repeat(80)}\n\n`;
+                report += `OVERALL PROGRESS: ${checkedItems}/${totalItems} items completed (${percentage}%)\n\n`;
+                
+                Object.keys(categories).sort().forEach(cat => {
+                    const catItems = categories[cat];
+                    const catChecked = catItems.filter(i => i.checked).length;
+                    const catPercentage = catItems.length > 0 ? Math.round((catChecked / catItems.length) * 100) : 0;
+                    
+                    report += `\n${categoryNames[cat] || cat.toUpperCase()}\n`;
+                    report += `Progress: ${catChecked}/${catItems.length} (${catPercentage}%)\n`;
+                    report += `${'-'.repeat(80)}\n`;
+                    
+                    catItems.forEach(item => {
+                        report += `${item.checked ? '[✓]' : '[ ]'} ${item.text}\n`;
+                        if (item.notes) {
+                            report += `    NOTES: ${item.notes}\n`;
+                        }
+                    });
+                });
+                
+                report += `\n${'='.repeat(80)}\n`;
+                report += `\nPre-Layout Review Checklist by Fresu Electronics\n`;
+                report += `www.fresuelectronics.com\n`;
+                
+                const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const date = new Date().toISOString().split('T')[0];
+                a.download = `PreLayout_Checklist_Progress_${date}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('✓ Progress report exported successfully!');
+            } catch (error) {
+                alert('Export failed: ' + error.message);
+            }
+        }
+
+        // Print to PDF function
+        function printPDF() {
+            // This triggers the browser's native print dialog
+            // Users can then select "Save as PDF" as the destination
+            window.print();
+        }
+    </script>
+</body>
+</html>
