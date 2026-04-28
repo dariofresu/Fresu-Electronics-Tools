@@ -1,41 +1,98 @@
-# Artifact — Top 10 PCB Design Mistakes for EMI Control
+# Fresu Electronics — Tools
 
-An interactive single-file HTML reader built for the Fresu Electronics guide  
-**"Top 10 PCB Design Mistakes for EMI Control"** by Dario Fresu.
+Interactive engineering tools by **Dario Fresu**, Principal EMC Architect at Fresu Electronics.
+
+Live at: **[tool.fresuelectronics.com](https://tool.fresuelectronics.com)**
 
 ---
 
-## What it is
+## Repository Structure
 
-A self-contained `index.html` file that turns the PDF guide into a full interactive web experience — no server, no dependencies, no internet required after opening.
+```
+/                          ← Hub landing page (tool.fresuelectronics.com)
+├── index.html             ← Tools hub — all tools listed
+│
+├── pcb-mistakes/          ← tool.fresuelectronics.com/pcb-mistakes/
+│   └── index.html         ← Top 10 PCB Design Mistakes for EMI Control
+│
+├── hardware-spec/         ← tool.fresuelectronics.com/hardware-spec/
+│   └── index.html         ← Hardware Specification Guide
+│
+├── emc-fundamentals/      ← tool.fresuelectronics.com/emc-fundamentals/
+│   └── index.html         ← EMC Fundamentals interactive module
+│
+├── pcb-em-fields/         ← tool.fresuelectronics.com/pcb-em-fields/
+│   └── index.html         ← PCB EM Fields visualiser
+│
+├── pcb-emc-design-kit/    ← tool.fresuelectronics.com/pcb-emc-design-kit/
+│   └── index.html         ← PCB EMC Design Kit
+│
+├── pcb-signal-propagation/← tool.fresuelectronics.com/pcb-signal-propagation/
+│   └── index.html         ← Signal Propagation Visualiser
+│
+└── images/                ← Shared figures (PCB Mistakes guide)
+    └── fig-01.jpg … fig-22.jpg, portrait.jpg
+```
 
-## Features
+---
 
-- 📖 **Chapter reader** — all 10 mistakes with figures, level-unlock callouts and key takeaways
-- 🗺️ **Roadmap view** — visual progress map across all mistakes
-- 🔍 **PCB Audit tool** — self-assessment checklist per mistake
-- 📸 **Figure gallery** — all 22 figures browsable in one place
-- ✅ **Design checklist** — actionable items per mistake
-- 🎓 **Certification exam** — 10-question final exam with scoring and certificate
-- 🌙 **Dark / light mode** — toggle with the `T` key or toolbar button
-- ⌨️ **Keyboard navigation** — `←` / `→` or `J` / `K` to move between chapters
+## Tools
 
-## How to use
+### 1. Top 10 PCB Design Mistakes for EMI Control
+**URL:** [tool.fresuelectronics.com/pcb-mistakes/](https://tool.fresuelectronics.com/pcb-mistakes/)
 
-1. Download `index.html`
-2. Open it in any modern browser (Chrome, Firefox, Safari, Edge)
-3. No installation, no build step, no internet needed
+The complete interactive guide. 10 chapters covering the most common PCB layout mistakes that cause EMC test failures — with chapter quizzes, self-audit tool, roadmap, printable checklist, and a certification exam.
 
-## Tech
+Features: Reader · Chapter Quizzes · Self-Audit · Roadmap · Key Insights Gallery · Printable Checklist · Certification Exam · Dark/Light Mode
 
-- Pure HTML + CSS + JavaScript — zero external runtime dependencies
-- All figures embedded as base64 JPEG
-- Fonts loaded from Google Fonts (requires internet on first load)
+---
+
+### 2. Hardware Specification Guide
+**URL:** [tool.fresuelectronics.com/hardware-spec/](https://tool.fresuelectronics.com/hardware-spec/)
+
+A structured interactive worksheet for defining hardware product specs before opening a schematic tool. Covers Product Vision, Technical Requirements, Architecture & Interfaces, and Compliance & Risk.
+
+Features: 4-Step Worksheet · Confidence Star Ratings · Notes per Item · Auto-Save (localStorage) · Export Product Specification Brief (TXT)
+
+---
+
+### 3. PCB Signal Propagation Visualiser
+**URL:** [tool.fresuelectronics.com/pcb-signal-propagation/](https://tool.fresuelectronics.com/pcb-signal-propagation/)
+
+Animated visualisation of how signals travel through a PCB transmission line — wavefront, displacement current, E and H fields, live impedance matching.
+
+---
+
+### 4. PCB EM Fields
+**URL:** [tool.fresuelectronics.com/pcb-em-fields/](https://tool.fresuelectronics.com/pcb-em-fields/)
+
+---
+
+### 5. EMC Fundamentals
+**URL:** [tool.fresuelectronics.com/emc-fundamentals/](https://tool.fresuelectronics.com/emc-fundamentals/)
+
+---
+
+### 6. PCB EMC Design Kit
+**URL:** [tool.fresuelectronics.com/pcb-emc-design-kit/](https://tool.fresuelectronics.com/pcb-emc-design-kit/)
+
+---
+
+## Deployment
+
+- **Hosting:** GitHub Pages (public repo)
+- **Domain:** `tool.fresuelectronics.com` → CNAME → `dariofresu.github.io`
+- **Push to deploy:** Changes pushed to `main` go live within 1–2 minutes automatically.
+- **No build step.** All tools are self-contained HTML files.
+
+## Development
+
+Each tool is a single self-contained `index.html` — no framework, no bundler, no dependencies beyond Google Fonts.
+To work on a tool locally: open the `index.html` in any browser. No server required.
+
+---
 
 ## Legal
 
 © 2026 Fresu Electronics SRL — All rights reserved  
-Resale or redistribution of this material is strictly prohibited.  
 [fresuelectronics.com](https://fresuelectronics.com)
-
-<!-- CDN purge: 2026-04-17T06:16:42Z -->
