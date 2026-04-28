@@ -41,7 +41,7 @@ a{text-decoration:none}
 .tools-section{max-width:1100px;margin:0 auto;padding:0 24px 80px}
 .sec-label{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:24px;display:flex;align-items:center;gap:10px}
 .sec-label::before{content:'';width:20px;height:1px;background:var(--accent)}
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2px}
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}.tools-grid.cols-2{grid-template-columns:repeat(2,1fr)}
 .tool-card{background:var(--surface);border:1px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:16px;transition:border-color .2s}
 .tool-card:hover{border-color:rgba(0,255,148,.35)}
 .tool-card.featured{border-left:3px solid var(--accent)}
@@ -68,7 +68,7 @@ footer{border-top:1px solid var(--border);padding:28px 24px}
 .footer-nav a:hover{color:var(--fg)}
 .footer-legal{font-size:11px;color:#6b7d8f}
 @media(max-width:600px){
-  .tools-grid{grid-template-columns:1fr}
+  .tools-grid,.tools-grid.cols-2{grid-template-columns:1fr}
   .hero{padding:48px 20px 40px}
   .tools-section{padding:0 20px 60px}
   .nav-inner{padding:0 16px}
@@ -149,7 +149,7 @@ footer{border-top:1px solid var(--border);padding:28px 24px}
 
   <div class="divider" style="margin-top:40px"><span class="divider-text">Also Free on fresuelectronics.com</span></div>
 
-  <div class="tools-grid">
+  <div class="tools-grid cols-2">
 
     <div class="tool-card">
       <div class="tool-tag free">Stack-Up Tool</div>
