@@ -4,160 +4,163 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hardware Specification Guide — Fresu Electronics</title>
-<meta name="description" content="Define your hardware product spec before you touch a schematic. The interactive pre-design worksheet by Dario Fresu, Fresu Electronics.">
+<meta name="description" content="Define your hardware product spec before you touch a schematic. Interactive spec capture tool by Dario Fresu.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a0a0a;--surface:#111111;--surface-2:#181818;
-  --border:#242424;--border-light:#1a1a1a;
-  --fg:#ffffff;--fg-secondary:#e8edf5;--label:#a0aab8;--label-dim:#6b7d8f;
-  --accent:#00FF94;--accent-dim:rgba(0,255,148,0.10);--accent-hover:#00e085;
-  --wrong:#ff4d4d;--ease:cubic-bezier(0.22,1,0.36,1);
+  --bg:#0a0a0a;
+  --surface:#141414;
+  --surface-2:#1c1c1c;
+  --surface-3:#242424;
+  --border:#383838;        /* was #242424 — FIXED */
+  --border-focus:#555555;  /* visible interactive border */
+  --fg:#ffffff;
+  --fg-2:#e8edf5;          /* was fg-secondary */
+  --fg-3:#c8d0dc;          /* hints, captions — visible */
+  --accent:#00FF94;
+  --accent-dim:rgba(0,255,148,.12);
+  --accent-mid:rgba(0,255,148,.25);
+  --star-off:#555555;      /* FIXED — was #242424, invisible */
+  --wrong:#ff4d4d;
+  --ease:cubic-bezier(0.22,1,0.36,1);
+  --mono:'JetBrains Mono',monospace;
 }
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--fg);font-family:'Poppins',sans-serif;font-size:16px;line-height:1.7;overflow-x:hidden;min-height:100vh}
-a{color:var(--accent);text-decoration:none}
-button{font-family:'Poppins',sans-serif;cursor:pointer}
+html{scroll-behavior:smooth;height:100%}
+body{background:var(--bg);color:var(--fg);font-family:'Poppins',sans-serif;font-size:15px;line-height:1.7;overflow:hidden;height:100%;display:flex;flex-direction:column}
+button,textarea,input{font-family:'Poppins',sans-serif}
+textarea{resize:none}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-focus)}
+::selection{background:var(--accent);color:#0a0a0a}
 
 /* ─── NAV ─── */
-.nav{background:rgba(10,10,10,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:12px 0;position:sticky;top:0;z-index:100}
-.nav-inner{max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.nav-logo img{height:40px;width:auto;display:block}
-.nav-cta{background:var(--accent);color:#0a0a0a;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 20px;border-radius:2px;text-decoration:none;transition:background .2s}
-.nav-cta:hover{background:var(--accent-hover)}
+.nav{background:rgba(10,10,10,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0;flex-shrink:0;z-index:100}
+.nav-inner{max-width:none;padding:0 24px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;height:52px;gap:20px}
+.nav-logo img{height:34px;width:auto;display:block}
+.nav-progress{display:flex;align-items:center;gap:14px}
+.nav-progress-bar{flex:1;height:2px;background:var(--surface-3);border-radius:1px;overflow:hidden;min-width:120px}
+.nav-progress-fill{height:100%;background:var(--accent);border-radius:1px;transition:width .4s var(--ease)}
+.nav-progress-label{font-family:var(--mono);font-size:11px;color:var(--fg-3);min-width:6ch;text-align:right;font-variant-numeric:tabular-nums}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.btn{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:9px 18px;border-radius:2px;border:none;cursor:pointer;transition:all .2s var(--ease);display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--accent);color:#0a0a0a}
+.btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--fg-3);border:1px solid var(--border);font-size:11px}
+.btn-outline:hover{border-color:var(--border-focus);color:var(--fg)}
+.btn-danger{background:transparent;color:#888;border:1px solid var(--border);font-size:11px}
+.btn-danger:hover{border-color:var(--wrong);color:var(--wrong)}
+.saved-badge{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;opacity:0;transition:opacity .3s;display:flex;align-items:center;gap:5px}
+.saved-badge.show{opacity:1}
+.saved-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent)}
 
-/* ─── HERO ─── */
-.hero{max-width:1100px;margin:0 auto;padding:60px 24px 40px}
-.kicker{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.kicker::before{content:'';width:24px;height:1px;background:var(--accent)}
-.hero h1{font-size:clamp(28px,6vw,52px);font-weight:800;letter-spacing:-.04em;line-height:1.06;margin-bottom:12px}
-.hero h1 em{font-style:normal;color:var(--accent)}
-.hero-sub{font-size:clamp(14px,2.5vw,17px);color:var(--fg-secondary);max-width:560px;line-height:1.7;margin-bottom:24px}
-.author-row{display:flex;align-items:center;gap:12px;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:0}
-.author-row img{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--accent)}
-.author-row p{margin:0;font-size:12px;font-weight:600;color:var(--fg);line-height:1.3}
-.author-row span{font-size:11px;color:var(--label)}
+/* ─── SPLIT LAYOUT ─── */
+.split{display:grid;grid-template-columns:1fr 420px;flex:1;min-height:0;overflow:hidden}
 
-/* ─── INSTRUCTIONS ─── */
-.instructions{max-width:1100px;margin:0 auto;padding:0 24px 32px}
-.instr-toggle{background:var(--surface);border:1px solid var(--border);padding:14px 20px;width:100%;text-align:left;display:flex;align-items:center;justify-content:space-between;color:var(--label);font-size:13px;font-weight:600;letter-spacing:.04em;transition:all .2s}
-.instr-toggle:hover{border-color:var(--accent);color:var(--accent)}
-.instr-toggle .arrow{transition:transform .25s var(--ease)}
-.instr-toggle.open .arrow{transform:rotate(180deg)}
-.instr-body{background:var(--surface);border:1px solid var(--border);border-top:none;padding:0;max-height:0;overflow:hidden;transition:max-height .35s var(--ease),padding .35s var(--ease)}
-.instr-body.open{max-height:600px;padding:24px 24px 28px}
-.instr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:16px}
-.instr-item{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:flex-start}
-.instr-num{font-size:11px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;padding-top:2px}
-.instr-text{font-size:13px;color:var(--fg-secondary);line-height:1.6}
-.instr-text strong{color:var(--fg);font-weight:600}
-.instr-callout{background:var(--surface-2);border-left:2px solid var(--accent);padding:12px 16px;margin-top:16px;font-size:13px;color:var(--fg-secondary);line-height:1.6;border-radius:0 2px 2px 0}
+/* ─── LEFT — FORM PANEL ─── */
+.form-panel{overflow-y:auto;padding:0}
+.form-panel-inner{max-width:640px;margin:0 auto;padding:36px 36px 80px}
 
-/* ─── TOOLBAR ─── */
-.toolbar{max-width:1100px;margin:0 auto;padding:0 24px 24px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
-.progress-wrap{flex:1;min-width:200px;display:flex;align-items:center;gap:14px}
-.progress-bar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s var(--ease);width:0%}
-.progress-label{font-size:11px;font-weight:700;color:var(--label);font-variant-numeric:tabular-nums;min-width:4ch;text-align:right}
-.btn-primary{background:var(--accent);color:#0a0a0a;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:12px 24px;border:none;border-radius:2px;transition:background .2s,transform .15s}
-.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
-.btn-secondary{background:transparent;color:var(--accent);font-size:13px;font-weight:600;padding:11px 23px;border:1px solid var(--accent);border-radius:2px;transition:all .2s}
-.btn-secondary:hover{background:var(--accent-dim)}
-.btn-ghost{background:transparent;color:var(--label);font-size:12px;font-weight:500;padding:11px 18px;border:1px solid var(--border);border-radius:2px;transition:all .2s}
-.btn-ghost:hover{border-color:var(--wrong);color:var(--wrong)}
-.saved-dot{font-size:11px;color:var(--label);display:flex;align-items:center;gap:6px;opacity:0;transition:opacity .3s}
-.saved-dot.show{opacity:1}
-.saved-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}
+/* ─── STEP HEADER ─── */
+.step-block{margin-bottom:48px}
+.step-block:last-child{margin-bottom:0}
+.step-tag{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.step-tag::before{content:'';width:20px;height:1px;background:var(--accent)}
+.step-title{font-size:22px;font-weight:700;letter-spacing:-.025em;line-height:1.25;margin-bottom:6px}
+.step-desc{font-size:13px;color:var(--fg-3);line-height:1.65;margin-bottom:24px;max-width:52ch}
 
-/* ─── MAIN LAYOUT ─── */
-.main{max-width:1100px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:240px 1fr;gap:0;align-items:start}
-.step-nav{position:sticky;top:76px;padding:0 0 40px}
-.step-nav-title{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--label);padding:0 0 12px;margin-bottom:4px;border-bottom:1px solid var(--border)}
-.step-btn{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;padding:12px 14px;background:transparent;border:none;border-left:2px solid transparent;color:var(--label);font-size:13px;font-weight:500;line-height:1.35;transition:all .18s;cursor:pointer}
-.step-btn:hover{color:var(--fg);border-left-color:var(--border)}
-.step-btn.active{color:var(--fg);border-left-color:var(--accent);background:rgba(0,255,148,.04)}
-.step-btn.done .step-dot{background:var(--accent)}
-.step-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;margin-top:5px;transition:background .2s}
-.step-btn.active .step-dot{background:var(--accent)}
-.step-btn-num{font-size:10px;font-weight:700;color:var(--accent);font-family:'Poppins',sans-serif;margin-right:2px;min-width:16px}
-
-/* ─── CATEGORIES ─── */
-.categories{min-width:0}
-.category{margin-bottom:2px}
-.cat-header{padding:28px 28px 0;margin-bottom:20px}
-.cat-step{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.cat-step::before{content:'';width:20px;height:1px;background:var(--accent)}
-.cat-title{font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-bottom:6px}
-.cat-desc{font-size:14px;color:var(--label);line-height:1.6}
-.cat-body{padding:0 28px 28px}
-
-/* ─── ITEM ─── */
-.item{padding:18px 0;border-bottom:1px solid var(--border-light)}
-.item:last-child{border-bottom:none}
-.item-row{display:flex;align-items:flex-start;gap:14px}
-.item-check{width:20px;height:20px;min-width:20px;border:1.5px solid var(--border);border-radius:3px;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;margin-top:2px;flex-shrink:0}
-.item-check.checked{background:var(--accent);border-color:var(--accent)}
-.item-check.checked::after{content:'';width:6px;height:10px;border:2px solid #0a0a0a;border-top:none;border-left:none;transform:rotate(45deg);margin-top:-2px}
-.item-content{flex:1;min-width:0}
-.item-label{font-size:15px;font-weight:500;color:var(--fg);line-height:1.4;cursor:pointer;user-select:none}
-.item-hint{font-size:12px;color:var(--label);margin-top:3px;line-height:1.5}
-.item-stars{display:flex;gap:4px;margin-top:10px}
-.star{width:20px;height:20px;cursor:pointer;color:var(--border);transition:color .15s,transform .15s}
-.star:hover{color:var(--accent);transform:scale(1.15)}
+/* ─── QUESTION CARD ─── */
+.q-card{background:var(--surface);border:1px solid var(--border);margin-bottom:12px;transition:border-color .2s}
+.q-card:focus-within{border-color:var(--border-focus)}
+.q-card-header{padding:16px 20px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.q-num{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--accent);letter-spacing:.1em;flex-shrink:0;padding-top:3px}
+.q-title{font-size:14px;font-weight:600;color:var(--fg);line-height:1.4;flex:1}
+.q-stars{display:flex;gap:3px;flex-shrink:0}
+.star{width:18px;height:18px;cursor:pointer;transition:transform .12s,color .12s;color:var(--star-off)}
+.star:hover,
+.star-hover{color:var(--accent);transform:scale(1.2)}
 .star.lit{color:var(--accent)}
-.star svg{width:100%;height:100%;pointer-events:none}
-.item-notes{margin-top:10px;display:none}
-.item-notes.open{display:block}
-.item-notes textarea{width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--fg);font-family:'Poppins',sans-serif;font-size:13px;padding:10px 12px;resize:vertical;min-height:60px;border-radius:2px;outline:none;transition:border-color .18s;line-height:1.6}
-.item-notes textarea::placeholder{color:var(--label)}
-.item-notes textarea:focus{border-color:var(--accent)}
-.item-meta{display:flex;align-items:center;gap:10px;margin-top:8px}
-.notes-toggle{font-size:11px;color:var(--label);background:none;border:none;cursor:pointer;font-family:'Poppins',sans-serif;padding:0;transition:color .15s}
-.notes-toggle:hover{color:var(--accent)}
+.star svg{width:100%;height:100%;display:block}
+.q-guide{padding:6px 20px 10px;font-size:12px;color:var(--fg-3);line-height:1.55}
+.q-answer{padding:0 20px 16px}
+.q-answer textarea{
+  width:100%;background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:2px;color:var(--fg);
+  font-size:13px;padding:10px 12px;
+  min-height:72px;outline:none;line-height:1.6;
+  transition:border-color .2s,background .2s;
+}
+.q-answer textarea::placeholder{color:#666;font-style:italic}
+.q-answer textarea:focus{border-color:var(--accent);background:var(--surface-3)}
+.q-answer textarea.has-content{border-color:var(--border-focus)}
+.q-footer{padding:0 20px 14px;display:flex;align-items:center;justify-content:space-between}
+.q-confidence-label{font-family:var(--mono);font-size:10px;color:#666;letter-spacing:.08em}
+.q-confidence-label.rated{color:var(--fg-3)}
+.q-wordcount{font-family:var(--mono);font-size:10px;color:#555;letter-spacing:.05em}
 
-/* ─── CARD ─── */
-.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:2px;margin-bottom:2px}
-.cat-card.active-card{border-color:rgba(0,255,148,.18)}
+/* ─── STEP PROGRESS BAR ─── */
+.step-progress{display:flex;gap:4px;margin-bottom:20px}
+.step-pip{height:3px;flex:1;background:var(--surface-3);border-radius:2px;transition:background .3s}
+.step-pip.done{background:var(--accent)}
+.step-pip.partial{background:rgba(0,255,148,.4)}
 
-/* ─── MILESTONE ─── */
-.milestone{background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--accent);padding:20px 24px;margin:24px 28px 4px;border-radius:0 2px 2px 0}
-.milestone-label{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
-.milestone-text{font-size:14px;color:var(--fg-secondary);line-height:1.6}
+/* ─── RIGHT — BRIEF PREVIEW ─── */
+.preview-panel{border-left:1px solid var(--border);overflow-y:auto;background:var(--surface);display:flex;flex-direction:column}
+.preview-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;background:var(--surface);z-index:10}
+.preview-title{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-3)}
+.preview-actions{display:flex;gap:6px}
+.preview-inner{padding:24px;flex:1}
+.brief-doc{font-size:12px;line-height:1.75;color:var(--fg-2)}
+.brief-masthead{border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:20px}
+.brief-logo{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.brief-h1{font-size:17px;font-weight:700;letter-spacing:-.02em;color:var(--fg);margin-bottom:4px}
+.brief-meta{font-family:var(--mono);font-size:10px;color:#666;letter-spacing:.06em}
+.brief-section{margin-bottom:20px}
+.brief-section-title{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.brief-item{padding:8px 0;border-bottom:1px solid var(--surface-3)}
+.brief-item:last-child{border-bottom:none}
+.brief-item-q{font-size:11px;font-weight:600;color:var(--fg-3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;font-family:var(--mono)}
+.brief-item-a{font-size:12px;color:var(--fg);line-height:1.6}
+.brief-item-a.empty{color:#555;font-style:italic}
+.brief-stars{display:flex;gap:2px;margin-top:3px}
+.brief-star{font-size:9px;color:var(--accent)}
+.brief-star.off{color:var(--surface-3)}
+.brief-completeness{margin-top:16px;padding:12px;background:var(--surface-2);border:1px solid var(--border)}
+.brief-comp-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-3);margin-bottom:8px}
+.brief-comp-bar{height:2px;background:var(--surface-3);margin-bottom:6px}
+.brief-comp-fill{height:100%;background:var(--accent);transition:width .5s var(--ease)}
+.brief-comp-pct{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent)}
+
+/* ─── EMPTY STATE ─── */
+.preview-empty{padding:40px 24px;text-align:center;color:#555}
+.preview-empty-icon{font-size:32px;margin-bottom:12px;opacity:.4}
+.preview-empty-text{font-size:13px;line-height:1.6}
 
 /* ─── MODAL ─── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
 .overlay.open{display:flex}
-.modal{background:var(--surface);border:1px solid var(--border);max-width:420px;width:100%;padding:32px}
-.modal h2{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
-.modal p{font-size:14px;color:var(--fg-secondary);line-height:1.6;margin-bottom:24px}
-.modal-actions{display:flex;gap:10px}
-
-/* ─── FOOTER ─── */
-footer{border-top:1px solid var(--border-light);padding:28px 24px;text-align:center}
-.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.footer-brand{font-size:12px;color:var(--accent);font-weight:600}
-.footer-legal{font-size:11px;color:var(--label-dim)}
+.modal{background:var(--surface);border:1px solid var(--border);max-width:400px;width:100%;padding:28px}
+.modal h2{font-size:17px;font-weight:700;margin-bottom:8px}
+.modal p{font-size:13px;color:var(--fg-3);line-height:1.6;margin-bottom:20px}
+.modal-actions{display:flex;gap:8px}
 
 /* ─── MOBILE ─── */
-@media(max-width:768px){
-  .main{grid-template-columns:1fr}
-  .step-nav{display:none}
-  .hero{padding:40px 20px 28px}
-  .instructions{padding:0 20px 24px}
-  .toolbar{padding:0 20px 20px}
-  .main{padding:0 20px 60px}
-  .cat-header{padding:20px 20px 0}
-  .cat-body{padding:0 20px 20px}
-  .milestone{margin:20px 20px 4px}
-  .modal-actions{flex-direction:column}
-  .nav-inner{padding:0 16px}
+@media(max-width:900px){
+  body{overflow:auto}
+  .split{grid-template-columns:1fr;overflow:visible}
+  .preview-panel{display:none}
+  .form-panel{overflow:visible}
+  .form-panel-inner{padding:24px 20px 60px}
+  .nav-inner{padding:0 16px;grid-template-columns:auto 1fr auto}
+  .nav-progress{display:none}
 }
-@media(max-width:390px){
-  .hero h1{font-size:26px}
-  .cat-title{font-size:20px}
+@media(max-width:480px){
+  .nav-actions .btn-outline,.nav-actions .btn-danger{display:none}
 }
 </style>
 </head>
@@ -166,432 +169,409 @@ footer{border-top:1px solid var(--border-light);padding:28px 24px;text-align:cen
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-inner">
-    <a class="nav-logo" href="https://www.fresuelectronics.com">
-      <img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/logo.png" alt="Fresu Electronics">
+    <a href="https://www.fresuelectronics.com">
+      <img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/logo.png" alt="Fresu Electronics" style="height:34px;width:auto">
     </a>
-    <a class="nav-cta" href="https://www.fresuelectronics.com/emc-audit">Work with Dario →</a>
+    <div class="nav-progress">
+      <div class="nav-progress-bar"><div class="nav-progress-fill" id="nav-fill" style="width:0%"></div></div>
+      <span class="nav-progress-label" id="nav-label">0 / 20</span>
+      <span class="saved-badge" id="saved-badge">Saved</span>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-primary" onclick="exportBrief()">Export Brief ↓</button>
+      <button class="btn btn-outline" onclick="downloadTool()">Save Offline</button>
+      <button class="btn btn-danger" onclick="showReset()">Reset</button>
+    </div>
   </div>
 </nav>
 
-<!-- HERO -->
-<header class="hero">
-  <div class="kicker">Hardware Specification Guide</div>
-  <h1>Define the product<br><em>before</em> the schematic.</h1>
-  <p class="hero-sub">The #1 hardware mistake is jumping to schematics before your product vision is clear. This worksheet changes that. Work through each step — your answers become a Product Specification Brief.</p>
-  <div class="author-row">
-    <img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/dario-fresu.jpg" alt="Dario Fresu">
-    <div>
-      <p>Dario Fresu</p>
-      <span>Principal EMC Architect · Fresu Electronics</span>
-    </div>
-  </div>
-</header>
+<!-- SPLIT -->
+<div class="split">
 
-<!-- INSTRUCTIONS -->
-<div class="instructions">
-  <button class="instr-toggle" id="instr-toggle" onclick="toggleInstructions()">
-    <span>How to use this guide ▾</span>
-    <span class="arrow" id="instr-arrow">▾</span>
-  </button>
-  <div class="instr-body" id="instr-body">
-    <p style="font-size:14px;color:var(--fg-secondary);line-height:1.65;max-width:640px;">Engineers fail EMC testing not because they can't design — but because they start routing before the product is truly defined. This guide forces the decision-making that should happen <em>before</em> you open your schematic tool.</p>
-    <div class="instr-grid">
-      <div class="instr-item">
-        <span class="instr-num">01</span>
-        <div class="instr-text"><strong>Work through each item</strong> — don't skip. If you can't answer something, that gap is exactly what needs resolving first.</div>
-      </div>
-      <div class="instr-item">
-        <span class="instr-num">02</span>
-        <div class="instr-text"><strong>Rate your confidence</strong> honestly with stars (1 = guessing, 5 = locked in). Low stars = conversations to have before you proceed.</div>
-      </div>
-      <div class="instr-item">
-        <span class="instr-num">03</span>
-        <div class="instr-text"><strong>Add notes</strong> for context, open questions, or decisions made. These flow into your exported brief.</div>
-      </div>
-      <div class="instr-item">
-        <span class="instr-num">04</span>
-        <div class="instr-text"><strong>Check items</strong> when you're satisfied. Your progress is saved automatically in this browser.</div>
+  <!-- FORM PANEL -->
+  <div class="form-panel" id="form-panel">
+    <div class="form-panel-inner" id="form-inner"></div>
+  </div>
+
+  <!-- PREVIEW PANEL -->
+  <div class="preview-panel">
+    <div class="preview-header">
+      <span class="preview-title">Live Brief Preview</span>
+      <div class="preview-actions">
+        <button class="btn btn-outline" style="font-size:10px" onclick="exportBrief()">Export HTML ↓</button>
       </div>
     </div>
-    <div class="instr-callout">When all four steps are complete, export your <strong>Product Specification Brief</strong> — a structured document ready to share with your team, stakeholders, or for design review.</div>
+    <div class="preview-inner" id="preview-inner">
+      <div class="preview-empty">
+        <div class="preview-empty-icon">📄</div>
+        <div class="preview-empty-text">Start answering questions on the left.<br>Your brief builds here in real time.</div>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- TOOLBAR -->
-<div class="toolbar">
-  <div class="progress-wrap">
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-    <span class="progress-label" id="progress-label">0%</span>
-  </div>
-  <span class="saved-dot" id="saved-dot">Saved</span>
-  <button class="btn-primary" onclick="exportBrief()">Export Brief →</button>
-  <button class="btn-ghost" onclick="showReset()">Reset</button>
-</div>
-
-<!-- MAIN -->
-<div class="main">
-  <!-- STEP NAV -->
-  <aside class="step-nav">
-    <div class="step-nav-title">Steps</div>
-    <button class="step-btn" id="nav-s1" onclick="scrollToSection('s1')">
-      <span class="step-dot"></span>
-      <div><span class="step-btn-num">01</span> Product Vision</div>
-    </button>
-    <button class="step-btn" id="nav-s2" onclick="scrollToSection('s2')">
-      <span class="step-dot"></span>
-      <div><span class="step-btn-num">02</span> Technical Requirements</div>
-    </button>
-    <button class="step-btn" id="nav-s3" onclick="scrollToSection('s3')">
-      <span class="step-dot"></span>
-      <div><span class="step-btn-num">03</span> Architecture & Interfaces</div>
-    </button>
-    <button class="step-btn" id="nav-s4" onclick="scrollToSection('s4')">
-      <span class="step-dot"></span>
-      <div><span class="step-btn-num">04</span> Compliance & Risk</div>
-    </button>
-  </aside>
-
-  <!-- CATEGORIES -->
-  <div class="categories" id="categories"></div>
 </div>
 
 <!-- RESET MODAL -->
 <div class="overlay" id="overlay">
   <div class="modal">
-    <h2>Reset all progress?</h2>
-    <p>This will clear all checkboxes, star ratings, and notes. Your exported briefs are not affected.</p>
+    <h2>Reset all answers?</h2>
+    <p>This clears every answer, confidence rating, and resets progress. Previously exported briefs are not affected.</p>
     <div class="modal-actions">
-      <button class="btn-primary" onclick="confirmReset()">Yes, reset everything</button>
-      <button class="btn-secondary" onclick="hideReset()">Cancel</button>
+      <button class="btn btn-primary" style="background:var(--wrong)" onclick="confirmReset()">Yes, reset</button>
+      <button class="btn btn-outline" onclick="hideReset()">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <span class="footer-brand">Fresu Electronics</span>
-    <a href="https://www.fresuelectronics.com" style="font-size:12px;color:var(--label)">fresuelectronics.com</a>
-    <span class="footer-legal">© 2026 Fresu Electronics SRL · All rights reserved</span>
-  </div>
-</footer>
-
 <script>
 // ─── DATA ───────────────────────────────────────────────────────────────────
-
-const DATA = [
+const STEPS = [
   {
     id: 's1',
-    step: 'Step 01',
+    tag: 'Step 01 of 04',
     title: 'Product Vision',
-    desc: 'Who is this for, what problem does it solve, and why does the world need it now? If you can\'t answer these clearly, no stack-up in the world will save you.',
-    items: [
-      { id: 'pv1', label: 'Problem definition', hint: 'What specific problem does this product solve? State it in one sentence.' },
-      { id: 'pv2', label: 'Target user', hint: 'Who will use this product? Be specific — role, industry, context of use.' },
-      { id: 'pv3', label: 'Market opportunity', hint: 'Why now? What gap or trend makes this the right moment?' },
-      { id: 'pv4', label: 'Success criteria', hint: 'How will you know this product is successful? What does "done" look like in 12 months?' },
-      { id: 'pv5', label: 'Competitive differentiation', hint: 'What makes this distinctly better than existing solutions?' },
+    desc: 'Who is this for, what problem does it solve, and why now? Engineers who can\'t answer these clearly build the wrong thing faster.',
+    questions: [
+      { id: 'q01', title: 'Problem statement', guide: 'What specific problem does this product solve? State it in one sentence — no technical jargon. If you need two sentences, the problem isn\'t clear yet.' },
+      { id: 'q02', title: 'Target user', guide: 'Who uses this? Role, industry, context of use. Not "engineers" — be specific. "A mechanical engineer at a Tier-1 automotive supplier designing battery management systems."' },
+      { id: 'q03', title: 'Market opportunity', guide: 'Why is now the right time? What trend, regulatory change, or gap makes this viable today that wasn\'t viable 2 years ago?' },
+      { id: 'q04', title: 'Success criteria', guide: 'How will you know this product succeeded in 12 months? Name 2–3 measurable outcomes — not "it works," but actual metrics.' },
+      { id: 'q05', title: 'Competitive advantage', guide: 'What makes this distinctly better or different from existing solutions? One clear, honest differentiator beats a list of vague ones.' },
     ]
   },
   {
     id: 's2',
-    step: 'Step 02',
+    tag: 'Step 02 of 04',
     title: 'Technical Requirements',
-    desc: 'Translate the product vision into engineering constraints. Every vague requirement here becomes a costly rework later.',
-    items: [
-      { id: 'tr1', label: 'Performance specifications', hint: 'Key metrics: speed, accuracy, range, resolution, throughput — with target values and tolerances.' },
-      { id: 'tr2', label: 'Power budget', hint: 'Supply voltage(s), max current draw, battery life target (if applicable), efficiency target.' },
-      { id: 'tr3', label: 'Environmental conditions', hint: 'Operating temperature range, humidity, altitude, vibration, ingress protection (IP rating).' },
-      { id: 'tr4', label: 'Form factor & mechanical constraints', hint: 'PCB size limits, enclosure type, connector placement, mounting requirements.' },
-      { id: 'tr5', label: 'BOM and cost target', hint: 'Target unit cost at volume (1k, 10k, 100k units). Key cost drivers identified.' },
-      { id: 'tr6', label: 'Reliability & lifetime', hint: 'Expected product lifetime, MTBF target, key failure modes to design against.' },
+    desc: 'Every vague requirement here becomes a costly rework later. Numbers beat adjectives — "fast" means nothing, "< 5 ms latency" does.',
+    questions: [
+      { id: 'q06', title: 'Performance specifications', guide: 'Key metrics with target values and tolerances: speed, accuracy, range, resolution, throughput, latency, sample rate. Include the condition under which each is measured.' },
+      { id: 'q07', title: 'Power budget', guide: 'Supply voltage(s), max current draw, efficiency target. If battery-powered: capacity (mAh/Wh), target run time, and acceptable charge time. If mains: input range, power factor requirement.' },
+      { id: 'q08', title: 'Environmental conditions', guide: 'Operating temperature range (°C), storage temperature, humidity (% RH), altitude, vibration profile, shock, IP rating. Note which are hard requirements vs. targets.' },
+      { id: 'q09', title: 'Form factor & mechanical', guide: 'PCB max dimensions (mm), enclosure type (closed/open/DIN rail/panel mount), connector face locations, mounting holes, any keep-out zones, height constraints.' },
+      { id: 'q10', title: 'Unit cost target', guide: 'Target BOM cost at volume (1k / 10k / 100k units). Identify the top 3 cost drivers. Flag any components with >30% BOM cost contribution — these drive architectural decisions.' },
+      { id: 'q11', title: 'Reliability & lifetime', guide: 'Expected product operating lifetime (hours or years), MTBF target if applicable, key failure modes to design against, warranty period. State the mission profile.' },
     ]
   },
   {
     id: 's3',
-    step: 'Step 03',
+    tag: 'Step 03 of 04',
     title: 'Architecture & Interfaces',
-    desc: 'Define what connects to what before you assign a single footprint. The block diagram is the design.',
-    items: [
-      { id: 'ai1', label: 'Top-level block diagram', hint: 'Sketch or describe the major functional blocks and their interconnections. Attach if available.' },
-      { id: 'ai2', label: 'Key component selection', hint: 'MCU/processor, FPGAs, key ICs, sensors, power components — initial candidates identified.' },
-      { id: 'ai3', label: 'External interfaces', hint: 'All connectors and communication protocols: USB, Ethernet, CAN, SPI, I²C, RS-485, RF, etc.' },
-      { id: 'ai4', label: 'Signal integrity critical nets', hint: 'Identify high-speed, differential, or noise-sensitive signals that will drive layout decisions.' },
-      { id: 'ai5', label: 'PCB stack-up requirements', hint: 'Layer count estimate, controlled impedance requirements, EMI shielding needs.' },
+    desc: 'Define what connects to what before you assign a single footprint. The block diagram is the design — everything else is implementation detail.',
+    questions: [
+      { id: 'q12', title: 'Top-level block diagram', guide: 'Describe the major functional blocks and their interconnections. If you can\'t describe it in text, sketch it and describe what you sketched. Identify the critical signal paths.' },
+      { id: 'q13', title: 'Key component candidates', guide: 'MCU/processor/FPGA, power management ICs, key sensors or actuators, memory, communication ICs. Initial candidates with part numbers if known. Flag single-source risks.' },
+      { id: 'q14', title: 'External interfaces & connectors', guide: 'List every I/O connector and protocol: USB (which version/class), Ethernet (speed), CAN, RS-485, SPI, I²C, UART, analog inputs/outputs, RF, GPIO. Include signal levels and max cable length.' },
+      { id: 'q15', title: 'High-speed & signal-integrity critical nets', guide: 'Which signals will drive PCB layout decisions? DDR, PCIe, USB HS, LVDS, clock distribution, high-current switching nodes. Note required impedance (e.g. 50 Ω, 100 Ω diff).' },
+      { id: 'q16', title: 'PCB stack-up & layer count', guide: 'Estimated layer count and rationale. Controlled impedance requirements. Any shielding layer needs. EMI-sensitive areas. Minimum trace/space if constrained by cost or fab capability.' },
     ]
   },
   {
     id: 's4',
-    step: 'Step 04',
+    tag: 'Step 04 of 04',
     title: 'Compliance & Risk',
-    desc: 'Decide which certifications you\'re targeting before the first trace is placed. Retrofitting compliance is 3× more expensive than designing for it.',
-    items: [
-      { id: 'cr1', label: 'Target certifications', hint: 'FCC, CE (RED/EMC/LVD), UL, UKCA, RoHS, REACH, automotive (AEC-Q, IATF), medical (IEC 60601), etc.' },
-      { id: 'cr2', label: 'EMC strategy defined', hint: 'Filter approach, shielding plan, PCB-level EMI mitigation strategy outlined at architecture level.' },
-      { id: 'cr3', label: 'Safety standards', hint: 'IEC 62368-1 (AV/IT), IEC 60601 (medical), ISO 26262 (automotive) — applicable standards identified.' },
-      { id: 'cr4', label: 'Supply chain risk', hint: 'Long-lead components identified. Single-source ICs flagged. Availability checked against project timeline.' },
-      { id: 'cr5', label: 'Development timeline', hint: 'Key milestones defined: schematic complete, layout complete, first article, DVT, compliance testing, production.' },
+    desc: 'Decide which certifications you\'re targeting before the first trace is placed. Retrofitting compliance costs 3× more than designing for it from the start.',
+    questions: [
+      { id: 'q17', title: 'Target certifications', guide: 'FCC Part 15 / CE (EMC + LVD + RED) / UKCA / UL 62368-1 / RoHS / REACH / automotive (AEC-Q, IATF 16949) / medical (IEC 60601-1) / industrial (IEC 61010). State the specific standards, not just regions.' },
+      { id: 'q18', title: 'EMC strategy', guide: 'EMI control approach at architecture level: filtering strategy at I/O, shielding plan (enclosure vs PCB), PCB-level mitigation (stack-up, layer assignment, return path planning). Who owns the EMC review — internal or external?' },
+      { id: 'q19', title: 'Supply chain risk', guide: 'Long-lead components (>16 weeks lead time), single-source ICs, components under export control, components at end-of-life. Are there qualified second-sources for the top 5 BOM items by cost?' },
+      { id: 'q20', title: 'Development timeline', guide: 'Key milestones with target dates: schematic complete, layout complete, first article build, DVT, EMC pre-compliance, formal compliance testing, production release. Which milestones are externally committed?' },
     ]
   }
 ];
 
-// ─── STATE ──────────────────────────────────────────────────────────────────
-
+const TOTAL_Q = STEPS.reduce((n, s) => n + s.questions.length, 0);
 const STORAGE_KEY = 'fresu_hwspec_v3';
 let state = {};
 
 function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    state = raw ? JSON.parse(raw) : {};
-  } catch(e) { state = {}; }
+  try { state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+  catch(e) { state = {}; }
 }
 
 function saveState() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch(e) {}
-  showSaved();
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e) {}
+  const el = document.getElementById('saved-badge');
+  el.classList.add('show');
+  clearTimeout(window._saveTimer);
+  window._saveTimer = setTimeout(() => el.classList.remove('show'), 2000);
 }
 
-function getItem(id) {
-  return state[id] || { checked: false, stars: 0, notes: '' };
+function getQ(id) { return state[id] || { answer: '', stars: 0 }; }
+
+// ─── STAR SVG ───────────────────────────────────────────────────────────────
+function starSVG(lit) {
+  return `<svg viewBox="0 0 24 24" fill="${lit?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
 }
 
-// ─── RENDER ─────────────────────────────────────────────────────────────────
-
-function starSVG(filled) {
-  const fill = filled ? 'currentColor' : 'none';
-  return `<svg viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
-}
-
-function render() {
-  const cont = document.getElementById('categories');
+// ─── RENDER FORM ─────────────────────────────────────────────────────────────
+function renderForm() {
   let html = '';
-  DATA.forEach(cat => {
-    const itemsDone = cat.items.filter(it => getItem(it.id).checked).length;
-    const allDone = itemsDone === cat.items.length;
-    html += `<div class="cat-card${allDone ? ' active-card' : ''}" id="${cat.id}">`;
-    html += `<div class="cat-header">`;
-    html += `<div class="cat-step">${cat.step}</div>`;
-    html += `<h2 class="cat-title">${cat.title}</h2>`;
-    html += `<p class="cat-desc">${cat.desc}</p>`;
-    html += `</div>`;
-    html += `<div class="cat-body">`;
-    cat.items.forEach(item => {
-      const s = getItem(item.id);
-      const notesOpen = s.notes ? ' open' : '';
-      html += `<div class="item" id="item-${item.id}">`;
-      html += `<div class="item-row">`;
-      html += `<div class="item-check${s.checked ? ' checked' : ''}" onclick="toggleCheck('${item.id}')" role="checkbox" aria-checked="${s.checked}" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')toggleCheck('${item.id}')"></div>`;
-      html += `<div class="item-content">`;
-      html += `<div class="item-label" onclick="toggleCheck('${item.id}')">${item.label}</div>`;
-      if (item.hint) html += `<div class="item-hint">${item.hint}</div>`;
-      html += `<div class="item-meta">`;
-      html += `<div class="item-stars">`;
-      for (let i = 1; i <= 5; i++) {
-        html += `<span class="star${i <= s.stars ? ' lit' : ''}" onclick="setStar('${item.id}',${i})">${starSVG(i <= s.stars)}</span>`;
-      }
-      html += `</div>`;
-      html += `<button class="notes-toggle" onclick="toggleNotes('${item.id}')">${s.notes ? 'Edit note' : '+ Note'}</button>`;
-      html += `</div>`;
-      html += `<div class="item-notes${notesOpen}" id="notes-${item.id}">`;
-      html += `<textarea placeholder="Add context, decisions, or open questions…" oninput="setNotes('${item.id}',this.value)">${s.notes || ''}</textarea>`;
-      html += `</div>`;
-      html += `</div></div></div>`;
+  STEPS.forEach(step => {
+    const filled = step.questions.filter(q => (getQ(q.id).answer || '').trim().length > 10).length;
+    html += `<div class="step-block" id="${step.id}">`;
+    html += `<div class="step-tag">${step.tag}</div>`;
+    html += `<div class="step-title">${step.title}</div>`;
+    html += `<div class="step-desc">${step.desc}</div>`;
+    // Step progress pips
+    html += `<div class="step-progress">`;
+    step.questions.forEach(q => {
+      const ans = (getQ(q.id).answer || '').trim();
+      const cls = ans.length > 30 ? 'done' : ans.length > 5 ? 'partial' : '';
+      html += `<div class="step-pip ${cls}" id="pip-${q.id}"></div>`;
     });
-    html += `</div></div>`;
+    html += `</div>`;
+    // Questions
+    step.questions.forEach(q => {
+      const s = getQ(q.id);
+      const wordCount = s.answer ? s.answer.trim().split(/\s+/).filter(Boolean).length : 0;
+      const hasContent = s.answer && s.answer.trim().length > 5;
+      html += `
+        <div class="q-card" id="card-${q.id}">
+          <div class="q-card-header">
+            <div class="q-num">${q.id.toUpperCase()}</div>
+            <div class="q-title">${q.title}</div>
+            <div class="q-stars" id="stars-${q.id}">
+              ${[1,2,3,4,5].map(i => `<span class="star${i<=s.stars?' lit':''}" data-qid="${q.id}" data-n="${i}" onclick="setStar('${q.id}',${i})">${starSVG(i<=s.stars)}</span>`).join('')}
+            </div>
+          </div>
+          <div class="q-guide">${q.guide}</div>
+          <div class="q-answer">
+            <textarea
+              id="ans-${q.id}"
+              placeholder="Write your answer here…"
+              oninput="setAnswer('${q.id}',this.value)"
+              class="${hasContent?'has-content':''}"
+            >${s.answer||''}</textarea>
+          </div>
+          <div class="q-footer">
+            <span class="q-confidence-label${s.stars?' rated'':''}">${s.stars ? ['','Low','Fair','Good','High','Locked'][s.stars]+' confidence' : 'Rate your confidence →'}</span>
+            <span class="q-wordcount" id="wc-${q.id}">${wordCount>0?wordCount+' words':''}</span>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
   });
-  cont.innerHTML = html;
+  document.getElementById('form-inner').innerHTML = html;
   updateProgress();
-  updateStepNav();
+  updatePreview();
 }
 
-// ─── ACTIONS ────────────────────────────────────────────────────────────────
-
-function toggleCheck(id) {
-  const s = getItem(id);
-  state[id] = { ...s, checked: !s.checked };
+// ─── ACTIONS ─────────────────────────────────────────────────────────────────
+function setAnswer(id, val) {
+  state[id] = { ...getQ(id), answer: val };
   saveState();
-  // Re-render just this item and progress
-  const itemEl = document.getElementById(`item-${id}`);
-  const checkEl = itemEl.querySelector('.item-check');
-  if (state[id].checked) checkEl.classList.add('checked');
-  else checkEl.classList.remove('checked');
-  checkEl.setAttribute('aria-checked', state[id].checked);
-  updateProgress();
-  updateStepNav();
-  // Update card border
-  const cat = DATA.find(c => c.items.some(it => it.id === id));
-  if (cat) {
-    const allDone = cat.items.every(it => getItem(it.id).checked);
-    const card = document.getElementById(cat.id);
-    if (allDone) card.classList.add('active-card');
-    else card.classList.remove('active-card');
+  // Update pip
+  const pip = document.getElementById('pip-' + id);
+  if (pip) {
+    const len = val.trim().length;
+    pip.className = 'step-pip' + (len > 30 ? ' done' : len > 5 ? ' partial' : '');
   }
+  // Update textarea class
+  const ta = document.getElementById('ans-' + id);
+  if (ta) ta.className = val.trim().length > 5 ? 'has-content' : '';
+  // Word count
+  const wc = document.getElementById('wc-' + id);
+  if (wc) {
+    const words = val.trim().split(/\s+/).filter(Boolean).length;
+    wc.textContent = words > 0 ? words + ' words' : '';
+  }
+  updateProgress();
+  updatePreview();
 }
 
 function setStar(id, n) {
-  const s = getItem(id);
-  // Toggle off if clicking same star
+  const s = getQ(id);
   const newStars = s.stars === n ? 0 : n;
   state[id] = { ...s, stars: newStars };
   saveState();
-  const itemEl = document.getElementById(`item-${id}`);
-  itemEl.querySelectorAll('.star').forEach((el, i) => {
-    if (i < newStars) { el.classList.add('lit'); el.innerHTML = starSVG(true); }
-    else { el.classList.remove('lit'); el.innerHTML = starSVG(false); }
-  });
-}
-
-function toggleNotes(id) {
-  const notesEl = document.getElementById(`notes-${id}`);
-  const isOpen = notesEl.classList.contains('open');
-  notesEl.classList.toggle('open');
-  const btn = notesEl.previousElementSibling.querySelector('.notes-toggle');
-  if (!isOpen) { btn.textContent = 'Close note'; notesEl.querySelector('textarea').focus(); }
-  else { const s = getItem(id); btn.textContent = s.notes ? 'Edit note' : '+ Note'; }
-}
-
-function setNotes(id, val) {
-  const s = getItem(id);
-  state[id] = { ...s, notes: val };
-  saveState();
-  // Update toggle label
-  const btn = document.querySelector(`#notes-${id}`).previousElementSibling.querySelector('.notes-toggle');
-  if (btn) btn.textContent = val ? 'Edit note' : '+ Note';
-}
-
-// ─── PROGRESS ───────────────────────────────────────────────────────────────
-
-function updateProgress() {
-  const total = DATA.reduce((acc, c) => acc + c.items.length, 0);
-  const done = DATA.reduce((acc, c) => acc + c.items.filter(it => getItem(it.id).checked).length, 0);
-  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-label').textContent = pct + '%';
-}
-
-function updateStepNav() {
-  DATA.forEach(cat => {
-    const btn = document.getElementById('nav-' + cat.id);
-    if (!btn) return;
-    const done = cat.items.every(it => getItem(it.id).checked);
-    if (done) btn.classList.add('done'); else btn.classList.remove('done');
-  });
-}
-
-// ─── NAV SCROLL ─────────────────────────────────────────────────────────────
-
-function scrollToSection(id) {
-  const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  DATA.forEach(c => document.getElementById('nav-' + c.id).classList.remove('active'));
-  document.getElementById('nav-' + id).classList.add('active');
-}
-
-// Highlight nav on scroll
-let scrollTimer;
-window.addEventListener('scroll', () => {
-  clearTimeout(scrollTimer);
-  scrollTimer = setTimeout(() => {
-    DATA.forEach(cat => {
-      const el = document.getElementById(cat.id);
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      if (rect.top < 160 && rect.bottom > 80) {
-        DATA.forEach(c => document.getElementById('nav-' + c.id).classList.remove('active'));
-        document.getElementById('nav-' + cat.id).classList.add('active');
-      }
+  const container = document.getElementById('stars-' + id);
+  if (container) {
+    container.querySelectorAll('.star').forEach((el, i) => {
+      el.className = 'star' + (i < newStars ? ' lit' : '');
+      el.innerHTML = starSVG(i < newStars);
     });
-  }, 80);
-});
-
-// ─── INSTRUCTIONS ───────────────────────────────────────────────────────────
-
-function toggleInstructions() {
-  const body = document.getElementById('instr-body');
-  const toggle = document.getElementById('instr-toggle');
-  const open = body.classList.toggle('open');
-  toggle.classList.toggle('open', open);
+  }
+  // Update confidence label
+  const card = document.getElementById('card-' + id);
+  if (card) {
+    const label = card.querySelector('.q-confidence-label');
+    if (label) {
+      label.className = 'q-confidence-label' + (newStars ? ' rated' : '');
+      label.textContent = newStars ? ['','Low','Fair','Good','High','Locked'][newStars]+' confidence' : 'Rate your confidence →';
+    }
+  }
+  updatePreview();
 }
 
-// ─── SAVED ──────────────────────────────────────────────────────────────────
-
-let savedTimer;
-function showSaved() {
-  const el = document.getElementById('saved-dot');
-  el.classList.add('show');
-  clearTimeout(savedTimer);
-  savedTimer = setTimeout(() => el.classList.remove('show'), 1800);
+// ─── PROGRESS ────────────────────────────────────────────────────────────────
+function updateProgress() {
+  const answered = STEPS.reduce((n, s) =>
+    n + s.questions.filter(q => (getQ(q.id).answer||'').trim().length > 10).length, 0);
+  const pct = Math.round(answered / TOTAL_Q * 100);
+  const fill = document.getElementById('nav-fill');
+  const label = document.getElementById('nav-label');
+  if (fill) fill.style.width = pct + '%';
+  if (label) label.textContent = answered + ' / ' + TOTAL_Q;
 }
 
-// ─── RESET ──────────────────────────────────────────────────────────────────
+// ─── PREVIEW ─────────────────────────────────────────────────────────────────
+function updatePreview() {
+  const answered = STEPS.reduce((n, s) =>
+    n + s.questions.filter(q => (getQ(q.id).answer||'').trim().length > 5).length, 0);
 
+  if (answered === 0) {
+    document.getElementById('preview-inner').innerHTML = `
+      <div class="preview-empty">
+        <div class="preview-empty-icon">📄</div>
+        <div class="preview-empty-text">Start answering questions on the left.<br>Your brief builds here in real time.</div>
+      </div>`;
+    return;
+  }
+
+  const date = new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'});
+  const pct = Math.round(answered / TOTAL_Q * 100);
+
+  let html = `<div class="brief-doc">`;
+  html += `<div class="brief-masthead">`;
+  html += `<div class="brief-logo">Fresu Electronics</div>`;
+  html += `<div class="brief-h1">Product Specification Brief</div>`;
+  html += `<div class="brief-meta">Generated ${date} &nbsp;·&nbsp; ${answered} of ${TOTAL_Q} questions answered</div>`;
+  html += `</div>`;
+
+  STEPS.forEach(step => {
+    const hasAny = step.questions.some(q => (getQ(q.id).answer||'').trim().length > 5);
+    if (!hasAny) return;
+    html += `<div class="brief-section">`;
+    html += `<div class="brief-section-title">${step.title}</div>`;
+    step.questions.forEach(q => {
+      const s = getQ(q.id);
+      const ans = (s.answer||'').trim();
+      html += `<div class="brief-item">`;
+      html += `<div class="brief-item-q">${q.title}</div>`;
+      if (ans) {
+        html += `<div class="brief-item-a">${ans.replace(/\n/g,'<br>')}</div>`;
+        if (s.stars) {
+          html += `<div class="brief-stars">`;
+          for (let i=1;i<=5;i++) html += `<span class="brief-star${i<=s.stars?'':' off'}">${i<=s.stars?'★':'☆'}</span>`;
+          html += `</div>`;
+        }
+      } else {
+        html += `<div class="brief-item-a empty">Not yet answered</div>`;
+      }
+      html += `</div>`;
+    });
+    html += `</div>`;
+  });
+
+  html += `<div class="brief-completeness">`;
+  html += `<div class="brief-comp-label">Spec completeness</div>`;
+  html += `<div class="brief-comp-bar"><div class="brief-comp-fill" style="width:${pct}%"></div></div>`;
+  html += `<div class="brief-comp-pct">${pct}% complete</div>`;
+  html += `</div>`;
+  html += `</div>`;
+
+  document.getElementById('preview-inner').innerHTML = html;
+}
+
+// ─── EXPORT HTML BRIEF ────────────────────────────────────────────────────────
+function exportBrief() {
+  const date = new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'});
+  const slug = new Date().toISOString().split('T')[0];
+  const answered = STEPS.reduce((n,s)=>n+s.questions.filter(q=>(getQ(q.id).answer||'').trim().length>5).length,0);
+  const pct = Math.round(answered/TOTAL_Q*100);
+
+  let sections = '';
+  STEPS.forEach(step => {
+    let items = '';
+    step.questions.forEach(q => {
+      const s = getQ(q.id);
+      const ans = (s.answer||'').trim();
+      const stars = s.stars ? '★'.repeat(s.stars)+'☆'.repeat(5-s.stars) : '';
+      items += `
+        <div style="padding:14px 0;border-bottom:1px solid #2a2a2a">
+          <div style="font-family:monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#a0aab8;margin-bottom:4px">${q.title}${stars?`  <span style="color:#00FF94">${stars}</span>`:''}</div>
+          <div style="font-size:14px;color:${ans?'#e8edf5':'#555'};line-height:1.65;white-space:pre-wrap">${ans||'Not answered'}</div>
+        </div>`;
+    });
+    sections += `
+      <div style="margin-bottom:32px">
+        <div style="font-family:monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#00FF94;border-bottom:1px solid #383838;padding-bottom:10px;margin-bottom:0">${step.title}</div>
+        ${items}
+      </div>`;
+  });
+
+  const html = `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Product Specification Brief — ${date}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0a;color:#e8edf5;font-family:'Poppins',sans-serif;font-size:15px;line-height:1.7;padding:40px 24px 80px}
+.wrap{max-width:720px;margin:0 auto}
+.top-bar{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:20px;border-bottom:2px solid #00FF94;margin-bottom:32px;flex-wrap:wrap;gap:8px}
+.brand{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#00FF94}
+.doc-title{font-size:28px;font-weight:800;letter-spacing:-.03em;color:#fff;margin:8px 0 4px}
+.meta{font-family:monospace;font-size:11px;color:#666;letter-spacing:.06em}
+.comp-bar-wrap{margin:24px 0 32px}
+.comp-label{font-family:monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#a0aab8;margin-bottom:8px}
+.comp-bar{height:3px;background:#2a2a2a;margin-bottom:4px}
+.comp-fill{height:100%;background:#00FF94}
+.comp-pct{font-family:monospace;font-size:12px;font-weight:700;color:#00FF94}
+.footer{margin-top:48px;padding-top:20px;border-top:1px solid #1c1c1c;font-family:monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#555;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style></head>
+<body><div class="wrap">
+<div class="top-bar">
+  <span class="brand">Fresu Electronics</span>
+  <span class="meta">fresuelectronics.com</span>
+</div>
+<div class="doc-title">Product Specification Brief</div>
+<div class="meta">Generated ${date} &nbsp;·&nbsp; ${answered} of ${TOTAL_Q} questions answered</div>
+<div class="comp-bar-wrap">
+  <div class="comp-label">Spec completeness</div>
+  <div class="comp-bar"><div class="comp-fill" style="width:${pct}%"></div></div>
+  <div class="comp-pct">${pct}%</div>
+</div>
+${sections}
+<div class="footer">
+  <span>Fresu Electronics SRL · fresuelectronics.com</span>
+  <span>Hardware Specification Guide</span>
+</div>
+</div></body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `product-spec-brief-${slug}.html`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ─── DOWNLOAD TOOL ────────────────────────────────────────────────────────────
+function downloadTool() {
+  const src = document.documentElement.outerHTML;
+  const blob = new Blob([src], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'hardware-spec-guide.html';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ─── RESET ───────────────────────────────────────────────────────────────────
 function showReset() { document.getElementById('overlay').classList.add('open'); }
 function hideReset() { document.getElementById('overlay').classList.remove('open'); }
 function confirmReset() {
   state = {};
   try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
   hideReset();
-  render();
+  renderForm();
 }
 
-// ─── EXPORT ─────────────────────────────────────────────────────────────────
-
-function exportBrief() {
-  const date = new Date().toISOString().split('T')[0];
-  let brief = '';
-  brief += '═══════════════════════════════════════════════════════════════\n';
-  brief += '  PRODUCT SPECIFICATION BRIEF\n';
-  brief += '  Generated by the Hardware Specification Guide\n';
-  brief += '  Fresu Electronics — fresuelectronics.com\n';
-  brief += `  ${date}\n`;
-  brief += '═══════════════════════════════════════════════════════════════\n\n';
-
-  const total = DATA.reduce((acc, c) => acc + c.items.length, 0);
-  const done = DATA.reduce((acc, c) => acc + c.items.filter(it => getItem(it.id).checked).length, 0);
-  brief += `Overall Completion: ${done} / ${total} items (${Math.round(done/total*100)}%)\n\n`;
-
-  DATA.forEach((cat, ci) => {
-    const catDone = cat.items.filter(it => getItem(it.id).checked).length;
-    const avgStars = cat.items.reduce((sum, it) => sum + getItem(it.id).stars, 0) / cat.items.length;
-    brief += `───────────────────────────────────────────────────────────────\n`;
-    brief += `${cat.step.toUpperCase()} — ${cat.title.toUpperCase()}\n`;
-    brief += `Progress: ${catDone} / ${cat.items.length}   `;
-    brief += `Confidence: ${'★'.repeat(Math.round(avgStars))}${'☆'.repeat(5-Math.round(avgStars))}\n`;
-    brief += `───────────────────────────────────────────────────────────────\n\n`;
-    cat.items.forEach(item => {
-      const s = getItem(item.id);
-      const check = s.checked ? '[✓]' : '[ ]';
-      const stars = s.stars > 0 ? '★'.repeat(s.stars) + '☆'.repeat(5-s.stars) : '☆☆☆☆☆';
-      brief += `${check} ${item.label}  ${stars}\n`;
-      if (s.notes && s.notes.trim()) {
-        s.notes.trim().split('\n').forEach(line => { brief += `    → ${line}\n`; });
-      }
-      brief += '\n';
-    });
-  });
-
-  brief += '═══════════════════════════════════════════════════════════════\n';
-  brief += '  Next Step: Open your schematic tool — you\'re ready.\n';
-  brief += '  Questions? fresuelectronics.com/emc-audit\n';
-  brief += '  © 2026 Fresu Electronics SRL — All rights reserved\n';
-  brief += '═══════════════════════════════════════════════════════════════\n';
-
-  const blob = new Blob([brief], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `product-spec-brief-${date}.txt`;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
-}
-
-// ─── INIT ───────────────────────────────────────────────────────────────────
-
+// ─── INIT ─────────────────────────────────────────────────────────────────────
 loadState();
-render();
-document.getElementById('nav-s1').classList.add('active');
+renderForm();
 </script>
 </body>
 </html>
