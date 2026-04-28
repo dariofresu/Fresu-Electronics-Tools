@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Signals Propagate in a PCB — Fresu Electronics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0a;--surface:#111111;--surface-2:#181818;
+  --border:#242424;--border-light:#1a1a1a;
+  --fg:#ffffff;--fg-2:#e8edf5;--label:#a0aab8;--label-dim:#6b7d8f;
+  --accent:#00FF94;--red:#ff4d4d;--orange:#ff8800;--cyan:#00ccff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:'Poppins','Helvetica Neue',Arial,sans-serif;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px}
+.widget{width:100%;max-width:880px;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.hdr{padding:20px 28px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:16px}
+.hdr-l .kicker{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.hdr-l .title{font-size:18px;font-weight:700;line-height:1.2}
+.hdr-l .title .acc{color:var(--accent)}
+.logo{height:34px;width:auto;display:block}
+.tabs{display:flex;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--label);font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;letter-spacing:.10em;text-transform:uppercase;padding:12px 20px;cursor:pointer;white-space:nowrap;min-height:44px;transition:color .15s,border-color .15s}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab:hover:not(.active){color:var(--fg)}
+.cv-wrap{background:var(--bg);position:relative}
+.cv-wrap::after{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 3px)}
+canvas{width:100%;height:auto;display:block}
+.legend{display:none;flex-wrap:wrap;gap:18px;padding:10px 28px;border-top:1px solid var(--border)}
+.legend.vis{display:flex}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--fg)}
+.pip{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.slider-row{display:none;align-items:center;gap:14px;padding:12px 28px;border-top:1px solid var(--border)}
+.slider-row.vis{display:flex}
+.s-lbl{font-size:11px;font-weight:500;color:var(--fg);min-width:58px}
+input[type=range]{flex:1;cursor:pointer;accent-color:var(--accent)}
+.s-val{font-size:13px;font-weight:600;color:var(--accent);min-width:44px}
+.btn-m{background:transparent;border:1px solid var(--border);color:var(--fg);font-family:'Poppins',sans-serif;font-size:10px;font-weight:600;letter-spacing:.10em;text-transform:uppercase;padding:8px 14px;cursor:pointer;border-radius:4px;min-height:44px;transition:border-color .15s,color .15s}
+.btn-m:hover{border-color:var(--accent);color:var(--accent)}
+.info{padding:20px 28px;border-top:1px solid var(--border)}
+.info-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:10px}
+.info-title{font-size:15px;font-weight:700}
+.info-eq{font-size:12px;font-weight:500;color:var(--label);background:var(--surface-2);border:1px solid var(--border);padding:4px 14px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.info-text{font-size:13px;color:var(--fg-2);line-height:1.8}
+.ftr{padding:12px 28px;border-top:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;gap:16px}
+.ftr-brand{font-size:11px;font-weight:600;color:var(--accent);text-decoration:none;letter-spacing:.06em}
+.ftr-eq{font-size:11px;color:var(--label-dim);font-style:italic}
+@media(max-width:600px){
+  body{padding:0}
+  .widget{border-radius:0;border-left:none;border-right:none}
+  .hdr{padding:14px 18px}
+  .hdr-l .title{font-size:14px}
+  .legend,.slider-row,.info,.ftr{padding-left:18px;padding-right:18px}
+  .info-head{flex-direction:column;gap:6px}
+  .info-eq{align-self:flex-start}
+  .logo{height:26px}
+  .tab{padding:12px 14px;font-size:10px}
+}
+</style>
+</head>
+<body>
+<div class="widget">
+
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="kicker">Fresu Electronics · PCB Fundamentals</div>
+      <div class="title">How Signals <span class="acc">Propagate</span> in a PCB</div>
+    </div>
+    <a href="https://www.fresuelectronics.com" target="_blank" rel="noopener noreferrer">
+      <img class="logo" src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/logo.png" alt="Fresu Electronics">
+    </a>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" onclick="setTab(0)">The Model</button>
+    <button class="tab"        onclick="setTab(1)">The Wavefront</button>
+    <button class="tab"        onclick="setTab(2)">Displacement ∂D/∂t</button>
+    <button class="tab"        onclick="setTab(3)">Impedance &amp; Reflection</button>
+  </div>
+
+  <div class="cv-wrap">
+    <canvas id="cv" width="880" height="320"></canvas>
+  </div>
+
+  <div class="legend" id="leg1">
+    <div class="leg-item"><div class="pip" style="background:#00ccff"></div>Conduction current (J)</div>
+    <div class="leg-item"><div class="pip" style="background:#ff8800"></div>Displacement current (∂D/∂t)</div>
+    <div class="leg-item"><div class="pip" style="background:#00FF94"></div>E-field lines</div>
+  </div>
+  <div class="legend" id="leg2">
+    <div class="leg-item"><div class="pip" style="background:#00FF94"></div>Bound charges polarizing</div>
+    <div class="leg-item"><div class="pip" style="background:#ff8800"></div>Displacement current J_d</div>
+  </div>
+  <div class="legend" id="leg3">
+    <div class="leg-item"><div class="pip" style="background:#00ccff"></div>Incident wave</div>
+    <div class="leg-item"><div class="pip" style="background:#ff4d4d"></div>Reflected wave (mismatch only)</div>
+  </div>
+
+  <div class="slider-row" id="sliderRow">
+    <span class="s-lbl">Z_L / Z₀</span>
+    <input type="range" id="zlSlider" min="0.1" max="4" step="0.05" value="1" oninput="onZL(this.value)">
+    <span class="s-val" id="zlVal">50 Ω</span>
+    <button class="btn-m" onclick="document.getElementById('zlSlider').value=1;onZL(1)">Match</button>
+  </div>
+
+  <div class="info">
+    <div class="info-head">
+      <div class="info-title" id="iTitle"></div>
+      <div class="info-eq"    id="iEq"></div>
+    </div>
+    <div class="info-text" id="iText"></div>
+  </div>
+
+  <div class="ftr">
+    <a class="ftr-brand" href="https://www.fresuelectronics.com" target="_blank" rel="noopener noreferrer">fresuelectronics.com</a>
+    <div class="ftr-eq">∇ × H = J + ∂D/∂t</div>
+  </div>
+</div>
+
+<script>
+const CONTENT=[
+  {title:"The PCB Transmission Line", eq:"Z₀ = √(L / C)", leg:null,
+   text:"A signal trace over a return plane is a distributed transmission line — not just a wire. Every tiny segment behaves like a series inductor (L) and shunt capacitor (C). The electric field (E) lives in the dielectric; the magnetic field (H) runs perpendicular to the current and to E. The characteristic impedance Z₀ is set entirely by geometry: trace width, dielectric thickness, and ε_r."},
+  {title:"Three Currents, One Wavefront", eq:"∇ × H = J + ∂D/∂t", leg:"leg1",
+   text:"When a rising edge propagates, three currents co-exist simultaneously at the wavefront. Conduction current flows forward on the signal trace. Return current flows backward on the return plane. Displacement current (∂D/∂t) spikes in the dielectric at the exact point where the electric field is changing. The signal is not electrons moving end-to-end — it is an electromagnetic field wavefront advancing through the structure."},
+  {title:"Why the Dielectric Isn't a Barrier", eq:"J_d = ε · ∂E/∂t", leg:"leg2",
+   text:"No real current crosses the dielectric — that would contradict its definition as an insulator. Instead, bound charges inside the material polarize as the electric field changes. The J_d arrow shows the key insight: displacement current is proportional to dV/dt, not to V itself. When voltage is rising or falling fastest, J_d is at its peak. When voltage is steady at any amplitude, J_d = 0. This is why capacitors pass high-frequency AC and block DC."},
+  {title:"The Signal is Blind — Reflections Follow", eq:"Γ = (Z_L − Z₀) / (Z_L + Z₀)", leg:"leg3",
+   text:"As the signal travels, it sees only the local impedance at its current position — it has no knowledge of what lies at the far end. When it reaches the load, if Z_L = Z₀ all energy is absorbed and no reflection occurs. If Z_L ≠ Z₀, a reflected wave travels back toward the source. Drag the slider to adjust Z_L and observe the reflection appear, grow, and change polarity. This is why controlled impedance and proper termination are critical in high-speed PCB design."},
+];
+
+let section=0, zlRatio=1, elapsed=0, prevTs=null, dt=0.016;
+let sPos=0, sVel=0;          // spring state (tab 2)
+let flashT=0, flashCol='#00FF94';
+let flashFired=false;
+
+function setTab(i){
+  section=i; elapsed=0; prevTs=null; sPos=0; sVel=0; flashT=0; flashFired=false;
+  document.querySelectorAll('.tab').forEach((b,j)=>b.classList.toggle('active',j===i));
+  ['leg1','leg2','leg3'].forEach(id=>document.getElementById(id).classList.remove('vis'));
+  if(CONTENT[i].leg) document.getElementById(CONTENT[i].leg).classList.add('vis');
+  document.getElementById('sliderRow').classList.toggle('vis',i===3);
+  document.getElementById('iTitle').textContent=CONTENT[i].title;
+  document.getElementById('iEq').textContent=CONTENT[i].eq;
+  document.getElementById('iText').textContent=CONTENT[i].text;
+}
+function onZL(v){ zlRatio=+v; document.getElementById('zlVal').textContent=(v*50|0)+' Ω'; }
+setTab(0);
+
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const W=cv.width, H=cv.height;
+
+/* ── helpers ─────────────────────────────────────────────────────────── */
+function arw(x1,y1,x2,y2,col,lw=1.5,hs=5){
+  const a=Math.atan2(y2-y1,x2-x1);
+  ctx.save(); ctx.strokeStyle=ctx.fillStyle=col; ctx.lineWidth=lw;
+  ctx.shadowColor=col; ctx.shadowBlur=10;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-hs*Math.cos(a-.45),y2-hs*Math.sin(a-.45));
+  ctx.lineTo(x2-hs*Math.cos(a+.45),y2-hs*Math.sin(a+.45));
+  ctx.closePath(); ctx.fill(); ctx.restore();
+}
+
+// All canvas labels use white by default — no more grey text
+function lbl(s,x,y,col,sz,align){
+  ctx.save();
+  ctx.font=`500 ${sz||10}px Poppins,sans-serif`;
+  ctx.fillStyle=col||'#ffffff'; ctx.shadowBlur=0; ctx.textAlign=align||'left';
+  ctx.fillText(s,x,y); ctx.restore();
+}
+
+function gauss(x,cx,s){ return Math.exp(-.5*((x-cx)/s)**2); }
+
+function pulse(cx,amp,sig,col,y0){
+  if(Math.abs(amp)<0.5) return;
+  const sw=sig*3.8;
+  ctx.save();
+  ctx.beginPath();
+  for(let i=0;i<=80;i++){ const x=cx-sw+i*(2*sw/80); i===0?ctx.moveTo(x,y0-amp*gauss(x,cx,sig)):ctx.lineTo(x,y0-amp*gauss(x,cx,sig)); }
+  ctx.lineTo(cx+sw,y0); ctx.lineTo(cx-sw,y0); ctx.closePath();
+  ctx.fillStyle=col+'28'; ctx.fill();
+  ctx.beginPath();
+  for(let i=0;i<=80;i++){ const x=cx-sw+i*(2*sw/80); i===0?ctx.moveTo(x,y0-amp*gauss(x,cx,sig)):ctx.lineTo(x,y0-amp*gauss(x,cx,sig)); }
+  ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.shadowColor=col; ctx.shadowBlur=16; ctx.stroke();
+  ctx.restore();
+}
+
+function geo(){
+  const mx=Math.round(W*.07), tw=Math.round(W*.74);
+  const ty=Math.round(H*.28), th=13;
+  const dy=ty+th, dh=Math.round(H*.28);
+  const py=dy+dh, ph=13, ex=mx+tw;
+  return{mx,tw,ty,th,dy,dh,py,ph,ex};
+}
+
+function pcb(g){
+  const{mx,tw,ty,th,dy,dh,py,ph}=g;
+  ctx.fillStyle='#0d1e12'; ctx.fillRect(mx,dy,tw,dh);
+  ctx.strokeStyle='#2a4030'; ctx.lineWidth=.8; ctx.strokeRect(mx,dy,tw,dh);
+  const tg=ctx.createLinearGradient(0,ty,0,ty+th);
+  tg.addColorStop(0,'#f0c050'); tg.addColorStop(1,'#c08038');
+  ctx.fillStyle=tg; ctx.fillRect(mx,ty,tw,th);
+  const pg=ctx.createLinearGradient(0,py,0,py+ph);
+  pg.addColorStop(0,'#c08038'); pg.addColorStop(1,'#f0c050');
+  ctx.fillStyle=pg; ctx.fillRect(mx,py,tw,ph);
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAB 0 — The Model
+═══════════════════════════════════════════════════════ */
+function drawModel(t){
+  const g=geo(); const{mx,tw,ty,th,dy,dh,py,ph,ex}=g;
+  pcb(g);
+
+  // ── E-field arrows drifting downward through dielectric ──
+  const spd=32, nc=10;
+  for(let i=0;i<nc;i++){
+    const fx=mx+(i+.5)*(tw/nc);
+    for(let pass=0;pass<2;pass++){
+      const ry=(t*spd+pass*(dh*.55))%(dh+16)-dh*.25;
+      const fy=dy+ry, fe=fy+26;
+      if(fe>dy+4&&fy<py-4){
+        const y1=Math.max(fy,dy+3), y2=Math.min(fe,py-3);
+        if(y2>y1+8){ ctx.save(); ctx.globalAlpha=.7; arw(fx,y1,fx,y2,'#00FF94',1.2,4); ctx.restore(); }
+      }
+    }
+  }
+
+  // ── H-field: BOTH currents produce fields — they ADD inside, CANCEL outside ──
+  //
+  // Signal trace carries current → (+x):
+  //   H below trace (in dielectric) → ⊙ out of page
+  //   H above trace (outside)       → ⊗ into page
+  //
+  // Return plane carries current ← (−x):
+  //   H above plane (in dielectric) → ⊙ out of page   ← SAME direction as trace contribution
+  //   H below plane (outside)       → ⊗ into page
+  //
+  // IN DIELECTRIC: both ⊙ contributions point the same way → REINFORCE → H strong
+  // OUTSIDE (above trace / below return plane): ⊗ and ⊙ oppose each other → CANCEL → H weak
+
+  function hCross(x,y,r,a){ // ⊗ symbol — field into page
+    ctx.save();ctx.globalAlpha=a;
+    ctx.strokeStyle='#ff8800';ctx.lineWidth=1.4;ctx.shadowColor='#ff8800';ctx.shadowBlur=4;
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();
+    const d=r*.65;
+    ctx.beginPath();ctx.moveTo(x-d,y-d);ctx.lineTo(x+d,y+d);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+d,y-d);ctx.lineTo(x-d,y+d);ctx.stroke();
+    ctx.restore();
+  }
+  function hDot(x,y,r,a){ // ⊙ symbol — field out of page
+    ctx.save();ctx.globalAlpha=a;
+    ctx.strokeStyle='#ff8800';ctx.lineWidth=2;ctx.shadowColor='#ff8800';ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle='#ff8800';
+    ctx.beginPath();ctx.arc(x,y,r*.38,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+
+  // DIELECTRIC — large, bright ⊙: both currents reinforce
+  for(let i=0;i<8;i++) hDot(mx+(i+.5)*(tw/8), dy+dh/2, 8, 0.95);
+  lbl('Both currents reinforce  →  H ⊙ strong here', mx+tw/2, dy+dh*.84, '#ff8800', 9, 'center');
+
+  // ABOVE TRACE — small, dim ⊗: partial cancellation outside the transmission line
+  for(let i=0;i<6;i++) hCross(mx+(i+.5)*(tw/6), ty-18, 5.5, 0.30);
+  lbl('Partial cancellation  →  H ⊗ weak', mx+tw/2, ty-30, '#ff8800', 8, 'center');
+
+  // BELOW RETURN PLANE — small, dim ⊗: same cancellation on the other outside
+  for(let i=0;i<6;i++) hCross(mx+(i+.5)*(tw/6), py+ph+20, 5.5, 0.30);
+  lbl('Partial cancellation  →  H ⊗ weak', mx+tw/2, py+ph+35, '#ff8800', 8, 'center');
+
+  // ── Signal source (left) ──
+  const sX=mx-26, sY=ty+th/2;
+  ctx.save(); ctx.strokeStyle='#00FF94'; ctx.lineWidth=1.8; ctx.shadowColor='#00FF94'; ctx.shadowBlur=10;
+  ctx.beginPath();
+  ctx.moveTo(sX,sY+6); ctx.lineTo(sX+4,sY+6); ctx.lineTo(sX+4,sY-6);
+  ctx.lineTo(sX+11,sY-6); ctx.lineTo(sX+11,sY+6); ctx.lineTo(sX+16,sY+6);
+  ctx.stroke(); ctx.restore();
+  lbl('V_in', sX+8, ty-7, '#00FF94', 8, 'center');
+
+  // ── Load (right) ──
+  const lx2=ex+12;
+  ctx.save(); ctx.strokeStyle='#ffffff'; ctx.lineWidth=1.8; ctx.shadowColor='#ffffff'; ctx.shadowBlur=4;
+  ctx.beginPath(); ctx.moveTo(lx2,ty+th/2); ctx.lineTo(lx2+4,ty+th/2); ctx.rect(lx2+4,ty+th/2-6,12,12); ctx.stroke(); ctx.restore();
+  lbl('Load', lx2+10, ty-7, '#ffffff', 9, 'center');
+
+  // ── Ground stubs ──
+  for(const gx of[mx-4,ex+4]){
+    ctx.save(); ctx.strokeStyle='#6a9a78'; ctx.lineWidth=1.2;
+    ctx.beginPath();
+    ctx.moveTo(gx,py+ph); ctx.lineTo(gx,py+ph+9);
+    ctx.moveTo(gx-7,py+ph+9);  ctx.lineTo(gx+7,py+ph+9);
+    ctx.moveTo(gx-5,py+ph+13); ctx.lineTo(gx+5,py+ph+13);
+    ctx.moveTo(gx-2,py+ph+17); ctx.lineTo(gx+2,py+ph+17);
+    ctx.stroke(); ctx.restore();
+  }
+
+  // ── Distributed LC cell markers ──
+  ctx.save(); ctx.strokeStyle='#4a7858'; ctx.lineWidth=.5; ctx.setLineDash([2,5]);
+  for(let i=1;i<6;i++){ const cx=mx+i*tw/6; ctx.beginPath(); ctx.moveTo(cx,ty-4); ctx.lineTo(cx,py+ph+4); ctx.stroke(); }
+  ctx.restore();
+  lbl('L', mx+tw/12-4, ty-5,  '#ffffff', 10, 'center');
+  lbl('C', mx+tw/12+6, dy+dh*.65, '#ffffff', 10, 'center');
+
+  // ── Layer labels — white ──
+  lbl('Signal trace',          mx+5, ty-7,       '#ffffff', 10);
+  lbl('Dielectric  ε_r ≈ 4.3', mx+5, dy+dh/2+4,  '#ffffff', 10);
+  lbl('Return plane',          mx+5, py+ph+17,   '#ffffff', 10);
+
+  // ── Z₀ bracket ──
+  const bx=ex+4;
+  ctx.save(); ctx.strokeStyle='#00FF94'; ctx.lineWidth=1.5; ctx.shadowColor='#00FF94'; ctx.shadowBlur=10;
+  ctx.beginPath(); ctx.moveTo(bx,ty); ctx.lineTo(bx+5,ty); ctx.lineTo(bx+5,py+ph); ctx.lineTo(bx,py+ph); ctx.stroke(); ctx.restore();
+  lbl('Z₀',       bx+9,  (ty+py+ph)/2+4,  '#00FF94', 14);
+  lbl('= √(L/C)', bx+24, (ty+py+ph)/2+4,  '#ffffff',  9);
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAB 1 — The Wavefront
+═══════════════════════════════════════════════════════ */
+function drawWavefront(t){
+  const CYCLE=4.8, SWEEP=.70, FADE=.13;
+  const phase=(t%CYCLE)/CYCLE;
+  let wfFrac, alpha;
+  if(phase<SWEEP)            { wfFrac=phase/SWEEP;                      alpha=1; }
+  else if(phase<SWEEP+FADE)  { wfFrac=1; alpha=1-(phase-SWEEP)/FADE;            }
+  else                       { wfFrac=0; alpha=0;                                }
+
+  const g=geo(); const{mx,tw,ty,th,dy,dh,py,ph,ex}=g;
+  pcb(g);
+  const wfX=mx+wfFrac*tw;
+  const charged=Math.min(wfX,ex);
+
+  // Charged dielectric (left of wavefront) — clearly brighter
+  if(charged>mx+2&&alpha>.01){
+    ctx.save(); ctx.globalAlpha=alpha*.9;
+    ctx.fillStyle='#1c4228'; ctx.fillRect(mx,dy,charged-mx,dh); ctx.restore();
+  }
+
+  // E-field lines in charged region
+  if(alpha>.05){
+    for(let x=mx+16;x<charged-14;x+=32){
+      ctx.save(); ctx.globalAlpha=alpha*.75;
+      arw(x,ty+th+3,x,py-3,'#00FF94',1.2,4); ctx.restore();
+    }
+  }
+
+  // ── Conduction current on signal trace → (marching ants + arrowhead) ──
+  if(charged>mx+22&&alpha>.05){
+    ctx.save(); ctx.globalAlpha=alpha;
+    ctx.strokeStyle='#00ccff'; ctx.lineWidth=2.5; ctx.shadowColor='#00ccff'; ctx.shadowBlur=12;
+    ctx.setLineDash([10,7]); ctx.lineDashOffset=-t*34;
+    ctx.beginPath(); ctx.moveTo(mx+4,ty+th/2); ctx.lineTo(charged-8,ty+th/2); ctx.stroke();
+    ctx.restore();
+    // Short arrowhead near wavefront end, pointing →
+    if(alpha>.3) arw(charged-20,ty+th/2,charged-7,ty+th/2,'#00ccff',2.5,7);
+  }
+
+  // ── Return current on return plane ← (marching ants in opposite direction + arrowhead) ──
+  // The return current flows from the wavefront BACK toward the source (LEFT direction)
+  // lineDashOffset increases → pattern shifts left → dashes appear to move LEFT ✓
+  if(charged>mx+22&&alpha>.05){
+    ctx.save(); ctx.globalAlpha=alpha;
+    ctx.strokeStyle='#00ccff'; ctx.lineWidth=2.5; ctx.shadowColor='#00ccff'; ctx.shadowBlur=12;
+    ctx.setLineDash([10,7]); ctx.lineDashOffset=t*34; // positive = dashes march LEFT
+    ctx.beginPath(); ctx.moveTo(mx+4,py+ph/2); ctx.lineTo(charged-8,py+ph/2); ctx.stroke();
+    ctx.restore();
+    // Short arrowhead near wavefront end, pointing ← (return current originates at wavefront)
+    if(alpha>.3) arw(charged-8,py+ph/2,charged-22,py+ph/2,'#00ccff',2.5,7);
+  }
+
+  // ── Displacement current spike at wavefront ──
+  if(wfX<ex-5&&wfX>mx+5&&alpha>.05){
+    ctx.save(); ctx.globalAlpha=alpha;
+    ctx.strokeStyle='#ff8800'; ctx.lineWidth=4; ctx.shadowColor='#ff8800'; ctx.shadowBlur=28;
+    ctx.beginPath(); ctx.moveTo(wfX,ty+th+2); ctx.lineTo(wfX,py-2); ctx.stroke();
+    ctx.fillStyle='#ff8800';
+    ctx.beginPath(); ctx.moveTo(wfX,py-1); ctx.lineTo(wfX-7,py-13); ctx.lineTo(wfX+7,py-13); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    // Wavefront guide line
+    ctx.save(); ctx.globalAlpha=alpha*.5;
+    ctx.strokeStyle='#00FF94'; ctx.lineWidth=1.2; ctx.shadowColor='#00FF94'; ctx.shadowBlur=8; ctx.setLineDash([5,5]);
+    ctx.beginPath(); ctx.moveTo(wfX,ty-14); ctx.lineTo(wfX,py+ph+14); ctx.stroke(); ctx.restore();
+    if(alpha>.5) lbl('Wavefront', wfX, ty-18, '#00FF94', 9, 'center');
+  }
+
+  // Region labels — white
+  if(alpha>.3&&charged>mx+70){
+    lbl('→ J (conduction)', mx+8, ty-8,       '#00ccff', 10);
+    lbl('← J (return)',     mx+8, py+ph+17,   '#00ccff', 10);
+    if(wfX<ex-55) lbl('↓ ∂D/∂t', wfX+10, dy+dh/2, '#ff8800', 10);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAB 2 — Displacement Current
+   No graphs — just the capacitor, spring dipoles, J_d arrow, status
+═══════════════════════════════════════════════════════ */
+function drawDisplacement(t){
+  const omega=.65;
+  const V=Math.sin(omega*t);
+  const dVdt=omega*Math.cos(omega*t); // ∝ J_d
+
+  // Spring physics
+  const target=V*15;
+  sVel=sVel*.84+(target-sPos)*.065;
+  sPos+=sVel;
+
+  // Capacitor geometry — larger, centered in canvas
+  const cW=W*.60, cH=H*.62, cPH=16, cGH=cH-cPH*2;
+  const cX=(W-cW)/2, cY=(H-cH)*.40;
+  const topY=cY, botY=cY+cH-cPH, midY=topY+cPH+cGH/2;
+
+  // Dielectric fill
+  ctx.fillStyle='#0d1e12'; ctx.fillRect(cX,topY+cPH,cW,cGH);
+  ctx.strokeStyle='#2a5038'; ctx.lineWidth=1; ctx.strokeRect(cX,topY+cPH,cW,cGH);
+
+  // Copper plates
+  const tg=ctx.createLinearGradient(0,topY,0,topY+cPH);
+  tg.addColorStop(0,'#f0c050'); tg.addColorStop(1,'#c08038');
+  ctx.fillStyle=tg; ctx.fillRect(cX,topY,cW,cPH);
+  const pg=ctx.createLinearGradient(0,botY,0,botY+cPH);
+  pg.addColorStop(0,'#c08038'); pg.addColorStop(1,'#f0c050');
+  ctx.fillStyle=pg; ctx.fillRect(cX,botY,cW,cPH);
+
+  // Plate charge labels
+  const nq=8;
+  for(let i=0;i<nq;i++){
+    const qx=cX+(i+.5)*cW/nq;
+    const [tc,bc,ts,bs]=V>0?['#00FF94','#ff4d4d','+','−']:['#ff4d4d','#00FF94','−','+'];
+    lbl(ts,qx,topY+12,tc,13,'center');
+    lbl(bs,qx,botY+12,bc,13,'center');
+  }
+
+  // Dipoles — spring positions
+  const nd=7;
+  for(let i=0;i<nd;i++){
+    const dx=cX+(i+.5)*cW/nd;
+    const negY=midY-sPos, posY=midY+sPos;
+    // Bond
+    ctx.save(); ctx.strokeStyle='#608870'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(dx,negY+6); ctx.lineTo(dx,posY-6); ctx.stroke(); ctx.restore();
+    // − charge
+    ctx.save(); ctx.fillStyle='#ff4d4d'; ctx.shadowColor='#ff4d4d'; ctx.shadowBlur=10;
+    ctx.beginPath(); ctx.arc(dx,negY,6.5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='bold 9px Poppins,sans-serif'; ctx.textAlign='center'; ctx.shadowBlur=0;
+    ctx.fillText('−',dx,negY+3.5); ctx.restore();
+    // + charge
+    ctx.save(); ctx.fillStyle='#00FF94'; ctx.shadowColor='#00FF94'; ctx.shadowBlur=10;
+    ctx.beginPath(); ctx.arc(dx,posY,6.5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#0a0a0a'; ctx.font='bold 9px Poppins,sans-serif'; ctx.textAlign='center'; ctx.shadowBlur=0;
+    ctx.fillText('+',dx,posY+3.5); ctx.restore();
+  }
+
+  // Labels — all white
+  lbl('Signal trace (+ terminal)',  cX+cW/2, topY-14, '#ffffff', 10, 'center');
+  lbl('Return plane (− terminal)',  cX+cW/2, botY+cPH+18, '#ffffff', 10, 'center');
+  lbl('No real current crosses — bound charges polarize instead', cX+cW/2, midY+4, '#aaaaaa', 9, 'center');
+
+  // ── J_d arrow — direction and size track dV/dt ──
+  // J_d = ε·∂E/∂t : positive dVdt → E increasing downward → J_d downward
+  const jdAmp=dVdt*26;
+  const ax=cX+cW+30, ay=midY;
+  if(Math.abs(jdAmp)>2){
+    arw(ax,ay,ax,ay+jdAmp,'#ff8800',3,8);
+    lbl('J_d', ax+12, ay+jdAmp/2+4, '#ff8800', 11);
+  } else {
+    // J_d ≈ 0 — horizontal dash
+    ctx.save(); ctx.strokeStyle='#ff8800'; ctx.lineWidth=2; ctx.globalAlpha=.4;
+    ctx.beginPath(); ctx.moveTo(ax-6,ay); ctx.lineTo(ax+18,ay); ctx.stroke(); ctx.restore();
+    lbl('J_d ≈ 0', ax-4, ay+20, '#ff8800', 10);
+  }
+
+  // Dynamic status — white text
+  const rising=dVdt>.3, falling=dVdt<-.3, atPeak=Math.abs(V)>.88&&Math.abs(dVdt)<.35;
+  const status= atPeak   ? 'V at peak — dV/dt = 0 → J_d = 0' :
+                rising    ? 'V rising fast — large J_d downward' :
+                falling   ? 'V falling fast — large J_d upward' :
+                            'J_d = ε · ∂E/∂t';
+  const sCol=atPeak?'#aaaaaa':'#00FF94';
+  lbl(status, W/2, H-16, sCol, 10, 'center');
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAB 3 — Impedance & Reflection
+   Clean uniform trace — Z_L slider is the only variable
+   Matched → no reflection. Mismatched → reflected pulse.
+═══════════════════════════════════════════════════════ */
+function drawReflection(t){
+  const g=geo(); const{mx,tw,ty,th,dy,dh,py,ph,ex}=g;
+
+  // Clean uniform trace — no geometry discontinuity
+  pcb(g);
+
+  // Load terminator
+  const gamma=(zlRatio-1)/(zlRatio+1);
+  const matched=Math.abs(gamma)<.04;
+  const lCol=matched?'#00FF94':'#ff4d4d';
+  const lx=ex; // load right at the end of the trace
+  ctx.save(); ctx.strokeStyle=lCol; ctx.lineWidth=2.5; ctx.shadowColor=lCol; ctx.shadowBlur=14;
+  ctx.beginPath();
+  ctx.moveTo(lx,ty+th/2); ctx.lineTo(lx+4,ty+th/2);
+  ctx.rect(lx+4,ty+th/2-9,18,18);
+  ctx.stroke(); ctx.restore();
+  lbl(`Z_L = ${(zlRatio*50|0)} Ω`, lx+26, ty+th/2+5, lCol, 11);
+
+  // Load flash — one-shot per cycle
+  flashT=Math.max(0,flashT-dt*2.0);
+  if(flashT>.01){
+    ctx.save(); ctx.globalAlpha=flashT*.7;
+    ctx.fillStyle=flashCol; ctx.shadowColor=flashCol; ctx.shadowBlur=50;
+    ctx.beginPath(); ctx.arc(lx+13,ty+th/2,22,0,Math.PI*2); ctx.fill(); ctx.restore();
+  }
+
+  // Z₀ label on trace
+  lbl('Z₀ = 50 Ω', mx+tw/2, ty-12, '#ffffff', 10, 'center');
+
+  // ── Wave animation — 6 s period ──
+  const PERIOD=6.0;
+  const prog=(t%PERIOD)/PERIOD;
+  const sig=24, sigY=ty-48;
+  const totalD=lx-mx+80;
+  const incX=mx+prog*totalD*1.15-40;
+  const incA=20;
+
+  // Reset one-shot flag each cycle
+  if(prog<.04) flashFired=false;
+
+  // Incident pulse (travels left → right)
+  if(incX>mx-70&&incX<lx+30){
+    pulse(incX,incA,sig,'#00ccff',sigY);
+    if(incX>mx+10&&incX<lx-40) lbl('Incident →',incX,sigY-22,'#00ccff',9,'center');
+  }
+
+  // At load contact: flash once, then show reflected pulse
+  if(incX>lx-15){
+    if(!flashFired){ flashT=1; flashCol=matched?'#00FF94':'#ff4d4d'; flashFired=true; }
+
+    const refAmp=Math.abs(gamma)*incA;
+    // Reflected pulse: same speed, travels back from load
+    const rX=lx-(incX-lx);
+
+    if(rX>mx-70&&rX<lx-2&&refAmp>0.5){
+      const rc=gamma>0?'#ff4d4d':'#ff8800'; // positive Γ → same polarity, negative → inverted
+      pulse(rX,refAmp*(gamma<0?-1:1),sig*.9,rc,sigY);
+      if(rX>mx+40&&rX<lx-40)
+        lbl(`← Reflected   Γ = ${gamma.toFixed(2)}`, rX, sigY-22, rc, 9, 'center');
+    }
+
+    if(matched&&rX<lx-20&&rX>mx)
+      lbl('✓ Matched — all energy absorbed, no reflection', lx-4, sigY-22, '#00FF94', 9, 'right');
+  }
+
+  // Γ readout at bottom — white
+  const gc=Math.abs(gamma)<.05?'#00FF94':Math.abs(gamma)<.4?'#ff8800':'#ff4d4d';
+  lbl(`Γ = ${gamma.toFixed(3)}`, mx, H-14, gc, 11);
+  lbl(
+    matched
+      ? 'No reflection — load perfectly matched'
+      : `Reflection coefficient ${(Math.abs(gamma)*100).toFixed(0)}% — energy reflected back`,
+    mx+96, H-14, gc, 10
+  );
+}
+
+/* ── Render loop ──────────────────────────────────────────────────────── */
+document.fonts.ready.then(()=>{
+  function loop(ts){
+    if(prevTs!==null){ dt=Math.min((ts-prevTs)/1000,.05); elapsed+=dt; }
+    prevTs=ts;
+    ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,W,H);
+    ctx.shadowBlur=0;
+    const t=elapsed;
+    if(section===0)      drawModel(t);
+    else if(section===1) drawWavefront(t);
+    else if(section===2) drawDisplacement(t);
+    else if(section===3) drawReflection(t);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+});
+</script>
+</body>
+</html>
