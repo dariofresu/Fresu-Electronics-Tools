@@ -9,28 +9,31 @@ Live at: **[tool.fresuelectronics.com](https://tool.fresuelectronics.com)**
 ## Repository Structure
 
 ```
-/                          ← Hub landing page (tool.fresuelectronics.com)
-├── index.html             ← Tools hub — all tools listed
+/                              ← Hub landing page (tool.fresuelectronics.com)
+├── index.html                 ← Tools hub — all tools listed
 │
-├── pcb-mistakes/          ← tool.fresuelectronics.com/pcb-mistakes/
-│   └── index.html         ← Top 10 PCB Design Mistakes for EMI Control
+├── pcb-mistakes/              ← tool.fresuelectronics.com/pcb-mistakes/
+│   └── index.html
 │
-├── hardware-spec/         ← tool.fresuelectronics.com/hardware-spec/
-│   └── index.html         ← Hardware Specification Guide
+├── hardware-spec/             ← tool.fresuelectronics.com/hardware-spec/
+│   └── index.html
 │
-├── emc-fundamentals/      ← tool.fresuelectronics.com/emc-fundamentals/
-│   └── index.html         ← EMC Fundamentals interactive module
+├── pre-layout-checklist/      ← tool.fresuelectronics.com/pre-layout-checklist/
+│   └── index.html
 │
-├── pcb-em-fields/         ← tool.fresuelectronics.com/pcb-em-fields/
-│   └── index.html         ← PCB EM Fields visualiser
+├── emc-fundamentals/          ← tool.fresuelectronics.com/emc-fundamentals/
+│   └── index.html
 │
-├── pcb-emc-design-kit/    ← tool.fresuelectronics.com/pcb-emc-design-kit/
-│   └── index.html         ← PCB EMC Design Kit
+├── pcb-em-fields/             ← tool.fresuelectronics.com/pcb-em-fields/
+│   └── index.html
 │
-├── pcb-signal-propagation/← tool.fresuelectronics.com/pcb-signal-propagation/
-│   └── index.html         ← Signal Propagation Visualiser
+├── pcb-emc-design-kit/        ← tool.fresuelectronics.com/pcb-emc-design-kit/
+│   └── index.html
 │
-└── images/                ← Shared figures (PCB Mistakes guide)
+├── pcb-signal-propagation/    ← tool.fresuelectronics.com/pcb-signal-propagation/
+│   └── index.html
+│
+└── images/                    ← Shared figures (PCB Mistakes guide)
     └── fig-01.jpg … fig-22.jpg, portrait.jpg
 ```
 
@@ -50,30 +53,39 @@ Features: Reader · Chapter Quizzes · Self-Audit · Roadmap · Key Insights Gal
 ### 2. Hardware Specification Guide
 **URL:** [tool.fresuelectronics.com/hardware-spec/](https://tool.fresuelectronics.com/hardware-spec/)
 
-A structured interactive worksheet for defining hardware product specs before opening a schematic tool. Covers Product Vision, Technical Requirements, Architecture & Interfaces, and Compliance & Risk.
+5-step interactive spec capture tool for defining hardware product requirements before opening a schematic tool. Covers Product Vision, Technical Requirements, EMC by Design, Architecture & Interfaces, and Compliance & Risk.
 
-Features: 4-Step Worksheet · Confidence Star Ratings · Notes per Item · Auto-Save (localStorage) · Export Product Specification Brief (TXT)
+Features: 5-Step Worksheet · Gate Reviews · Confidence Star Ratings · Live Brief Preview · Risk Register · PDF Export · Save Offline
 
 ---
 
-### 3. PCB Signal Propagation Visualiser
+### 3. Pre-Layout Review Checklist
+**URL:** [tool.fresuelectronics.com/pre-layout-checklist/](https://tool.fresuelectronics.com/pre-layout-checklist/)
+
+9-category, 50+ item checklist covering schematic organisation, signal integrity, protection, compliance, and layout readiness. Complete before the first trace is placed.
+
+Features: 9 Categories · 50+ Items · Notes per Item · Export Progress Report · Print to PDF · Auto-Save
+
+---
+
+### 4. PCB Signal Propagation Visualiser
 **URL:** [tool.fresuelectronics.com/pcb-signal-propagation/](https://tool.fresuelectronics.com/pcb-signal-propagation/)
 
 Animated visualisation of how signals travel through a PCB transmission line — wavefront, displacement current, E and H fields, live impedance matching.
 
 ---
 
-### 4. PCB EM Fields
+### 5. PCB EM Fields
 **URL:** [tool.fresuelectronics.com/pcb-em-fields/](https://tool.fresuelectronics.com/pcb-em-fields/)
 
 ---
 
-### 5. EMC Fundamentals
+### 6. EMC Fundamentals
 **URL:** [tool.fresuelectronics.com/emc-fundamentals/](https://tool.fresuelectronics.com/emc-fundamentals/)
 
 ---
 
-### 6. PCB EMC Design Kit
+### 7. PCB EMC Design Kit
 **URL:** [tool.fresuelectronics.com/pcb-emc-design-kit/](https://tool.fresuelectronics.com/pcb-emc-design-kit/)
 
 ---
