@@ -202,5 +202,16 @@ footer { border-top: 1px solid var(--border); padding: 24px; }
   </div>
 </footer>
 
+<script>
+// Tell Wix iframe the full page height so it resizes correctly
+function postHeight() {
+  var h = document.documentElement.scrollHeight;
+  window.parent.postMessage({ height: h }, '*');
+  // Wix-specific API
+  if (window.Wix) window.Wix.setHeight(h);
+}
+window.addEventListener('load', postHeight);
+window.addEventListener('resize', postHeight);
+</script>
 </body>
 </html>
