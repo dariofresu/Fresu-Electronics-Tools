@@ -2,199 +2,104 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1080">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EMC Tools Hub — Fresu Electronics</title>
-<meta name="description" content="Free interactive EMC & PCB engineering tools by Dario Fresu.">
+<meta name="description" content="Free interactive EMC & PCB engineering tools by Dario Fresu. Top 10 PCB Design Mistakes, Hardware Specification Guide, Pre-Layout Checklist and more.">
 <link rel="canonical" href="https://tool.fresuelectronics.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --bg: #0a0a0a;
-  --surface: #111111;
-  --border: #383838;
-  --fg: #ffffff;
-  --label: #c8d0dc;
-  --muted: #a0aab8;
-  --accent: #00FF94;
-  --accent-dim: rgba(0,255,148,.10);
+  --bg: #0a0a0a; --surface: #111111; --border: #383838;
+  --fg: #ffffff; --label: #c8d0dc; --muted: #a0aab8;
+  --accent: #00FF94; --accent-dim: rgba(0,255,148,.10);
+  --ease: cubic-bezier(0.22,1,0.36,1);
 }
-
-/* ── FIXED 1080×1080 CANVAS ── */
-html {
-  width: 1080px;
-  height: 1080px;
-  overflow: hidden;
-}
-body {
-  width: 1080px;
-  height: 1080px;
-  overflow: hidden;
-  background: var(--bg);
-  color: var(--fg);
-  font-family: 'Poppins', sans-serif;
-  display: flex;
-  flex-direction: column;
-}
-
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--fg); font-family: 'Poppins', sans-serif; line-height: 1.7; }
 a { text-decoration: none; }
 img { display: block; }
 
-/* ── NAV ── */
-.nav {
-  width: 100%;
-  background: #111111;
-  border-bottom: 1px solid var(--border);
-  padding: 0 32px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-}
-.nav img { height: 32px; width: auto; }
-.nav-cta {
-  background: var(--accent); color: #0a0a0a;
-  font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-  padding: 8px 16px; border-radius: 2px;
-}
+/* NAV */
+.nav { background: rgba(10,10,10,.95); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 12px 0; position: sticky; top: 0; z-index: 100; }
+.nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo img { height: 38px; width: auto; }
+.nav-cta { background: var(--accent); color: #0a0a0a; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 9px 18px; border-radius: 2px; transition: opacity .2s; }
+.nav-cta:hover { opacity: .88; }
 
-/* ── HERO ── */
-.hero {
-  text-align: center;
-  padding: 36px 32px 28px;
-  flex-shrink: 0;
-}
-.kicker {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 9px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
-  color: var(--accent); margin-bottom: 10px;
-}
-.kicker::before, .kicker::after { content: ''; width: 20px; height: 1px; background: var(--accent); }
-.hero h1 {
-  font-size: 36px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1;
-  margin-bottom: 10px;
-}
+/* HERO */
+.hero { max-width: 1100px; margin: 0 auto; padding: 72px 24px 56px; text-align: center; }
+.kicker { display: inline-flex; align-items: center; gap: 10px; font-size: 10px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+.kicker::before, .kicker::after { content: ''; width: 24px; height: 1px; background: var(--accent); }
+.hero h1 { font-size: clamp(30px, 6vw, 56px); font-weight: 800; letter-spacing: -.04em; line-height: 1.08; margin-bottom: 16px; }
 .hero h1 em { font-style: normal; color: var(--accent); }
-.hero-sub {
-  font-size: 13px; color: var(--label); max-width: 480px; margin: 0 auto 16px; line-height: 1.6;
-}
-.author-pill {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 8px 14px; background: var(--surface); border: 1px solid var(--border);
-}
-.author-pill img {
-  width: 32px; height: 32px; border-radius: 50%;
-  object-fit: cover; border: 2px solid var(--accent);
-}
-.author-name { font-size: 12px; font-weight: 600; text-align: left; line-height: 1.3; }
-.author-role { font-size: 10px; color: var(--muted); }
+.hero-sub { font-size: clamp(14px, 2vw, 17px); color: var(--label); max-width: 520px; margin: 0 auto 40px; line-height: 1.7; }
+.author-pill { display: inline-flex; align-items: center; gap: 12px; padding: 10px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 2px; }
+.author-pill img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
+.author-name { font-size: 13px; font-weight: 600; color: var(--fg); text-align: left; line-height: 1.3; }
+.author-role { font-size: 11px; color: var(--muted); }
 
-/* ── MAIN GRID ── */
-.main {
-  flex: 1;
-  padding: 0 32px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-height: 0;
-}
-.sec-label {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--accent);
-}
-.sec-label::before { content: ''; width: 16px; height: 1px; background: var(--accent); }
+/* TOOLS SECTION */
+.tools-section { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+.sec-label { display: flex; align-items: center; gap: 10px; font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+.sec-label::before { content: ''; width: 20px; height: 1px; background: var(--accent); }
 
-/* ── CARDS GRID — hard-coded 3 columns, 1016px wide ── */
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 2px;
-  width: 100%;
-}
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px;
-  width: 100%;
-}
+/* GRIDS */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-bottom: 2px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; }
 
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--border);
-  padding: 16px 18px;
-  display: flex; flex-direction: column; gap: 8px;
-}
+/* CARD */
+.card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--border); padding: 24px; display: flex; flex-direction: column; gap: 12px; transition: border-color .2s; }
+.card:hover { border-color: rgba(0,255,148,.4); }
 .card.hi { border-left-color: var(--accent); }
-.card-tag {
-  font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
-  color: var(--accent);
-  display: flex; align-items: center; gap: 6px;
-}
-.card-tag::after {
-  content: 'FREE'; background: rgba(0,255,148,.12);
-  font-size: 8px; padding: 2px 5px; font-weight: 700;
-}
-.card-title {
-  font-size: 13px; font-weight: 700; letter-spacing: -.01em;
-  color: var(--fg); line-height: 1.3;
-}
-.card-desc {
-  font-size: 11px; color: var(--label); line-height: 1.55; flex: 1;
-}
-.card-feats {
-  display: flex; flex-wrap: wrap; gap: 4px;
-}
-.feat {
-  font-size: 9px; font-weight: 600; color: var(--muted);
-  padding: 2px 6px; border: 1px solid var(--border);
-}
-.card-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--accent); color: #0a0a0a;
-  font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-  padding: 8px 14px; align-self: flex-start;
-}
-.card-btn.out {
-  background: transparent; color: var(--accent);
-  border: 1px solid var(--accent);
-}
+.card-tag { font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 6px; }
+.card-tag::after { content: 'FREE'; background: rgba(0,255,148,.12); color: var(--accent); font-size: 9px; padding: 2px 6px; border-radius: 2px; font-weight: 700; letter-spacing: .1em; }
+.card-title { font-size: 17px; font-weight: 700; letter-spacing: -.02em; color: var(--fg); line-height: 1.3; }
+.card-desc { font-size: 13px; color: var(--label); line-height: 1.65; flex: 1; }
+.card-feats { display: flex; flex-wrap: wrap; gap: 6px; }
+.feat { font-size: 10px; font-weight: 600; color: var(--muted); padding: 3px 8px; border: 1px solid var(--border); border-radius: 2px; }
+.card-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #0a0a0a; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 11px 18px; border-radius: 2px; align-self: flex-start; transition: gap .2s var(--ease); }
+.card-btn:hover { gap: 14px; }
+.card-btn.out { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.card-btn.out:hover { background: var(--accent-dim); }
 
-/* ── DIVIDER ── */
-.divider {
-  display: flex; align-items: center; gap: 12px;
-}
+/* DIVIDER */
+.divider { display: flex; align-items: center; gap: 16px; padding: 32px 0; }
 .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-.divider span {
-  font-size: 9px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
-  color: var(--muted); white-space: nowrap;
-}
+.divider span { font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
 
-/* ── FOOTER ── */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 12px 32px;
-  display: flex; align-items: center; justify-content: space-between;
-  flex-shrink: 0;
+/* FOOTER */
+footer { border-top: 1px solid var(--border); padding: 24px; }
+.footer-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.footer-brand { font-size: 12px; font-weight: 700; color: var(--accent); }
+.footer-nav { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-nav a { font-size: 12px; color: var(--muted); transition: color .2s; }
+.footer-nav a:hover { color: var(--fg); }
+.footer-legal { font-size: 11px; color: #555; }
+
+/* RESPONSIVE */
+@media (max-width: 860px) {
+  .grid-3 { grid-template-columns: 1fr 1fr; }
 }
-.footer-brand { font-size: 11px; font-weight: 700; color: var(--accent); }
-.footer-nav { display: flex; gap: 16px; }
-.footer-nav a { font-size: 11px; color: var(--muted); }
-.footer-legal { font-size: 10px; color: #555; }
+@media (max-width: 560px) {
+  .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .hero { padding: 48px 20px 40px; }
+  .tools-section { padding: 0 20px 60px; }
+  .nav-inner { padding: 0 16px; }
+}
 </style>
 </head>
 <body>
 
 <nav class="nav">
-  <a href="https://www.fresuelectronics.com">
-    <img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/logo.png" alt="Fresu Electronics">
-  </a>
-  <a class="nav-cta" href="https://www.fresuelectronics.com/emc-audit">Work with Dario →</a>
+  <div class="nav-inner">
+    <a href="https://www.fresuelectronics.com">
+      <img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/logo.png" alt="Fresu Electronics" style="height:38px;width:auto">
+    </a>
+    <a class="nav-cta" href="https://www.fresuelectronics.com/emc-audit">Work with Dario →</a>
+  </div>
 </nav>
 
 <header class="hero">
@@ -210,18 +115,18 @@ footer {
   </div>
 </header>
 
-<main class="main">
+<main class="tools-section">
 
   <div class="sec-label">Interactive Tools</div>
 
-  <div class="grid">
-
+  <!-- ROW 1: 3 featured tools -->
+  <div class="grid-3">
     <div class="card hi">
       <div class="card-tag">EMI Control Series</div>
       <div class="card-title">Top 10 PCB Design Mistakes for EMI Control</div>
-      <p class="card-desc">10 chapters, quizzes, self-audit, roadmap, certification exam and printable checklist. Every layout mistake that causes EMC failures.</p>
+      <p class="card-desc">10 chapters covering every layout mistake that causes EMC test failures — with quizzes, self-audit, roadmap, certification exam and printable checklist.</p>
       <div class="card-feats">
-        <span class="feat">10 Chapters</span><span class="feat">Quizzes</span><span class="feat">Self-Audit</span><span class="feat">Cert Exam</span>
+        <span class="feat">10 Chapters</span><span class="feat">Quizzes</span><span class="feat">Self-Audit</span><span class="feat">Cert Exam</span><span class="feat">Printable</span>
       </div>
       <a class="card-btn" href="/pcb-mistakes/">Read the Guide →</a>
     </div>
@@ -229,9 +134,9 @@ footer {
     <div class="card hi">
       <div class="card-tag">Pre-Design</div>
       <div class="card-title">Hardware Specification Guide</div>
-      <p class="card-desc">5-step spec capture with gate reviews, live brief preview, risk register and PDF export. Define the product before the schematic.</p>
+      <p class="card-desc">5-step spec capture with gate reviews, live brief preview, risk register and PDF export. Define the product before you open the schematic tool.</p>
       <div class="card-feats">
-        <span class="feat">5 Steps</span><span class="feat">Gate Reviews</span><span class="feat">Risk Register</span><span class="feat">PDF</span>
+        <span class="feat">5 Steps</span><span class="feat">Gate Reviews</span><span class="feat">Risk Register</span><span class="feat">Live Brief</span><span class="feat">PDF</span>
       </div>
       <a class="card-btn" href="/hardware-spec/">Open the Guide →</a>
     </div>
@@ -239,46 +144,61 @@ footer {
     <div class="card hi">
       <div class="card-tag">Pre-Layout</div>
       <div class="card-title">Pre-Layout Review Checklist</div>
-      <p class="card-desc">9 categories, 50+ items covering schematic organisation, signal integrity, protection and compliance. Before the first trace.</p>
+      <p class="card-desc">9 categories, 50+ items covering schematic organisation, signal integrity, protection and compliance. Complete before the first trace is placed.</p>
       <div class="card-feats">
-        <span class="feat">9 Categories</span><span class="feat">50+ Items</span><span class="feat">Notes</span><span class="feat">PDF</span>
+        <span class="feat">9 Categories</span><span class="feat">50+ Items</span><span class="feat">Notes</span><span class="feat">Export</span><span class="feat">PDF</span>
       </div>
       <a class="card-btn" href="/pre-layout-checklist/">Open Checklist →</a>
     </div>
-
   </div>
 
-  <div class="divider"><span>More tools</span></div>
-
+  <!-- ROW 2: 2 tools -->
   <div class="grid-2">
-
-    <div class="card">
+    <div class="card hi">
       <div class="card-tag">Signal Propagation</div>
       <div class="card-title">PCB Signal Propagation Visualiser</div>
-      <p class="card-desc">Animated visualisation of wavefront, displacement current, E and H fields through a PCB transmission line.</p>
-      <a class="card-btn out" href="/pcb-signal-propagation/">Open Visualiser →</a>
+      <p class="card-desc">Animated visualisation of how signals travel through a PCB transmission line — wavefront, displacement current, E and H fields, live impedance matching.</p>
+      <a class="card-btn" href="/pcb-signal-propagation/">Open Visualiser →</a>
     </div>
 
-    <div class="card">
+    <div class="card hi">
       <div class="card-tag">EMC Fundamentals</div>
       <div class="card-title">EMC Fundamentals Interactive Module</div>
-      <p class="card-desc">Core EMC theory, field behaviour and design principles — interactive and self-paced.</p>
-      <a class="card-btn out" href="/emc-fundamentals/">Open Module →</a>
+      <p class="card-desc">Core EMC theory, field behaviour and PCB design principles — interactive and self-paced.</p>
+      <a class="card-btn" href="/emc-fundamentals/">Open Module →</a>
+    </div>
+  </div>
+
+  <!-- ROW 3: 2 tools -->
+  <div class="grid-2" style="margin-top:2px">
+    <div class="card hi">
+      <div class="card-tag">EM Fields</div>
+      <div class="card-title">PCB EM Fields Visualiser</div>
+      <p class="card-desc">Visualise the electromagnetic field distribution on a PCB — understand how fields couple between layers and traces.</p>
+      <a class="card-btn" href="/pcb-em-fields/">Open Visualiser →</a>
     </div>
 
+    <div class="card hi">
+      <div class="card-tag">EMC Design Kit</div>
+      <div class="card-title">PCB EMC Design Kit</div>
+      <p class="card-desc">A practical design reference covering EMC-compliant PCB layout rules, decoupling strategies and filter selection.</p>
+      <a class="card-btn" href="/pcb-emc-design-kit/">Open Design Kit →</a>
+    </div>
   </div>
 
 </main>
 
 <footer>
-  <span class="footer-brand">Fresu Electronics</span>
-  <nav class="footer-nav">
-    <a href="https://www.fresuelectronics.com">Home</a>
-    <a href="https://www.fresuelectronics.com/resources">Resources</a>
-    <a href="https://blog.fresuelectronics.com">Blog</a>
-    <a href="https://www.fresuelectronics.com/emc-audit">Work with Dario</a>
-  </nav>
-  <span class="footer-legal">© 2026 Fresu Electronics SRL</span>
+  <div class="footer-inner">
+    <span class="footer-brand">Fresu Electronics</span>
+    <nav class="footer-nav">
+      <a href="https://www.fresuelectronics.com">Home</a>
+      <a href="https://www.fresuelectronics.com/resources">Resources</a>
+      <a href="https://blog.fresuelectronics.com">Blog</a>
+      <a href="https://www.fresuelectronics.com/emc-audit">Work with Dario</a>
+    </nav>
+    <span class="footer-legal">© 2026 Fresu Electronics SRL</span>
+  </div>
 </footer>
 
 </body>
