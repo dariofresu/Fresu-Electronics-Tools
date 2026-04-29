@@ -296,7 +296,48 @@ img { display: block; }
 
 /* ─── CONTENT ─── */
 .content { overflow-y: auto; min-width: 0; }
-.content-inner { max-width: 720px; margin: 0 auto; padding: 36px 40px 80px; }
+
+/* ─── CHAPTER NAV ─── */
+.chapter-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 48px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.chapter-nav-btn {
+  padding: 18px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  text-align: left;
+  transition: border-color .2s, background .2s;
+  cursor: pointer;
+}
+.chapter-nav-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--surface-2); }
+.chapter-nav-btn:disabled { opacity: .3; cursor: not-allowed; }
+.chapter-nav-btn.next { text-align: right; }
+.nav-direction {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 5px;
+}
+.nav-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  line-height: 1.3;
+  letter-spacing: -.01em;
+}
 
 /* ─── SUMMARY ─── */
 .summary {
@@ -326,11 +367,14 @@ img { display: block; }
 }
 .summary-label { font-size: 11px; color: var(--label); letter-spacing: .04em; }
 
+/* ─── SCREENS ─── */
+.screen { display: none; }
+.screen.active { display: block; }
+
 /* ─── CATEGORY ─── */
-.cat-block { margin-bottom: 44px; }
-.cat-header { margin-bottom: 20px; }
+.cat-block { max-width: 680px; margin: 0 auto; padding: 36px 40px 80px; }
+.cat-header { margin-bottom: 24px; }
 .cat-kicker {
-  font-family: var(--mono);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: .2em;
@@ -627,7 +671,7 @@ img { display: block; }
 
   <!-- CONTENT -->
   <main class="content" id="main">
-    <div class="content-inner" id="content-inner"></div>
+    <div id="content-inner"></div>
   </main>
 
 </div>
@@ -760,9 +804,135 @@ var DATA = [
   }
 ];
 
+var currentCat = 0; // index into DATA
+
+// ─── RENDER ─────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderContent();
+  renderSidebar();
+  updateProgress();
+  showCat(currentCat);
+}
+
+function renderContent() {
+  var html = '';
+
+  // Overview screen (index -1 mapped to screen 0)
+  html += '<div class="screen active" id="screen-overview">';
+  html += '<div class="cat-block">';
+  html += '<div class="cat-header">';
+  html += '<div class="cat-kicker">Pre-Layout Review Checklist</div>';
+  html += '<h2 class="cat-title">Schematic Readiness</h2>';
+  html += '<p class="cat-desc">Work through each category before handing your schematic to layout. Every item here is a class of error Dario has seen cause EMC failures, costly respins, or certification delays.</p>';
+  html += '</div>';
+
+  // Summary stats
+  html += '<div class="summary">';
+  html += '<div class="summary-kicker">Overall Progress</div>';
+  html += '<div class="summary-grid">';
+  html += '<div class="summary-stat"><div class="summary-num" id="stat-checked">0</div><div class="summary-label">Items Checked</div></div>';
+  html += '<div class="summary-stat"><div class="summary-num" id="stat-remaining">' + TOTAL + '</div><div class="summary-label">Remaining</div></div>';
+  html += '<div class="summary-stat"><div class="summary-num" id="stat-pct">0%</div><div class="summary-label">Complete</div></div>';
+  html += '</div></div>';
+
+  // Category overview list
+  html += '<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">';
+  DATA.forEach(function(cat, i) {
+    html += '<button onclick="showCat(' + i + ')" style="display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--border);padding:14px 18px;text-align:left;transition:all .18s;cursor:pointer;" onmouseover="this.style.borderColor=\'var(--accent)\'" onmouseout="this.style.borderColor=\'var(--border)\'" id="overview-cat-' + i + '">';
+    html += '<span style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--accent);min-width:28px;">' + cat.n + '</span>';
+    html += '<span style="flex:1;font-size:13px;font-weight:600;color:var(--fg-secondary);">' + cat.title + '</span>';
+    html += '<span style="font-family:var(--mono);font-size:10px;color:var(--fg-secondary);" id="overview-count-' + i + '">0 / ' + cat.items.length + '</span>';
+    html += '<span style="font-family:var(--mono);font-size:11px;color:var(--accent);">→</span>';
+    html += '</button>';
+  });
+  html += '</div>';
+
+  // Footer
+  html += '<div class="content-footer">';
+  html += '<div class="author-row">';
+  html += '<img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/dario-fresu.jpg" alt="Dario Fresu">';
+  html += '<div><div class="author-name">Dario Fresu</div><div class="author-role">Principal EMC Architect · Fresu Electronics</div></div>';
+  html += '</div>';
+  html += '<div class="footer-links">';
+  html += '<a href="https://www.fresuelectronics.com" target="_blank" rel="noopener">fresuelectronics.com</a>';
+  html += '<a href="https://www.fresuelectronics.com/emc-audit" target="_blank" rel="noopener">EMC Design Audit</a>';
+  html += '<a href="https://blog.fresuelectronics.com" target="_blank" rel="noopener">Blog</a>';
+  html += '<a href="https://www.youtube.com/@dario_fresu" target="_blank" rel="noopener">YouTube</a>';
+  html += '<a href="https://tool.fresuelectronics.com" target="_blank" rel="noopener">All Tools</a>';
+  html += '</div>';
+  html += '<p class="footer-legal">© 2026 Fresu Electronics SRL · All rights reserved · 80,000+ engineers in the community</p>';
+  html += '</div>';
+
+  html += '</div></div>'; // cat-block, screen-overview
+
+  // Category screens
+  DATA.forEach(function(cat, ci) {
+    html += '<div class="screen" id="screen-' + ci + '">';
+    html += '<div class="cat-block">';
+    html += '<div class="cat-header">';
+    html += '<div class="cat-kicker">Category ' + cat.n + ' of 09</div>';
+    html += '<h2 class="cat-title">' + cat.title + '</h2>';
+    html += '<p class="cat-desc">' + cat.desc + '</p>';
+    html += '<div class="cat-pips">';
+    cat.items.forEach(function(it) {
+      html += '<div class="pip" id="pip-' + it.id + '"></div>';
+    });
+    html += '</div></div>';
+
+    // Items
+    cat.items.forEach(function(it) {
+      var s = getS(it.id);
+      html += '<div class="item' + (s.checked ? ' is-checked' : '') + '" id="item-' + it.id + '">';
+      html += '<div class="item-row" onclick="toggleCheck(\'' + it.id + '\')">';
+      html += '<div class="checkbox' + (s.checked ? ' is-checked' : '') + '" id="cb-' + it.id + '"></div>';
+      html += '<div class="item-label">' + it.label + '</div>';
+      html += '</div>';
+      if (it.info) {
+        html += '<div class="item-meta">';
+        html += '<button class="info-toggle" onclick="toggleInfo(\'' + it.id + '\')">';
+        html += '<span class="info-icon">i</span>';
+        html += '<span id="itoggle-' + it.id + '">' + (s.infoOpen ? 'Hide' : 'Why this matters') + '</span>';
+        html += '</button>';
+        html += '</div>';
+        html += '<div class="info-body' + (s.infoOpen ? ' open' : '') + '" id="info-' + it.id + '">' + it.info + '</div>';
+      }
+      html += '<div class="notes-wrap">';
+      html += '<textarea class="notes-input" placeholder="Add a note…" oninput="setNote(\'' + it.id + '\',this.value)">' + (s.notes || '') + '</textarea>';
+      html += '</div>';
+      html += '</div>';
+    });
+
+    // Prev / Next nav
+    var prevLabel = ci === 0 ? '← Overview' : '← ' + DATA[ci - 1].title;
+    var nextLabel = ci === DATA.length - 1 ? 'Overview →' : DATA[ci + 1].title + ' →';
+    html += '<div class="chapter-nav">';
+    html += '<button class="chapter-nav-btn prev" onclick="goToPrev(' + ci + ')">';
+    html += '<span class="nav-direction">← Previous</span>';
+    html += '<span class="nav-label">' + (ci === 0 ? 'Overview' : DATA[ci - 1].title) + '</span>';
+    html += '</button>';
+    html += '<button class="chapter-nav-btn next" onclick="goToNext(' + ci + ')">';
+    html += '<span class="nav-direction">Next →</span>';
+    html += '<span class="nav-label">' + (ci === DATA.length - 1 ? 'Overview' : DATA[ci + 1].title) + '</span>';
+    html += '</button>';
+    html += '</div>';
+
+    html += '</div></div>'; // cat-block, screen
+  });
+
+  document.getElementById('content-inner').innerHTML = html;
+  // Restore pip states
+  DATA.forEach(function(cat) {
+    cat.items.forEach(function(it) {
+      updatePip(it.id);
+    });
+  });
+  updateOverviewCounts();
+}
+
 var TOTAL = DATA.reduce(function(n,s){ return n + s.items.length; }, 0);
 var KEY = 'fresu_prelayout_v3';
 var state = {};
+var currentCat = -1; // -1 = overview screen
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
 function loadState() {
@@ -775,102 +945,43 @@ function saveState() {
 }
 function getS(id) { return state[id] || { checked: false, notes: '', infoOpen: false }; }
 
-// ─── RENDER ─────────────────────────────────────────────────────────────────
-function renderAll() {
-  renderSidebar();
-  renderContent();
-  updateProgress();
+// ─── SCREEN NAVIGATION ───────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('active'); });
+  var el = document.getElementById(id);
+  if (el) { el.classList.add('active'); }
+  // scroll content area back to top
+  var content = document.getElementById('main');
+  if (content) content.scrollTop = 0;
 }
 
-function renderSidebar() {
-  var h = '';
-  DATA.forEach(function(cat) {
-    var checked = cat.items.filter(function(it){ return getS(it.id).checked; }).length;
-    var done = checked === cat.items.length;
-    h += '<button class="nav-btn' + (done ? ' done' : '') + '" onclick="jumpTo(\'' + cat.id + '\')">';
-    h += '<div class="nav-dot"></div>';
-    h += '<div class="nav-info">';
-    h += '<div class="nav-num">CAT ' + cat.n + '</div>';
-    h += '<div class="nav-title">' + cat.title + '</div>';
-    h += '<div class="nav-count">' + checked + ' / ' + cat.items.length + ' done</div>';
-    h += '</div></button>';
-  });
-  document.getElementById('sidebar-nav').innerHTML = h;
+function showCat(idx) {
+  currentCat = idx;
+  showScreen('screen-' + idx);
+  updateSidebarActive(idx);
+  closeSidebar();
 }
 
-function renderContent() {
-  var totalChecked = 0;
-  DATA.forEach(function(s){ s.items.forEach(function(it){ if(getS(it.id).checked) totalChecked++; }); });
-  var pct = Math.round(totalChecked / TOTAL * 100);
+function showOverview() {
+  currentCat = -1;
+  showScreen('screen-overview');
+  updateSidebarActive(-1);
+  closeSidebar();
+}
 
-  var h = '';
+function goToPrev(ci) {
+  if (ci === 0) showOverview();
+  else showCat(ci - 1);
+}
 
-  // Summary
-  h += '<div class="summary">';
-  h += '<div class="summary-kicker">Schematic Readiness</div>';
-  h += '<div class="summary-grid">';
-  h += '<div class="summary-stat"><div class="summary-num" id="stat-checked">' + totalChecked + '</div><div class="summary-label">Items Checked</div></div>';
-  h += '<div class="summary-stat"><div class="summary-num">' + (TOTAL - totalChecked) + '</div><div class="summary-label">Remaining</div></div>';
-  h += '<div class="summary-stat"><div class="summary-num" style="color:' + (pct === 100 ? 'var(--accent)' : 'var(--fg)') + '">' + pct + '%</div><div class="summary-label">Complete</div></div>';
-  h += '</div></div>';
+function goToNext(ci) {
+  if (ci === DATA.length - 1) showOverview();
+  else showCat(ci + 1);
+}
 
-  // Categories
-  DATA.forEach(function(cat) {
-    h += '<div class="cat-block" id="' + cat.id + '">';
-    h += '<div class="cat-header">';
-    h += '<div class="cat-kicker">Category ' + cat.n + ' of 09</div>';
-    h += '<h2 class="cat-title">' + cat.title + '</h2>';
-    h += '<p class="cat-desc">' + cat.desc + '</p>';
-    h += '<div class="cat-pips">';
-    cat.items.forEach(function(it){
-      var checked = getS(it.id).checked;
-      h += '<div class="pip' + (checked ? ' done' : '') + '" id="pip-' + it.id + '"></div>';
-    });
-    h += '</div></div>';
-
-    // Items
-    cat.items.forEach(function(it) {
-      var s = getS(it.id);
-      h += '<div class="item' + (s.checked ? ' is-checked' : '') + '" id="item-' + it.id + '">';
-      h += '<div class="item-row" onclick="toggleCheck(\'' + it.id + '\')">';
-      h += '<div class="checkbox' + (s.checked ? ' is-checked' : '') + '" id="cb-' + it.id + '"></div>';
-      h += '<div class="item-label">' + it.label + '</div>';
-      h += '</div>';
-      if (it.info) {
-        h += '<div class="item-meta">';
-        h += '<button class="info-toggle" onclick="toggleInfo(\'' + it.id + '\')">';
-        h += '<span class="info-icon">i</span>';
-        h += '<span id="itoggle-' + it.id + '">' + (s.infoOpen ? 'Hide' : 'Why this matters') + '</span>';
-        h += '</button>';
-        h += '</div>';
-        h += '<div class="info-body' + (s.infoOpen ? ' open' : '') + '" id="info-' + it.id + '">' + it.info + '</div>';
-      }
-      h += '<div class="notes-wrap">';
-      h += '<textarea class="notes-input" placeholder="Add a note…" oninput="setNote(\'' + it.id + '\',this.value)">' + (s.notes || '') + '</textarea>';
-      h += '</div>';
-      h += '</div>';
-    });
-
-    h += '</div>'; // cat-block
-  });
-
-  // Footer
-  h += '<div class="content-footer">';
-  h += '<div class="author-row">';
-  h += '<img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/dario-fresu.jpg" alt="Dario Fresu">';
-  h += '<div><div class="author-name">Dario Fresu</div><div class="author-role">Principal EMC Architect · Fresu Electronics</div></div>';
-  h += '</div>';
-  h += '<div class="footer-links">';
-  h += '<a href="https://www.fresuelectronics.com" target="_blank" rel="noopener">fresuelectronics.com</a>';
-  h += '<a href="https://www.fresuelectronics.com/emc-audit" target="_blank" rel="noopener">EMC Design Audit</a>';
-  h += '<a href="https://blog.fresuelectronics.com" target="_blank" rel="noopener">Blog</a>';
-  h += '<a href="https://www.youtube.com/@dario_fresu" target="_blank" rel="noopener">YouTube</a>';
-  h += '<a href="https://tool.fresuelectronics.com" target="_blank" rel="noopener">All Tools</a>';
-  h += '</div>';
-  h += '<p class="footer-legal">© 2026 Fresu Electronics SRL · All rights reserved · 80,000+ engineers in the community</p>';
-  h += '</div>';
-
-  document.getElementById('content-inner').innerHTML = h;
+function updateSidebarActive(idx) {
+  var btns = document.querySelectorAll('.nav-btn');
+  btns.forEach(function(b, i){ b.classList.toggle('active', i === idx); });
 }
 
 // ─── ACTIONS ────────────────────────────────────────────────────────────────
@@ -880,12 +991,17 @@ function toggleCheck(id) {
   saveState();
   var cb = document.getElementById('cb-' + id);
   var item = document.getElementById('item-' + id);
-  var pip = document.getElementById('pip-' + id);
   if (cb) cb.className = 'checkbox' + (state[id].checked ? ' is-checked' : '');
   if (item) item.className = 'item' + (state[id].checked ? ' is-checked' : '');
-  if (pip) pip.className = 'pip' + (state[id].checked ? ' done' : '');
+  updatePip(id);
   updateProgress();
   updateSidebarCount(id);
+  updateOverviewCounts();
+}
+
+function updatePip(id) {
+  var pip = document.getElementById('pip-' + id);
+  if (pip) pip.className = 'pip' + (getS(id).checked ? ' done' : '');
 }
 
 function toggleInfo(id) {
@@ -911,34 +1027,61 @@ function updateProgress() {
   var fill = document.getElementById('prog-fill');
   var pctEl = document.getElementById('prog-pct');
   var stat = document.getElementById('stat-checked');
+  var rem = document.getElementById('stat-remaining');
+  var statPct = document.getElementById('stat-pct');
   if (fill) fill.style.width = pct + '%';
   if (pctEl) pctEl.textContent = pct + '%';
   if (stat) stat.textContent = done;
+  if (rem) rem.textContent = TOTAL - done;
+  if (statPct) { statPct.textContent = pct + '%'; statPct.style.color = pct === 100 ? 'var(--accent)' : 'var(--fg)'; }
+}
+
+function updateOverviewCounts() {
+  DATA.forEach(function(cat, i) {
+    var checked = cat.items.filter(function(it){ return getS(it.id).checked; }).length;
+    var el = document.getElementById('overview-count-' + i);
+    if (el) el.textContent = checked + ' / ' + cat.items.length;
+    var btn = document.getElementById('overview-cat-' + i);
+    if (btn) btn.style.borderLeftColor = checked === cat.items.length ? 'var(--accent)' : 'var(--border)';
+  });
+}
+
+function renderSidebar() {
+  var h = '<button class="nav-btn" onclick="showOverview()" id="nav-overview">';
+  h += '<div class="nav-dot"></div>';
+  h += '<div class="nav-info"><div class="nav-num">00</div>';
+  h += '<div class="nav-title">Overview</div>';
+  h += '<div class="nav-count">All categories</div>';
+  h += '</div></button>';
+  DATA.forEach(function(cat, i) {
+    var checked = cat.items.filter(function(it){ return getS(it.id).checked; }).length;
+    var done = checked === cat.items.length;
+    h += '<button class="nav-btn' + (done ? ' done' : '') + '" onclick="showCat(' + i + ')" id="nav-' + i + '">';
+    h += '<div class="nav-dot"></div>';
+    h += '<div class="nav-info">';
+    h += '<div class="nav-num">CAT ' + cat.n + '</div>';
+    h += '<div class="nav-title">' + cat.title + '</div>';
+    h += '<div class="nav-count" id="nav-count-' + i + '">' + checked + ' / ' + cat.items.length + '</div>';
+    h += '</div></button>';
+  });
+  document.getElementById('sidebar-nav').innerHTML = h;
 }
 
 function updateSidebarCount(itemId) {
-  // Find which cat this item belongs to and refresh just that nav button
   DATA.forEach(function(cat, ci) {
-    var hasItem = cat.items.some(function(it){ return it.id === itemId; });
-    if (!hasItem) return;
+    if (!cat.items.some(function(it){ return it.id === itemId; })) return;
     var checked = cat.items.filter(function(it){ return getS(it.id).checked; }).length;
     var done = checked === cat.items.length;
-    var btns = document.querySelectorAll('.nav-btn');
-    if (btns[ci]) {
-      btns[ci].className = 'nav-btn' + (done ? ' done' : '');
-      var countEl = btns[ci].querySelector('.nav-count');
-      if (countEl) countEl.textContent = checked + ' / ' + cat.items.length + ' done';
-      var dotEl = btns[ci].querySelector('.nav-dot');
-      if (dotEl) dotEl.style.background = done ? 'var(--accent)' : '';
-    }
+    var btn = document.getElementById('nav-' + ci);
+    var count = document.getElementById('nav-count-' + ci);
+    if (btn) btn.className = 'nav-btn' + (done ? ' done' : '') + (currentCat === ci ? ' active' : '');
+    if (count) count.textContent = checked + ' / ' + cat.items.length;
   });
 }
 
 function jumpTo(id) {
   var el = document.getElementById(id);
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   closeSidebar();
 }
 
@@ -946,6 +1089,7 @@ function confirmReset() {
   if (!confirm('Reset all progress and notes?')) return;
   state = {};
   try { localStorage.removeItem(KEY); } catch(e) {}
+  currentCat = -1;
   renderAll();
 }
 
@@ -969,7 +1113,6 @@ function closeSidebar() {
 
 // ─── INIT ───────────────────────────────────────────────────────────────────
 loadState();
-renderAll();
-</script>
+renderAll();</script>
 </body>
 </html>
