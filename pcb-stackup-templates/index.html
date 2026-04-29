@@ -3,1007 +3,440 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PCB Stackup Templates — Fresu Electronics</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>PCB Stackup Tool — Fresu Electronics</title>
+<meta name="description" content="Interactive PCB stackup templates and EMC checker for 2–12 layers with live scoring and return path analysis. By Dario Fresu.">
+<link rel="canonical" href="https://tool.fresuelectronics.com/pcb-stackup-templates/">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#07090d;--bg2:#0e1117;--bg3:#161a23;--bg4:#1c2130;
-  --brd:#222838;--brd2:#2c3346;
-  --t1:#f2f4f8;--t2:#c8cdd8;--t3:#9aa0b4;--t4:#7a8194;
-  --sig:#ff6b6b;--sig2:#d94545;--sig-g:linear-gradient(180deg,#ff8585,#e05555,#c44040);--sig-dim:rgba(255,107,107,0.08);
-  --rrp:#3dd68c;--rrp2:#1fa35e;--rrp-g:linear-gradient(180deg,#4ae89a,#2ebf72,#1fa35e);--rrp-dim:rgba(61,214,140,0.08);
-  --pwr:#a78bfa;--pwr2:#7c5ce0;--pwr-g:linear-gradient(180deg,#bfa4ff,#9b7af0,#7c5ce0);--pwr-dim:rgba(167,139,250,0.08);
-  --cu:#e8a44a;--cu-glow:rgba(232,164,74,0.10);
-  --pp-bg:linear-gradient(180deg,#2a3125,#232b1e);--pp-brd:rgba(120,160,90,0.12);
-  --core-bg:linear-gradient(180deg,#33291c,#291f12);--core-brd:rgba(200,160,80,0.12);
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
-a{color:var(--cu);text-decoration:none}a:hover{text-decoration:underline}
+:root{--bg:#0a0a0a;--s1:#111111;--s2:#181818;--brd:#383838;--fg:#ffffff;--fg2:#e8edf5;--hint:#c8d0dc;--lbl:#a0aab8;--dim:#6b7d8f;--acc:#00FF94;--acc-d:rgba(0,255,148,0.10);--err:#ff4d4d;--err-d:rgba(255,77,77,0.08);--sig:#00FF94;--pwr:#ff4d4d;--rrp:#a0aab8;--ease:cubic-bezier(0.22,1,0.36,1);--sb-w:210px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);color:var(--fg);font-family:'Poppins',sans-serif;font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+body{min-height:100vh}a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 
-/* === NAV === */
-.nav{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;border-bottom:1px solid var(--brd);position:sticky;top:0;background:rgba(7,9,13,0.94);backdrop-filter:blur(14px);z-index:100}
-.nav-b{display:flex;align-items:center;gap:9px;text-decoration:none}
-.nav-b img{height:30px;width:30px;border-radius:50%}
-.nav-b span{font-size:12px;font-weight:700;color:var(--t1);letter-spacing:-0.2px;line-height:1.3}
-.nav-b small{display:block;font-size:8.5px;font-weight:600;color:var(--t3);letter-spacing:1.2px;text-transform:uppercase}
-.nav-r{display:flex;align-items:center;gap:10px}
-.nl{font-size:10.5px;color:var(--t2);font-weight:500;text-decoration:none;padding:5px 8px;border-radius:5px;transition:all 0.2s}
-.nl:hover{color:var(--t1);background:rgba(255,255,255,0.04);text-decoration:none}
-.ncta{background:var(--cu);color:#000;font-weight:700;font-size:10.5px;padding:6px 14px;border-radius:6px;text-decoration:none;transition:all 0.2s;white-space:nowrap}
-.ncta:hover{filter:brightness(1.1);text-decoration:none}
+/* NAV */
+.nav{background:rgba(10,10,10,0.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--brd);padding:10px 0;position:sticky;top:0;z-index:100}
+.nav-in{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
+.nav-b{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-b img{height:38px;width:auto}
+.nav-b span{font-size:13px;font-weight:700;color:var(--fg)}
+.nav-b small{display:block;font-size:9px;font-weight:600;color:var(--lbl);letter-spacing:0.12em;text-transform:uppercase}
+.nav-cta{background:var(--acc);color:#0a0a0a;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:8px 16px;border-radius:2px;text-decoration:none;transition:opacity 0.2s}
+.nav-cta:hover{opacity:0.88;text-decoration:none}
 
-/* === HERO === */
-.hero{position:relative;padding:44px 24px 28px;text-align:center;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-180px;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(232,164,74,0.04) 0%,transparent 70%);pointer-events:none}
-h1{font-size:clamp(1.6rem,4vw,2.8rem);font-weight:800;line-height:1.12;letter-spacing:-1.2px;margin-bottom:12px;position:relative;z-index:1}
-h1 .hl{background:linear-gradient(135deg,#d4943a,#f0b860,#e8a44a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-sub{font-size:0.88rem;color:var(--t2);max-width:540px;margin:0 auto 8px;line-height:1.6;position:relative;z-index:1}
-.hero-cr{font-size:10px;color:var(--t2);position:relative;z-index:1}
+/* LAYOUT */
+.page{display:flex;min-height:calc(100vh - 53px)}
+.sidebar{width:var(--sb-w);flex-shrink:0;background:var(--s1);border-right:1px solid var(--brd);position:sticky;top:53px;height:calc(100vh - 53px);overflow-y:auto;display:flex;flex-direction:column}
+.sb-brand{padding:20px 16px 16px;border-bottom:1px solid var(--brd)}
+.sb-kicker{font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--acc);display:block;margin-bottom:4px}
+.sb-name{font-size:13px;font-weight:800;color:var(--fg);line-height:1.2}
+.sb-name em{color:var(--acc);font-style:normal}
+.sb-nav{padding:8px 0}
+.sb-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 20px;border:none;background:none;color:var(--fg2);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;border-left:2px solid transparent;letter-spacing:0.02em;min-height:40px}
+.sb-item:hover{color:var(--fg);background:var(--s2)}
+.sb-item.on{color:var(--acc);border-left-color:var(--acc);background:var(--acc-d)}
+.sb-ico{font-size:14px;flex-shrink:0;opacity:0.7}.sb-item.on .sb-ico{opacity:1}
+.sb-sep{height:1px;background:var(--brd);margin:4px 16px}
+.sb-section{padding:12px 16px}
+.sb-section-title{font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--acc);margin-bottom:8px}
+.tip-box{background:var(--s2);border:1px solid var(--brd);border-radius:4px;padding:10px 12px;margin-bottom:6px}
+.tip-t{font-size:11px;font-weight:700;color:var(--fg2);margin-bottom:3px}
+.tip-d{font-size:10px;color:var(--fg2);line-height:1.5}
+.tip-nav{display:flex;justify-content:space-between;align-items:center}
+.tip-btn{background:none;border:1px solid var(--brd);color:var(--fg2);font-size:9px;padding:3px 8px;border-radius:2px;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.15s}
+.tip-btn:hover{color:var(--acc);border-color:var(--acc)}
+.tip-ct{font-size:9px;color:var(--lbl)}
+.sb-footer{margin-top:auto;padding:14px 16px;border-top:1px solid var(--brd)}
+.sb-link{display:block;font-size:10px;color:var(--fg2);text-decoration:none;font-weight:500;padding:3px 0;transition:color 0.15s}
+.sb-link:hover{color:var(--acc);text-decoration:none}
+.main{flex:1;min-width:0}
+.main-in{max-width:820px;padding:40px 44px 60px}
+.pane{display:none}.pane.on{display:block}
+.sec-lbl{font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--acc);margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--brd)}
 
-/* === SELECTOR === */
-.sel{padding:24px 24px 16px;text-align:center}
-.sel-l{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
-.sel-r{display:flex;justify-content:center;gap:5px;flex-wrap:wrap}
-.lb{width:50px;height:38px;border:1px solid var(--brd);border-radius:6px;background:var(--bg2);color:var(--t2);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
-.lb::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#d4943a,#f0b860);opacity:0;transition:opacity 0.15s}
-.lb:hover{border-color:var(--cu);color:var(--t1);transform:translateY(-1px)}
-.lb.on{border-color:var(--cu);color:#000;font-weight:700}
-.lb.on::before{opacity:1}
-.lb span{position:relative;z-index:1}
+/* LAYER SELECTOR */
+.lc-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px}
+.lc-btn{padding:7px 16px;border-radius:3px;border:1px solid var(--brd);background:var(--s2);color:var(--fg2);font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;letter-spacing:0.06em;min-height:38px}
+.lc-btn:hover{border-color:var(--dim);color:var(--fg)}
+.lc-btn.on{background:var(--acc);color:#0a0a0a;border-color:var(--acc)}
 
-/* === LEGEND === */
-.leg{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;padding:4px 24px 18px}
-.li{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--t3);font-weight:500;white-space:nowrap}
-.lsw{width:16px;height:8px;border-radius:2px}
-.lsw.s{background:var(--sig-g)}.lsw.g{background:var(--rrp-g)}.lsw.p{background:var(--pwr-g)}
-.lsw.co{background:var(--core-bg);border:1px solid rgba(200,160,80,0.15)}
-.lsw.pp{background:var(--pp-bg);border:1px solid rgba(120,160,90,0.12)}
+/* VARIANT TABS */
+.vtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.vt{padding:6px 14px;border-radius:3px;border:1px solid var(--brd);background:none;color:var(--fg2);font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.vt:hover{color:var(--fg);border-color:#555555}
+.vt.on{color:var(--acc);border-color:rgba(0,255,148,0.3);background:var(--acc-d)}
 
-.wrap{max-width:1100px;margin:0 auto;padding:0 20px 40px}
+/* SVG CROSS-SECTION */
+.xsec{border:1px solid var(--brd);border-radius:4px;overflow:hidden;background:var(--s1);padding:16px;margin-bottom:16px}
 
-/* === TABS === */
-.tabs{display:flex;gap:3px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:1px}
-.tabs::-webkit-scrollbar{display:none}
-.vt{padding:6px 12px;border-radius:6px 6px 0 0;font-size:10px;font-weight:600;color:var(--t3);background:transparent;border:1px solid transparent;border-bottom:none;cursor:pointer;transition:all 0.15s;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap;flex-shrink:0}
-.vt:hover{color:var(--t2);background:rgba(255,255,255,0.015)}
-.vt.on{color:var(--cu);background:var(--bg2);border-color:var(--brd)}
-.vt .tag{font-size:7px;background:rgba(167,139,250,0.15);color:var(--pwr);padding:1px 4px;border-radius:3px;margin-left:4px;vertical-align:middle;font-weight:700;letter-spacing:0.3px;text-transform:uppercase}
+/* SCORE */
+.score-card{background:var(--s1);border:1px solid var(--brd);border-radius:4px;padding:16px;margin-bottom:12px}
+.score-row{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+.score-big{font-size:36px;font-weight:800;color:var(--acc)}
+.score-lbl{font-size:12px;color:var(--lbl);font-weight:500}
+.score-bar{height:4px;background:var(--brd);border-radius:2px}
+.score-fill{height:100%;border-radius:2px;background:var(--acc);transition:width 0.4s var(--ease)}
+.findings{display:flex;flex-direction:column;gap:8px}
+.finding{display:flex;gap:10px;padding:10px 12px;border-radius:4px;border-left:3px solid;font-size:12px;line-height:1.5}
+.finding.critical{background:var(--err-d);border-color:var(--err)}
+.finding.warning{background:rgba(160,170,184,0.06);border-color:var(--lbl)}
+.finding.info{background:var(--acc-d);border-color:var(--acc)}
+.finding.ok{background:var(--acc-d);border-color:var(--acc)}
+.f-icon{font-size:12px;font-weight:800;flex-shrink:0;padding-top:1px}
+.finding.critical .f-icon{color:var(--err)}.finding.warning .f-icon{color:var(--lbl)}
+.finding.info .f-icon,.finding.ok .f-icon{color:var(--acc)}
+.f-text{color:var(--fg2)}
 
-/* === CARD === */
-.card{background:var(--bg2);border:1px solid var(--brd);border-radius:0 12px 12px 12px;overflow:hidden;animation:fi .25s ease-out}
-@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.card-h{padding:20px 22px 14px;border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px}
-.card-h h2{font-size:1.05rem;font-weight:700;letter-spacing:-0.3px;margin-bottom:2px;line-height:1.3}
-.card-h h2 .lc{color:var(--cu)}
-.card-nt{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t2);margin-top:4px;word-break:break-all;padding:6px 10px;background:var(--bg3);border-radius:5px;border:1px solid var(--brd);letter-spacing:0.5px}
-.card-nt .sep{color:var(--t2);margin:0 2px}
-.card-nt .cs{color:var(--sig)}.card-nt .cg{color:var(--rrp)}.card-nt .cp{color:var(--pwr)}
-.card-ds{font-size:10.5px;color:var(--t2);margin-top:6px;line-height:1.5}
-.badges{display:flex;gap:4px;flex-shrink:0}
-.bdg{padding:3px 8px;border-radius:4px;font-size:8px;font-weight:700;letter-spacing:0.4px;text-transform:uppercase}
-.bdg-e{background:var(--rrp-dim);color:var(--rrp);border:1px solid rgba(61,214,140,0.15)}
-.bdg-s{background:var(--sig-dim);color:var(--sig);border:1px solid rgba(255,107,107,0.15)}
-.bdg-p{background:var(--pwr-dim);color:var(--pwr);border:1px solid rgba(167,139,250,0.15)}
+/* BODY GRID (Templates) */
+.tpl-body{display:grid;grid-template-columns:1fr 240px;gap:16px;align-items:start;margin-bottom:16px}
+/* BODY GRID (Checker) */
+.ck-body{display:grid;grid-template-columns:1fr 240px;gap:16px;align-items:start;margin-bottom:16px}
+.ck-layers{display:flex;flex-direction:column;gap:6px}
+.ck-layer{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--brd);border-radius:4px;background:var(--s1)}
+.ck-lnum{font-size:10px;font-weight:700;color:var(--lbl);min-width:50px;letter-spacing:0.06em}
+.ck-sel{flex:1;background:var(--s2);border:1px solid #555555;color:var(--fg);padding:8px 12px;border-radius:3px;font-family:'Poppins',sans-serif;font-size:12px;min-height:40px;cursor:pointer;-webkit-appearance:none;appearance:none}
+.ck-sel:focus{outline:none;border-color:var(--acc)}
+.ck-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.ck-dot.S{background:var(--sig)}.ck-dot.G{background:var(--rrp)}.ck-dot.P{background:var(--pwr)}
+.ck-match{margin-top:12px;padding:12px 14px;background:var(--acc-d);border:1px solid rgba(0,255,148,0.2);border-radius:4px;font-size:11px;color:var(--acc);font-weight:600}
 
-/* === BODY GRID === */
-.card-body{display:grid;grid-template-columns:1fr 280px;gap:0}
-
-/* === 3D PANEL — Canvas === */
-.vp{padding:0;min-height:340px;position:relative;cursor:grab;user-select:none;overflow:hidden}
-.vp:active{cursor:grabbing}
-.vp-hint{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--t3);background:rgba(0,0,0,0.4);padding:2px 8px;border-radius:3px;pointer-events:none;white-space:nowrap;z-index:5}
-.vp-rst{position:absolute;top:8px;right:8px;background:var(--bg3);border:1px solid var(--brd);color:var(--t3);font-size:8px;padding:3px 7px;border-radius:3px;cursor:pointer;z-index:5;font-family:'JetBrains Mono',monospace}
-.vp-rst:hover{color:var(--t1);border-color:var(--cu)}
-#pcbCanvas{display:block;width:100%;height:100%}
-
-/* === INFO PANEL === */
-.ip{border-left:1px solid var(--brd);padding:18px;background:rgba(0,0,0,0.08);overflow-y:auto;max-height:640px}
-.is{margin-bottom:14px}.is:last-child{margin-bottom:0}
-.it{font-size:8px;font-weight:700;color:var(--t3);letter-spacing:1.4px;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:6px}
-.it::after{content:'';flex:1;height:1px;background:var(--brd)}
-.ig{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
-.ii{background:var(--bg3);border-radius:4px;padding:6px 8px;border:1px solid rgba(255,255,255,0.012)}
-.ii.f{grid-column:1/-1}
-.il{font-size:7px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:1px}
-.iv{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600}
-
-/* Return paths */
-.rr{display:flex;align-items:flex-start;gap:4px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.015);font-size:9.5px;line-height:1.35}
+/* RETURN PATHS */
+.rp-sec{margin-top:16px}
+.rr{display:flex;align-items:flex-start;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:11px;line-height:1.45}
 .rr:last-child{border-bottom:none}
-.rd{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.rd{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
 .rd.s{background:var(--sig)}.rd.g{background:var(--rrp)}.rd.pw{background:var(--pwr)}
-.rl{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--t2);min-width:18px;flex-shrink:0;font-size:9px}
-.rx{color:var(--t2);font-size:9px}
-.rx strong{color:var(--t1);font-weight:600}
-.rx .warn{color:#f0b040;font-weight:600}
+.rl{font-weight:700;color:var(--fg);min-width:22px;flex-shrink:0}
+.rx{color:var(--fg2)}.rx strong{color:var(--fg)}.rx .warn{color:#f0b040;font-weight:600}
 
-/* === FOOTER NOTES === */
-.card-f{padding:14px 22px;border-top:1px solid var(--brd);background:rgba(0,0,0,0.05)}
-.ng{display:flex;gap:14px;flex-wrap:wrap}
-.nt{display:flex;align-items:flex-start;gap:5px;font-size:10.5px;color:var(--t2);line-height:1.45;flex:1;min-width:160px}
-.ni{font-size:11px;margin-top:1px;flex-shrink:0}
-.nt strong{color:var(--t1)}
-.etip{margin-top:12px;padding:10px 14px;background:var(--cu-glow);border:1px solid rgba(232,164,74,0.12);border-radius:7px;font-size:10.5px;color:var(--t2);line-height:1.5}
-.etip-h{font-size:8px;font-weight:700;color:var(--cu);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-.etip strong{color:var(--t1)}
+/* NOTES */
+.notes-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+.note{display:flex;align-items:flex-start;gap:5px;font-size:11px;color:var(--fg2);line-height:1.5;flex:1;min-width:180px}
+.note strong{color:var(--fg)}
 
-/* === DISCLAIMER === */
-.disc{max-width:1100px;margin:0 auto 32px;padding:0 20px}
-.disc-box{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:20px 24px}
-.disc-title{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
-.disc-box p{font-size:10.5px;color:var(--t2);line-height:1.65;margin-bottom:6px}
-.disc-box p:last-child{margin-bottom:0}
+/* NOTATION */
+.notation{font-family:'Poppins',monospace;font-size:12px;color:var(--fg2);padding:8px 12px;background:var(--s2);border-radius:3px;border:1px solid var(--brd);letter-spacing:0.3px;margin-bottom:10px;display:inline-block;word-break:break-all}
+.notation .cs{color:var(--sig)}.notation .cg{color:var(--rrp)}.notation .cp{color:var(--pwr)}.notation .sep{color:var(--fg2)}
+.card-desc{font-size:13px;color:var(--fg2);line-height:1.65;margin-bottom:10px}
+.badges{display:flex;gap:5px;margin-bottom:12px}
+.bdg{padding:3px 9px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;border:1px solid}
+.bdg-e{background:var(--acc-d);color:var(--acc);border-color:rgba(0,255,148,0.2)}
+.bdg-s{background:var(--err-d);color:var(--sig);border-color:rgba(0,255,148,0.2)}
+.bdg-p{background:rgba(255,77,77,0.08);color:var(--pwr);border-color:rgba(255,77,77,0.2)}
 
-/* === FOOTER === */
-footer{text-align:center;padding:28px 24px;border-top:1px solid var(--brd);color:var(--t2);font-size:9.5px;line-height:1.7}
-footer a{color:var(--cu)}
+/* REFERENCE TAB */
+.ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ref-card{padding:16px 18px;border:1px solid var(--brd);border-radius:4px;background:var(--s1);transition:border-color 0.15s}
+.ref-card:hover{border-color:var(--dim)}
+.ref-n{font-size:12px;font-weight:700;color:var(--acc);margin-bottom:6px}
+.ref-d{font-size:12px;color:var(--fg2);line-height:1.65}
+.rule-card{padding:16px 18px;border:1px solid var(--brd);border-radius:4px;background:var(--s1);position:relative;overflow:hidden}
+.rule-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%}
+.rule-card.critical::before{background:var(--err)}
+.rule-card.warning::before{background:var(--lbl)}
+.rule-card.info::before{background:var(--acc)}
+.rule-num{font-size:10px;font-weight:600;color:var(--lbl);margin-bottom:6px;letter-spacing:0.08em}
+.rule-t{font-size:13px;color:var(--fg);line-height:1.65}
 
-/* === SCROLLBAR === */
+/* SPEC */
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.spec{background:var(--s2);border-radius:3px;padding:7px 10px;border:1px solid rgba(255,255,255,0.02)}
+.spec.f{grid-column:1/-1}
+.spec-l{font-size:8px;color:var(--lbl);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:1px}
+.spec-v{font-size:11px;font-weight:700}
+
+/* DISCLAIMER */
+.disc{margin-top:40px;background:var(--s1);border:1px solid var(--brd);border-radius:4px;padding:20px 24px}
+.disc-t{font-size:9px;font-weight:700;color:var(--lbl);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px}
+.disc p{font-size:11px;color:var(--fg2);line-height:1.65;margin-bottom:5px}.disc p:last-child{margin-bottom:0}.disc strong{color:var(--fg)}
+
+/* FOOTER */
+.page-footer{text-align:center;padding:24px;border-top:1px solid var(--brd);font-size:10px;color:var(--fg2)}
+
+/* MOBILE */
+@media(max-width:860px){
+  .sidebar{display:none}
+  .mob-bar{display:flex!important;gap:0;background:var(--s1);border-bottom:1px solid var(--brd);position:sticky;top:53px;z-index:50;overflow-x:auto}
+  .mob-btn{flex:1;padding:10px 8px;border:none;border-bottom:2px solid transparent;background:none;color:var(--fg2);font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;text-align:center;min-height:42px}
+  .mob-btn.on{color:var(--acc);border-bottom-color:var(--acc);background:var(--acc-d)}
+  .main-in{padding:24px 16px 40px}
+  .tpl-body,.ck-body{grid-template-columns:1fr}
+  .ref-grid{grid-template-columns:1fr}
+}
+@media(min-width:861px){.mob-bar{display:none!important}}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:2px}
-
-/* === MOBILE === */
-@media(max-width:768px){
-  .nav{padding:8px 14px;gap:8px}
-  .nav-b img{height:26px;width:26px}
-  .nav-b span{font-size:11px}
-  .nav-b small{font-size:7.5px}
-  .nav-r .nl{display:none}
-  .ncta{font-size:9.5px;padding:5px 10px}
-  .hero{padding:30px 16px 20px}
-  .hero-sub{font-size:0.82rem}
-  .sel{padding:18px 16px 12px}
-  .sel-r{gap:3px}
-  .lb{width:42px;height:34px;font-size:11px}
-  .leg{gap:10px;padding:4px 16px 14px}
-  .li{font-size:8px}
-  .lsw{width:14px;height:7px}
-  .wrap{padding:0 12px 32px}
-  .tabs{gap:2px}
-  .vt{padding:5px 8px;font-size:9px}
-  .card-body{grid-template-columns:1fr}
-  .ip{border-left:none;border-top:1px solid var(--brd);max-height:none;padding:14px}
-  .card-h{padding:14px 16px 10px}
-  .card-h h2{font-size:0.92rem}
-  .card-nt{font-size:9.5px;padding:5px 8px}
-  .card-ds{font-size:9.5px}
-  .vp{min-height:260px}
-  .card-f{padding:12px 16px}
-  .nt{font-size:9.5px;min-width:140px}
-  .etip{font-size:9.5px;padding:8px 12px}
-  .ig{grid-template-columns:1fr 1fr}
-  .rr{font-size:8.5px}
-  .disc{padding:0 12px}
-  .disc-box{padding:14px 16px}
-  .disc-box p{font-size:9.5px}
-  footer{padding:20px 16px;font-size:8.5px}
-}
-@media(max-width:400px){
-  .lb{width:38px;height:32px;font-size:10px}
-  h1{font-size:1.4rem}
-}
 </style>
 </head>
 <body>
 
-<nav class="nav">
+<nav class="nav"><div class="nav-in">
   <a href="https://fresuelectronics.com" target="_blank" class="nav-b">
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAAAAACreq1xAAAAAmJLR0QA/4ePzL8AAAAHdElNRQfqAgsMNiaEwavJAAAF7UlEQVRYw+1Xa3CU1Rl+3nPO7ua6CWkuXpAEI0Eu6mhbQZ3RCFZBZ9rKxVqmZVRQUUetTDvUu6PjfZim1P5waDsCM2pSCcwoIlAbCmNUHBRBZlTUITclkpgEw2az+53z9MdusrvB3azAD53J8+87873P9z7v+5z3nA8YwxjGMIYfJSSbV0QgJKnE8cQINcgEhRAYlTMToXYEoAvHlZafcuqpp5SVtv77tU5Awx4PoShH369rK8pLS4oDhAAgpG9L/X+OAJruexIqschb9IdphIBi+3u+6fr6UHvZvCmUQ6827BxMz/ndhMqhbMmySqfam1q+6uzs6u0bAACYmQt+VeXU542v7LYQbUdt0ZBaTKrrpuXB5cHEN7Q2GkDuVasP0bk9D0wFoHRWfPD/w6PlJ8vyAW2MVsrnM8YYY2LxRfPre+miO++qzC4/0esZ5e5FAYiWEXWprIHWAMpveD1EhjbfmDdqDQXSMN/zbl0LpS0FhLK+ZWVRASQ68brg3asUFR1Q+cuFF8Hc+5TOZCJAROo5yOuhhpc07qHnSNIxws80AIhWgFSv4hsjUzrmkS/+djAQesfvXGyXSMGef24L9vcrAMwtUFvmxEOUonf6F/2TvpFMvRasY4SOCTh63QxdlldaUvKT4jMe/dv4pNwFTaxNegYAk0rINb/zIj0qsblY5GchHvmfCgFA70MAXEV+3NOm68PaS7dn2L0KdeSByfnjiodQYq5jhO9BSQzaaEzpiYQG4gixKeM48B1g59kpbwheoeubDL+Jw4+XGY0XxdGypyLDPEDVt7wNye4Xg2khjy8PBylcSa+ztb2tra2trb21x/KalICUGipbUwBOK0gYy3zZavavWuEtWNnij/VSokvx/mwvxq/6a/+L2k1pBWv8kYM2qceWrWVASQvDbmjVMcK5icbmHWQzMhCuYzTFMYOsgx9L4r4mSUa5HloBorXWfqznkQkpRUyWbDEVn9TnDPuUZknZ7et2y9rTxkcksVgHuqkTm0IAgM3zCme0qu/efYKKbj6c9AmNe8jNkJG7SePyCPfWb2hs3NCw3fI5pBliGrPIO5CrjQnk5Gj4fBLYRy6EPwVGNJ5jf7yqzuP76UqoMMOy5TQIBEDBRAWN+eT+3JFCNOaRHTuam5vfentHB8M1yUVMlqPcfY9j6xyIW1gzuPic1bdAuU1Xuz0dvuGz1BVurFMOmHVeQ4cQgH7nZ5jVpNKcWYIG8glgLp1zlufB4PwIXZKRHMPT4VMaEKO1DmAFuTW9bwRF+8ir89sZ6bPsGQ/ReJaRqBeOu9MxzI0JVYJJvQxfkDJvUjuo3Lk7ig60XIGVD9806/k3hEBecPa//HsX5eNouFBbs3ZKdGeviVdAItPPxtN/zjSzNa5nNMpdfgBijDFaFNbQXQJU/NxA4zeMJkrg6PHTIDJC40mGOTOhQhtMPcr2v7zQxTd9YtDIiBeDdf2RCBeMcOGxhxRfuwYbtgcIAAzseV0p7/H7PC02mnNJs7aFVfGOanbcvxwb5imXMUMIyj+jHdJk+Rg0xn3Q3XrYsvv0uEfjWD7AbyePfiHUmNE3NJJDnuULGjqnKFi06MVfQAAopZRoH2reYpR/QhZ3B0H5pOrq6urq6rMmXNlObis+JkoLlh4hexZnc2FNrqugai/50ZnwifiR82BpbFWjdD09bp0w4sRLzzgMjaIt5FczYQzGv9sXhABKYU4HOXA3stE7EgpqNd3Ra4E5nfyyCAKFnL/Scvd06CzzG5GtwgN0vHMFPR4eBxH8dB8tn/EdT3oxRoPFETpHj51BaNxuLVuvOM70YjC4vJvc9SbDFyMHK8iPi487vSHGmi82YTm9/t8DufvZVZWdXdJDIRgA7neWf8/FzeSabP2SnlFEFK76mtxVib2MXnjCjDHlE94mey6dS248KYTQ8D1Py3t3krNPDqNSWBpmuMvjthNtSxxicOFBWucdM1gTKr4fnG5/6Sx96PBAfmOWv1Gjy45pNSdHMgDISWnHGMYwhjH8wPB/6BcRRioymYwAAAAedEVYdGljYzpjb3B5cmlnaHQAR29vZ2xlIEluYy4gMjAxNqwLMzgAAAAUdEVYdGljYzpkZXNjcmlwdGlvbgBzUkdCupBzBwAAAABJRU5ErkJggg==" alt="FE">
-    <span>Fresu Electronics<small>PCB Stackup Templates</small></span>
+    <img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/logo.png" alt="FE">
+    <span>Fresu Electronics<small>PCB Stackup Tool</small></span>
   </a>
-  <div class="nav-r">
-    <a href="https://fresuelectronics.com" target="_blank" class="nl">Services</a>
-    <a href="https://fresuelectronics.com" target="_blank" class="nl">Academy</a>
-    <a href="https://fresuelectronics.com" target="_blank" class="nl">Blog</a>
-    <a href="https://fresuelectronics.com" target="_blank" class="ncta">Book EMC Audit</a>
-  </div>
-</nav>
+  <a href="https://fresuelectronics.com" target="_blank" class="nav-cta">Book EMC Audit</a>
+</div></nav>
 
-<section class="hero">
-  <h1>EMI-Controlled <span class="hl">Stackup</span> Templates</h1>
-  <p class="hero-sub">Production-ready PCB stackup configurations designed for maximum EMI containment, signal integrity, and power integrity. Each template follows strict return-reference-plane rules.</p>
-  <p class="hero-cr">By <a href="https://fresuelectronics.com" target="_blank">Dario Fresu — Fresu Electronics</a> · Principal EMI Specialist</p>
-</section>
-
-<section class="sel">
-  <div class="sel-l">Select Layer Count</div>
-  <div class="sel-r" id="selR"></div>
-</section>
-
-<div class="leg">
-  <div class="li"><div class="lsw s"></div>SIG — Signal</div>
-  <div class="li"><div class="lsw g"></div>RRP — Return Ref Plane</div>
-  <div class="li"><div class="lsw p"></div>PWR — Power Plane</div>
-  <div class="li"><div class="lsw co"></div>Core</div>
-  <div class="li"><div class="lsw pp"></div>Prepreg</div>
+<div class="mob-bar">
+  <button class="mob-btn on" onclick="go('tpl',this)">Templates</button>
+  <button class="mob-btn" onclick="go('chk',this)">Checker</button>
+  <button class="mob-btn" onclick="go('ref',this)">Reference</button>
 </div>
 
-<section class="wrap">
-  <div id="tabs" class="tabs"></div>
-  <div id="ctn"></div>
-</section>
-
-<section class="disc">
-  <div class="disc-box">
-    <div class="disc-title">Important Notices & Disclaimer</div>
-    <p><strong>For reference and educational purposes only.</strong> These stackup templates are generalized recommendations based on established EMI/EMC design principles. They do not constitute professional engineering advice for any specific product or application.</p>
-    <p><strong>Always validate with your PCB manufacturer.</strong> Actual dielectric thicknesses, material availability, minimum copper weights, and impedance targets vary by fabricator. Run field-solver impedance simulations (e.g., Polar SI, Simbeor, or your EDA tool's built-in solver) before committing to production.</p>
-    <p><strong>Compliance responsibility.</strong> EMC certification (FCC, CE, CISPR, etc.) depends on the complete system design — not only the stackup. Proper component placement, routing, decoupling, grounding, shielding, and cable management are equally critical.</p>
-    <p><strong>No liability.</strong> Fresu Electronics provides these templates as-is without warranty of any kind. Fresu Electronics shall not be held liable for any damages, losses, or certification failures resulting from the use of these templates. Users assume full responsibility for verifying suitability for their specific application.</p>
-    <p><strong>Intellectual property.</strong> © 2025 Fresu Electronics. These templates and their presentation are proprietary. Redistribution or commercial reuse without written permission is prohibited.</p>
+<div class="page">
+<aside class="sidebar">
+  <div class="sb-brand"><span class="sb-kicker">Fresu Electronics</span><div class="sb-name">PCB Stackup <em>Tool</em></div></div>
+  <div class="sb-nav">
+    <button class="sb-item on" id="t-tpl" onclick="go('tpl')"><span class="sb-ico">📋</span> Templates</button>
+    <button class="sb-item" id="t-chk" onclick="go('chk')"><span class="sb-ico">✓</span> Checker</button>
+    <button class="sb-item" id="t-ref" onclick="go('ref')"><span class="sb-ico">📖</span> Reference</button>
   </div>
-</section>
+  <div class="sb-sep"></div>
+  <div class="sb-section">
+    <div class="sb-section-title">EMI Tip</div>
+    <div class="tip-box"><div class="tip-t" id="tipT"></div><div class="tip-d" id="tipD"></div></div>
+    <div class="tip-nav"><button class="tip-btn" onclick="pTip()">←</button><span class="tip-ct" id="tipC"></span><button class="tip-btn" onclick="nTip()">→</button></div>
+  </div>
+  <div class="sb-footer">
+    <a href="https://fresuelectronics.com" target="_blank" class="sb-link">Home</a>
+    <a href="https://fresuelectronics.com" target="_blank" class="sb-link">Services</a>
+    <a href="https://fresuelectronics.com" target="_blank" class="sb-link">Academy</a>
+  </div>
+</aside>
 
-<footer>
-  <p><strong><a href="https://fresuelectronics.com" target="_blank">Fresu Electronics</a></strong> — Reduce the risk of failing EMC certification before you enter the test lab.</p>
-  <p style="margin-top:4px">Dielectric values shown are typical for standard FR-4 (Dk ≈ 4.2–4.6, Df ≈ 0.02). High-frequency designs may require low-loss laminates.</p>
-</footer>
+<div class="main"><div class="main-in">
+  <div class="pane on" id="p-tpl"></div>
+  <div class="pane" id="p-chk"></div>
+  <div class="pane" id="p-ref"></div>
+  <div class="disc"><div class="disc-t">Disclaimer</div><p><strong>For reference and educational purposes only.</strong> Always validate with your PCB manufacturer. Run impedance simulations before production.</p><p><strong>No liability.</strong> Fresu Electronics provides these templates as-is without warranty. Users assume full responsibility.</p><p><strong>© 2025 Fresu Electronics.</strong> Redistribution without written permission is prohibited.</p></div>
+</div></div>
+</div>
 
 <script>
+// ═══ TIPS ═══
 const TIPS=[
-  `<strong>Return Path Principle:</strong> For a signal to propagate, two conductors must form a complete current loop. The return reference conductor should be a continuous plane — no splits, cuts, or segmentations.`,
-  `<strong>Stitching Vias:</strong> When multiple RRPs are used, stitching vias are required to interconnect the planes and make them equipotential. They also create a Faraday shield and provide return paths at layer transitions.`,
-  `<strong>Impedance Control:</strong> You control impedance by designing the physical layout — trace width, spacing, and the dielectric stackup geometry. Consistent impedance prevents reflections that degrade signal quality and create EMI.`,
-  `<strong>Field Containment:</strong> Think of electromagnetic fields radiating outside the traces, not electrons flowing inside copper. Transmission lines exist to contain and direct this energy. Without control, fields couple into nearby signals and radiate.`,
-  `<strong>Stripline vs Microstrip:</strong> For noisy signals (clocks) or highly sensitive signals (analog), use stripline — the trace sandwiched between two RRPs offers the tightest field confinement and best isolation from other layers.`,
-  `<strong>Power Plane Integrity:</strong> Use solid, homogeneous planes for both return reference and power layers. Different polygons on a single layer generate common-mode noise and radiated emissions. Dedicate one plane per voltage rail.`,
-  `<strong>Skin Effect in Stackups:</strong> A single RRP can serve as return reference for signal layers on both sides. Return currents flow on the plane surface nearest each signal layer, thanks to the skin effect at high frequencies.`,
-  `<strong>Stackup Symmetry:</strong> Always design symmetric stackups to prevent board warpage during lamination. If L2 is an RRP, its mirrored layer should also be an RRP. Asymmetry causes bowing and twist.`,
-  `<strong>Crosstalk Prevention:</strong> Crosstalk happens when adjacent signal traces couple unintentionally. That coupling can radiate through connected cables, turning them into accidental antennas. RRP isolation between signal layers is your first defense.`,
-  `<strong>Pre-Certification Audit:</strong> Before entering the EMC test lab, have your stackup, layout, and PDN reviewed. Catching issues early avoids costly respins, delays, and re-testing fees.`
+  {t:'Return Path Principle',d:'Two conductors form a loop. The return reference conductor must be a continuous plane — no splits.'},
+  {t:'Skin Effect',d:'A single RRP serves signals on both sides. Return currents flow on the surface nearest each trace.'},
+  {t:'Stripline vs Microstrip',d:'For noisy or sensitive signals, use stripline — trace between two RRPs gives tightest field confinement.'},
+  {t:'Symmetry Matters',d:'Symmetric stackups prevent warpage during lamination. Mirror layer types around the center.'},
+  {t:'Stitching Via Spacing',d:'Place stitching vias at λ/20 intervals at the highest frequency of concern.'},
+  {t:'Loop Area = Antenna',d:'Radiated field strength is proportional to loop area × frequency². Minimise the signal-return loop.'},
+  {t:'Never Split the RRP',d:'A split creates a slot antenna and forces currents into large parasitic loops.'},
+  {t:'Return Via Discipline',d:'Place a return via adjacent to every signal via at layer transitions.'},
+  {t:'Energy in Fields',d:'EM energy propagates between trace and RRP — not inside the conductor (Poynting vector).'},
+  {t:'Filter Placement',d:'EMI filters must be the first component noise encounters at the board boundary.'},
+  {t:'High-Frequency Rule',d:'Design for f_max ≈ 0.35/t_rise, not the clock fundamental. A 10 MHz square wave has harmonics at 30, 50, 70+ MHz.'},
+  {t:'Decoupling Distance',d:'Every extra mm between cap and IC pin adds loop inductance. Place within 15 mm.'},
+  {t:'3W Rule',d:'Centre-to-centre trace spacing ≥ 3× trace width confines the majority of the EM field.'},
+  {t:'No Stubs',d:'Unused traces and floating conductors act as antennas, radiating harmonics from nearby switching.'},
+  {t:'Pre-Certification Audit',d:'Have your stackup, layout, and PDN reviewed before entering the EMC test lab.'}
 ];
+let ti=0;
+function sTip(){document.getElementById('tipT').textContent=TIPS[ti].t;document.getElementById('tipD').textContent=TIPS[ti].d;document.getElementById('tipC').textContent=(ti+1)+'/'+TIPS.length}
+function nTip(){ti=(ti+1)%TIPS.length;sTip()}function pTip(){ti=(ti-1+TIPS.length)%TIPS.length;sTip()}
+sTip();
 
-// ═══════════════════════════════════════
-//  STACKUP DATABASE — exact configs
-// ═══════════════════════════════════════
-// Pattern: S=SIG, G=RRP, P=PWR
-// Groups: indices of group boundaries ("|" positions between copper layers)
+// ═══ MODE ═══
+let mode='tpl';
+function go(m,mob){
+  mode=m;
+  ['tpl','chk','ref'].forEach(k=>{
+    const p=document.getElementById('p-'+k);if(p)p.classList.toggle('on',k===m);
+    const t=document.getElementById('t-'+k);if(t)t.classList.toggle('on',k===m);
+  });
+  document.querySelectorAll('.mob-btn').forEach(b=>b.classList.remove('on'));
+  if(mob)mob.classList.add('on');
+  else document.querySelectorAll('.mob-btn').forEach(b=>{if(b.textContent.toLowerCase().includes(m==='tpl'?'template':m==='chk'?'checker':'reference'))b.classList.add('on')});
+  if(m==='tpl')rTpl();if(m==='chk')rChk();if(m==='ref')rRef();
+}
 
-const DB={
-2:[
-  {id:'2L-A',label:'SIG – RRP',pat:'SG',grp:[],badges:['e'],
-   desc:'Signal layer with full RRP ground reference below. Components and power traces on L1.',
-   thickness:'1.6 mm',material:'FR-4 TG135–150',z50:'~0.30 mm trace / 1.5 mm dielectric',
-   notes:[{icon:'💡',text:'<strong>Power delivery:</strong> Route VCC as wide traces on L1 with decoupling caps near ICs. Short vias to L2 (RRP).'}]},
-  {id:'2L-B',label:'RRP – SIG',pat:'GS',grp:[],badges:['e'],
-   desc:'RRP on top acts as shield. Signal and power traces on bottom layer (L2). Components on L2.',
-   thickness:'1.6 mm',material:'FR-4 TG135–150',z50:'~0.30 mm trace / 1.5 mm dielectric',
-   notes:[{icon:'💡',text:'<strong>Shielding:</strong> Top RRP provides shielding from external interference. Useful when board faces an EMI source above.'}]}
-],
-4:[
-  {id:'4L-A',label:'SIG–RRP | RRP–SIG',pat:'SGGS',grp:[2],badges:['e','s'],
-   desc:'Classic 4-layer EMI configuration. Both signal layers directly adjacent to dedicated RRPs. Power routed as traces on signal layers.',
-   thickness:'1.6 mm',material:'FR-4 TG155',z50:'~0.11 mm trace / 0.21 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Rule check:</strong> Both SIG layers adjacent only to RRP. Symmetric. Stitching vias between L2–L3 RRPs create Faraday shield.'},
-     {icon:'⚡',text:'<strong>Power:</strong> Route VCC as wide traces on L1/L4 with decoupling cap arrays near ICs.'}
-   ]},
-  {id:'4L-B',label:'RRP–SIG | SIG–RRP',pat:'GSSG',grp:[2],badges:['e'],shielded:true,
-   desc:'Signals embedded between outer RRP shields. Maximum external shielding. Components mounted through RRP pours.',
-   thickness:'1.6 mm',material:'FR-4 TG155',z50:'~0.10 mm trace / 0.12 mm prepreg (stripline)',
-   notes:[
-     {icon:'✅',text:'<strong>Shielded:</strong> Outer RRPs act as Faraday cage. SIG layers in stripline for best field containment. Symmetric.'},
-     {icon:'⚠️',text:'<strong>Note:</strong> L2 (SIG) and L3 (SIG) are adjacent at center core. Increase core thickness and route orthogonally on L2 vs L3 to minimize coupling.'}
-   ]},
-  {id:'4L-C',label:'SIG–RRP | RRP–PWR',pat:'SGGP',grp:[2],badges:['e','p'],
-   desc:'Signal with RRP reference + dedicated power plane paired with RRP. Single voltage rail with clean PDN.',
-   thickness:'1.6 mm',material:'FR-4 TG155',z50:'~0.11 mm trace / 0.21 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Rule check:</strong> SIG (L1) adjacent to RRP (L2). PWR (L4) paired with RRP (L3). Tight RRP–PWR coupling provides embedded decoupling.'},
-     {icon:'⚠️',text:'<strong>Asymmetric stackup</strong> — may cause warpage on large boards. Best for small, single-rail designs.'}
-   ]}
-],
-6:[
-  {id:'6L-A',label:'SIG–RRP–SIG | SIG–RRP–SIG',pat:'SGSSGS',grp:[3],badges:['e','s'],
-   desc:'Maximum 4 signal layers with 2 RRPs. Best routing density for 6-layer boards. Each RRP serves two SIG layers via skin effect.',
-   thickness:'1.6 mm',material:'FR-4 TG155',z50:'~0.10 mm trace / 0.12 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Routing champion:</strong> 4 SIG layers on a 6L board. L2 and L5 RRPs each serve signals on both sides (skin effect). Symmetric.'},
-     {icon:'⚠️',text:'<strong>Note:</strong> L3 (SIG) and L4 (SIG) are adjacent at center core. Increase core thickness and route orthogonally to minimize coupling.'},
-     {icon:'⚡',text:'<strong>Power:</strong> No dedicated PWR plane — distribute VCC via wide traces on signal layers with decoupling.'}
-   ]},
-  {id:'6L-B',label:'SIG–RRP–PWR | PWR–RRP–SIG',pat:'SGPPGS',grp:[3],badges:['e','s','p'],
-   desc:'2 signal + 2 power planes with RRP pairing. Best power integrity for 6-layer boards with dual voltage rails.',
-   thickness:'1.6 mm',material:'FR-4 TG155',z50:'~0.11 mm trace / 0.20 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Rule check:</strong> SIG layers (L1, L6) adjacent only to RRP. PWR (L3) paired with RRP (L2). PWR (L4) paired with RRP (L5). Symmetric.'},
-     {icon:'⚡',text:'<strong>PDN:</strong> Tight RRP–PWR spacing (~0.06 mm prepreg) creates excellent embedded decoupling capacitance (~4.7 nF/in² per pair).'}
-   ]},
-  {id:'6L-C',label:'SIG–RRP | RRP–PWR | RRP–SIG',pat:'SGGPGS',grp:[2,4],badges:['e','p'],
-   desc:'2 signal + 1 power + 3 RRPs. Triple ground reference provides maximum shielding with a dedicated power rail.',
-   thickness:'1.6 mm',material:'FR-4 TG155',z50:'~0.11 mm trace / 0.20 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Rule check:</strong> SIG (L1) adj RRP (L2). PWR (L4) paired with RRP (L3) and RRP (L5). SIG (L6) adj RRP (L5). 3 RRPs for maximum shielding.'},
-     {icon:'💡',text:'<strong>Use case:</strong> Low-complexity designs needing a clean power rail and excellent EMI performance. Only 2 routing layers.'}
-   ]}
-],
-8:[
-  {id:'8L-A',label:'SIG–RRP | SIG–RRP | RRP–SIG | RRP–SIG',pat:'SGSGGSGS',grp:[2,4,6],badges:['e','s'],
-   desc:'4 signal layers, each adjacent only to RRP. The optimal 8-layer EMI configuration with maximum routing.',
-   thickness:'1.6 mm',material:'FR-4 TG155 / Isola 370HR',z50:'~0.09 mm trace / 0.075 mm prepreg (stripline)',
-   notes:[
-     {icon:'✅',text:'<strong>Rule check:</strong> All 4 SIG layers adjacent only to RRP. Inner signals (L3, L5) in stripline. Center RRP–RRP pair. Symmetric.'},
-     {icon:'⚡',text:'<strong>Power:</strong> No dedicated PWR — distribute VCC via wide traces. Ideal for designs needing 4 routing layers with moderate current.'}
-   ]},
-  {id:'8L-B',label:'SIG–RRP | PWR–RRP | RRP–PWR | RRP–SIG',pat:'SGPGGPGS',grp:[2,4,6],badges:['e','p'],
-   desc:'2 signal + 2 power + 4 RRP. Dual voltage rails with full RRP enclosure. Best PDN for 8-layer boards.',
-   thickness:'1.6 mm',material:'FR-4 TG155',z50:'~0.11 mm trace / 0.20 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Rule check:</strong> SIG layers adj RRP only. PWR (L3) enclosed by RRP (L2+L4). PWR (L6) enclosed by RRP (L5+L7). Symmetric.'},
-     {icon:'⚡',text:'<strong>Dual-rail PDN:</strong> Each power plane fully RRP-enclosed. Tight coupling for excellent embedded decoupling.'}
-   ]},
-  {id:'8L-C',label:'SIG–RRP–SIG | PWR–RRP | SIG–RRP–SIG',pat:'SGSPGSGS',grp:[3,5],badges:['e','s','p'],
-   desc:'4 signal + 1 power + 3 RRP. High routing density with a single dedicated power rail.',
-   thickness:'1.6 mm',material:'FR-4 TG155',z50:'~0.09 mm trace / 0.075 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Routing + power:</strong> 4 SIG layers with 1 dedicated PWR. L2 and L7 RRPs serve signals on both sides (skin effect).'},
-     {icon:'⚠️',text:'<strong>Note:</strong> SIG (L3) is adjacent to PWR (L4). Ensure PWR plane is solid and continuous — it acts as partial reference for L3. Route sensitive signals away from PWR boundary.'}
-   ]},
-  {id:'8L-D',label:'SIG–RRP–PWR | RRP–SIG | PWR–RRP–SIG',pat:'SGPGSPGS',grp:[3,5],badges:['e','s','p'],
-   desc:'3 signal + 2 power + 3 RRP. Dual power rails distributed across the stackup for balanced PDN.',
-   thickness:'1.6 mm',material:'FR-4 TG155',z50:'~0.10 mm trace / 0.10 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Distributed PDN:</strong> PWR planes at L3 and L6 provide uniform power delivery. Each paired with adjacent RRP.'},
-     {icon:'⚠️',text:'<strong>Note:</strong> Asymmetric (L4=RRP, L5=SIG at center). May require lamination care. Best for designs prioritizing PDN balance over symmetry.'}
-   ]},
-  {id:'8L-E',label:'RRP–SIG | RRP–SIG | SIG–RRP | SIG–RRP',pat:'GSGSSGSG',grp:[2,4,6],badges:['e'],shielded:true,
-   desc:'Extra Shielded: 4 signal layers embedded with outer RRP shields. Maximum external interference rejection.',
-   thickness:'1.6 mm',material:'FR-4 TG155',z50:'~0.10 mm trace / 0.10 mm prepreg (stripline)',
-   notes:[
-     {icon:'✅',text:'<strong>Shielded:</strong> Outer RRPs (L1, L8) act as Faraday cage. All signals are internal. Symmetric.'},
-     {icon:'⚠️',text:'<strong>Note:</strong> L4 (SIG) and L5 (SIG) adjacent at center. Increase core spacing and route orthogonally.'}
-   ]},
-  {id:'8L-F',label:'RRP–SIG | RRP–PWR | PWR–RRP | SIG–RRP',pat:'GSGPPGSG',grp:[2,4,6],badges:['e','p'],shielded:true,
-   desc:'Extra Shielded: 2 signal + 2 power, all embedded between outer RRP shields. Maximum EMI + PI.',
-   thickness:'1.6 mm',material:'FR-4 TG155',z50:'~0.10 mm trace / 0.10 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Rule check:</strong> SIG adj RRP only. PWR (L4) paired with RRP (L3). PWR (L5) paired with RRP (L6). Outer RRP shields. Symmetric.'},
-     {icon:'🔬',text:'<strong>Best for:</strong> EMI-sensitive environments, RF front-ends, or designs near high-power interference sources.'}
-   ]}
-],
-10:[
-  {id:'10L-A',label:'SIG–RRP–SIG | RRP–SIG | SIG–RRP | SIG–RRP–SIG',pat:'SGSGSSGSGS',grp:[3,5,7],badges:['e','s'],
-   desc:'Maximum 6 signal layers. Best routing density for 10-layer boards. RRPs serve dual signals via skin effect.',
-   thickness:'1.6 mm',material:'FR-4 TG170 / Isola 370HR',z50:'~0.085 mm trace / 0.075 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Routing champion:</strong> 6 SIG layers on 10L. All have at least one adjacent RRP. Symmetric.'},
-     {icon:'⚠️',text:'<strong>Note:</strong> L5 (SIG) and L6 (SIG) adjacent at center. Increase core spacing and route orthogonally.'},
-     {icon:'⚡',text:'<strong>Power:</strong> No dedicated PWR — use wide traces with decoupling.'}
-   ]},
-  {id:'10L-B',label:'SIG–RRP–SIG | RRP–PWR | PWR–RRP | SIG–RRP–SIG',pat:'SGSGPPGSGS',grp:[3,5,7],badges:['e','s','p'],
-   desc:'4 signal + 2 power + 4 RRP. Excellent balance of routing, power integrity, and EMI control.',
-   thickness:'1.6 mm',material:'FR-4 TG170 / Isola 370HR',z50:'~0.09 mm trace / 0.10 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Rule check:</strong> All SIG adj RRP only. PWR (L5) paired with RRP (L4). PWR (L6) paired with RRP (L7). Symmetric.'},
-     {icon:'⚡',text:'<strong>PDN:</strong> Center PWR–PWR pair with tight RRP coupling on each side. Supports dual voltage rails.'}
-   ]},
-  {id:'10L-C',label:'SIG–RRP–PWR | RRP–SIG | SIG–RRP | PWR–RRP–SIG',pat:'SGPGSSGSGS',grp:[3,5,7],badges:['e','s','p'],
-   desc:'4 signal + 2 power + 4 RRP. Distributed power planes for balanced PDN across board thickness.',
-   thickness:'1.6 mm',material:'FR-4 TG170',z50:'~0.09 mm trace / 0.10 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Distributed PDN:</strong> PWR at L3 and L8, each paired with adjacent RRP. Balanced power delivery to inner and outer signals.'},
-     {icon:'⚠️',text:'<strong>Note:</strong> L5 (SIG) and L6 (SIG) adjacent at center. Route orthogonally with increased spacing. Symmetric.'}
-   ]},
-  {id:'10L-D',label:'RRP–SIG | SIG–RRP–PWR | PWR–RRP–SIG | SIG–RRP',pat:'GSSGPPGSSG',grp:[2,5,8],badges:['e','s','p'],shielded:true,
-   desc:'Extra Shielded: 4 signal + 2 power embedded between outer RRP shields. Dual power rails fully enclosed.',
-   thickness:'2.0 mm',material:'Isola 370HR',z50:'~0.09 mm trace / 0.10 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Shielded:</strong> Outer RRP (L1, L10) provide Faraday cage. PWR planes fully RRP-enclosed at center. Symmetric.'},
-     {icon:'⚠️',text:'<strong>Note:</strong> Adjacent SIG pairs at L2–L3 and L8–L9. Route orthogonally with increased spacing.'}
-   ]}
-],
-12:[
-  {id:'12L-A',label:'SIG–RRP | SIG–RRP | SIG–RRP | RRP–SIG | RRP–SIG | RRP–SIG',pat:'SGSGSGGSGSGS',grp:[2,4,6,8,10],badges:['e','s'],
-   desc:'Maximum 6 signal layers. Every SIG adjacent only to RRP. The gold standard 12-layer configuration.',
-   thickness:'1.6 mm',material:'FR-4 TG170 / Isola 370HR',z50:'~0.08 mm trace / 0.075 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Perfect compliance:</strong> All 6 SIG in S–G alternation. Inner signals in stripline. Center RRP–RRP pair. Zero compromises. Symmetric.'},
-     {icon:'⚡',text:'<strong>Power:</strong> No dedicated PWR plane. Route VCC as traces with decoupling. Ideal for high-density designs with moderate current.'}
-   ]},
-  {id:'12L-B',label:'SIG–RRP | PWR–RRP | SIG–RRP | RRP–SIG | RRP–PWR | RRP–SIG',pat:'SGPGSGGSGSGS',grp:[2,4,6,8,10],badges:['e','s','p'],
-   desc:'4 signal + 2 power + 6 RRP. Dual power rails fully RRP-enclosed with strong routing density.',
-   thickness:'1.6 mm',material:'Isola 370HR',z50:'~0.08 mm trace / 0.075 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Rule check:</strong> All SIG adj RRP only. PWR (L3) enclosed by RRP (L2+L4). PWR (L10) enclosed by RRP (L9+L11). Symmetric.'},
-     {icon:'⚡',text:'<strong>PDN:</strong> Distributed dual rails near top and bottom for balanced power delivery to all signal layers.'}
-   ]},
-  {id:'12L-C',label:'SIG–RRP–SIG | RRP–SIG | PWR–RRP | SIG–RRP | SIG–RRP–SIG',pat:'SGSGSPGSGSGS',grp:[3,5,7,9],badges:['e','s','p'],
-   desc:'6 signal + 1 power + 5 RRP. Maximum routing with a single dedicated power rail.',
-   thickness:'1.6 mm',material:'FR-4 TG170',z50:'~0.08 mm trace / 0.075 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Max routing + power:</strong> 6 SIG layers with 1 PWR. L2 and L11 RRPs serve signals on both sides. PWR (L6) paired with RRP (L7).'},
-     {icon:'⚠️',text:'<strong>Note:</strong> SIG (L5) adjacent to PWR (L6). Ensure PWR is solid and continuous. Asymmetric around center — verify with manufacturer.'}
-   ]},
-  {id:'12L-D',label:'RRP–SIG | PWR–RRP | SIG–RRP | RRP–SIG | RRP–PWR | SIG–RRP',pat:'GSPGSGGSGSGS',grp:[2,4,6,8,10],badges:['e','s','p'],shielded:true,
-   desc:'Extra Shielded: 4 signal + 2 power embedded between outer RRP shields. Dual rails fully enclosed.',
-   thickness:'2.0 mm',material:'Isola 370HR',z50:'~0.08 mm trace / 0.075 mm prepreg',
-   notes:[
-     {icon:'✅',text:'<strong>Shielded:</strong> Outer RRP (L1, L12) act as Faraday cage. PWR planes fully RRP-enclosed. Symmetric.'},
-     {icon:'🔬',text:'<strong>Best for:</strong> EMI-critical applications — medical devices, automotive ADAS, telecom base stations.'}
-   ]}
-]};
+// ═══ SVG CROSS-SECTION ═══
+function xsecSVG(pat){
+  const lh=28,gap=6,pad=14;
+  const h=pat.length*(lh+gap)-gap+pad*2;
+  const colors={S:'#00FF94',G:'#a0aab8',P:'#ff4d4d'};
+  const labels={S:'Signal',G:'GND / RRP',P:'Power'};
+  let rects='';
+  pat.split('').forEach((ch,i)=>{
+    const y=pad+i*(lh+gap),col=colors[ch];
+    rects+=`<rect x="0" y="${y}" width="100%" height="${lh}" rx="3" fill="${col}" fill-opacity="0.15" stroke="${col}" stroke-width="1.5" stroke-opacity="0.6"/>`;
+    rects+=`<text x="12" y="${y+lh/2+4.5}" font-family="Poppins,sans-serif" font-size="11" font-weight="600" fill="${col}">${labels[ch]}</text>`;
+    rects+=`<text x="96%" y="${y+lh/2+4.5}" font-family="Poppins,sans-serif" font-size="10" fill="#6b7d8f" text-anchor="end">L${i+1}</text>`;
+  });
+  return`<svg width="100%" height="${h}" xmlns="http://www.w3.org/2000/svg" style="display:block">${rects}</svg>`;
+}
 
-// Fix 12L-B and 12L-D patterns to match exact user specs
-// 12L-B: S-G | P-G | S-G | G-S | G-P | G-S = S,G,P,G,S,G,G,S,G,P,G,S
-DB[12][1].pat='SGPGSGGSGPGS';
-// 12L-D: G-S | P-G | S-G | G-S | G-P | S-G = G,S,P,G,S,G,G,S,G,P,S,G
-DB[12][3].pat='GSPGSGGSGPSG';
-// 10L-C: S-G-P | G-S | S-G | P-G-S = S,G,P,G,S,S,G,P,G,S
-DB[10][2].pat='SGPGSSGPGS';
-// 10L-D: G-S | S-G-P | P-G-S | S-G = G,S,S,G,P,P,G,S,S,G
-DB[10][3].pat='GSSGPPGSSG';
-
-// ═══════════════════════════════════════
-//  AUTO-GENERATE LAYERS & RETURN PATHS
-// ═══════════════════════════════════════
-function genLayers(pat, grps) {
-  const N = pat.length;
-  const layers = [{type:'mask'}];
-  for (let i = 0; i < N; i++) {
-    const ch = pat[i];
-    const num = i + 1;
-    const isOuter = (i === 0 || i === N - 1);
-    const cu_t = isOuter ? '35 µm (1 oz)' : '17.5 µm (½ oz)';
-    let lname, role;
-    if (ch === 'S') {
-      role = 'signal';
-      lname = i === 0 ? `L${num} — TOP · SIG` : i === N-1 ? `L${num} — BOT · SIG` : `L${num} — SIG`;
-    } else if (ch === 'G') {
-      role = 'gnd';
-      lname = i === 0 ? `L${num} — TOP · RRP` : i === N-1 ? `L${num} — BOT · RRP` : `L${num} — RRP`;
+// ═══ SCORING ═══
+function score(pat){
+  const L=pat.split(''),f=[];let s=100;
+  if(!L.includes('G')){f.push({sev:'critical',msg:'No RRP layer — all return paths uncontrolled.'});s-=40;}
+  L.forEach((l,i)=>{if(l==='S'){const a=i>0?L[i-1]:null,b=i<L.length-1?L[i+1]:null;if(a!=='G'&&b!=='G'){f.push({sev:'critical',msg:`Layer ${i+1} (Signal) has no adjacent GND/RRP — electric fields are uncontained.`});s-=20;}}});
+  for(let i=0;i<L.length-1;i++){if(L[i]==='S'&&L[i+1]==='S'){
+    const outerA=i>0?L[i-1]:null,outerB=i+2<L.length?L[i+2]:null;
+    if(outerA==='G'&&outerB==='G'){
+      f.push({sev:'warning',msg:`Layers ${i+1}–${i+2} are adjacent Signal layers, but each has an RRP on its outer side (L${i} and L${i+3}). Acceptable if the SIG–SIG dielectric is thicker than SIG–RRP, so the RRP is the preferred return reference path. Route orthogonally between L${i+1} and L${i+2} to minimise crosstalk.`});s-=5;
     } else {
-      role = 'pwr';
-      lname = `L${num} — PWR`;
+      f.push({sev:'critical',msg:`Layers ${i+1} and ${i+2} both Signal with no RRP between them — and at least one lacks an RRP on its outer side. Fields are uncontained.`});s-=15;
     }
-    layers.push({type:'copper', role, name:lname, thickness:cu_t});
-    // Dielectric after (except last)
-    if (i < N - 1) {
-      const isGroupBound = grps.includes(i + 1);
-      if (isGroupBound) {
-        // Core at group boundary
-        const isCenter = (i === Math.floor(N/2) - 1);
-        layers.push({type:'dielectric', kind:'core', name:'Core FR-4', thickness: isCenter && N > 4 ? '0.20 mm' : N <= 4 ? '1.0 mm' : '0.10 mm', dk:'4.4', thick: N <= 4});
-        // Add group separator marker
-        layers.push({type:'gsep'});
-      } else {
-        // Prepreg within group
-        const adjGP = (ch==='G'&&pat[i+1]==='P') || (ch==='P'&&pat[i+1]==='G');
-        layers.push({type:'dielectric', kind:'prepreg', name: adjGP ? 'PP 1080' : (isOuter || i===N-2) ? 'PP 7628' : 'PP 2116',
-          thickness: adjGP ? '0.06 mm' : (isOuter || i===N-2) ? '0.20 mm' : '0.10 mm',
-          dk: adjGP ? '4.2' : (isOuter || i===N-2) ? '4.6' : '4.4'});
-      }
-    }
-  }
-  layers.push({type:'mask',bot:true});
-  return layers;
+  }}
+  for(let i=0;i<L.length-1;i++){if((L[i]==='S'&&L[i+1]==='P')||(L[i]==='P'&&L[i+1]==='S')){f.push({sev:'warning',msg:`Layers ${i+1}–${i+2}: SIG adjacent to PWR — ensure PWR is solid continuous.`});s-=8;}}
+  L.forEach((l,i)=>{if(l==='P'){const a=i>0?L[i-1]:null,b=i<L.length-1?L[i+1]:null;if(a!=='G'&&b!=='G'&&a!=='P'&&b!=='P'){f.push({sev:'info',msg:`Power plane (L${i+1}) not sandwiched between two GND/RRP layers — missed inter-plane decoupling.`});s-=5;}}});
+  const mid=Math.floor(L.length/2);let sym=true;for(let j=0;j<mid;j++){if(L[j]!==L[L.length-1-j]){sym=false;break;}}
+  if(!sym){f.push({sev:'warning',msg:'Stackup not symmetric around centre — risk of board warpage under thermal cycling.'});s-=5;}
+  const gc=L.filter(l=>l==='G').length;
+  if(gc>=2)f.push({sev:'info',msg:`${gc} RRP layers present — stitching vias required to maintain equipotentiality.`});
+  s=Math.max(0,s);
+  if(f.filter(x=>x.sev!=='info').length===0&&f.filter(x=>x.sev==='info').length<=1)f.unshift({sev:'ok',msg:'No EMC issues detected in this stackup configuration.'});
+  return{s,f};
+}
+function scoreHTML(sc){
+  const col=sc.s>=80?'var(--acc)':sc.s>=50?'var(--lbl)':'var(--err)';
+  const icons={critical:'✕',warning:'!',info:'i',ok:'✓'};
+  return`<div class="score-card"><div class="score-row"><div class="score-big" style="color:${col}">${sc.s}%</div><div class="score-lbl">EMC Score</div></div><div class="score-bar"><div class="score-fill" style="width:${sc.s}%;background:${col}"></div></div></div><div class="findings">${sc.f.map(f=>`<div class="finding ${f.sev}"><span class="f-icon">${icons[f.sev]}</span><span class="f-text">${f.msg}</span></div>`).join('')}</div>`;
 }
 
-function genRP(pat) {
-  const N = pat.length;
-  const rp = [];
-  for (let i = 0; i < N; i++) {
-    const ch = pat[i];
-    const num = i + 1;
-    const prev = i > 0 ? pat[i-1] : null;
-    const next = i < N-1 ? pat[i+1] : null;
-    const dc = ch==='S'?'s':ch==='G'?'g':'pw';
-    let desc = '';
-    if (ch === 'S') {
-      const adjG_above = prev === 'G';
-      const adjG_below = next === 'G';
-      if (adjG_above && adjG_below) {
-        desc = `SIG (stripline). <strong>Return ref → L${i} (RRP) above + L${num+1} (RRP) below.</strong> Best EMI containment.`;
-      } else if (!prev && adjG_below) {
-        desc = `SIG (microstrip, outer). <strong>Return ref → L${num+1} (RRP)</strong> below.`;
-      } else if (adjG_above && !next) {
-        desc = `SIG (microstrip, outer). <strong>Return ref → L${i} (RRP)</strong> above.`;
-      } else if (adjG_above) {
-        desc = `SIG. <strong>Return ref → L${i} (RRP)</strong> above.`;
-        if (next === 'S') desc += ` <span class="warn">⚠ Adjacent to L${num+1} (SIG) — route orthogonally, increase spacing.</span>`;
-        if (next === 'P') desc += ` Adjacent to L${num+1} (PWR) — ensure PWR plane is solid and continuous.`;
-      } else if (adjG_below) {
-        desc = `SIG. <strong>Return ref → L${num+1} (RRP)</strong> below.`;
-        if (prev === 'S') desc += ` <span class="warn">⚠ Adjacent to L${i} (SIG) — route orthogonally, increase spacing.</span>`;
-        if (prev === 'P') desc += ` Adjacent to L${i} (PWR) — ensure PWR plane is solid.`;
-      } else if (!prev && next === 'S') {
-        desc = `SIG (outer). <span class="warn">⚠ No adjacent RRP.</span> Pair with external ground pour if possible.`;
-      } else if (prev === 'S' && !next) {
-        desc = `SIG (outer). <span class="warn">⚠ No adjacent RRP.</span> Pair with external ground pour if possible.`;
-      } else {
-        // Fallback
-        const gRef = [];
-        if (adjG_above) gRef.push(`L${i} (RRP) above`);
-        if (adjG_below) gRef.push(`L${num+1} (RRP) below`);
-        desc = gRef.length ? `SIG. <strong>Return ref → ${gRef.join(' + ')}</strong>.` : `SIG. No direct RRP adjacency — use stitching vias and nearby RRPs.`;
-      }
-    } else if (ch === 'G') {
-      const refs = [];
-      if (prev === 'S') refs.push(`L${i} (SIG) above`);
-      if (next === 'S') refs.push(`L${num+1} (SIG) below`);
-      if (prev === 'P') refs.push(`L${i} (PWR) above`);
-      if (next === 'P') refs.push(`L${num+1} (PWR) below`);
-      if (prev === 'G') refs.push(`L${i} (RRP) — stitch together`);
-      if (next === 'G') refs.push(`L${num+1} (RRP) — stitch together`);
-      desc = refs.length ? `RRP. Serves: ${refs.join('; ')}.` : 'RRP. Shielding / stitching target.';
-    } else if (ch === 'P') {
-      const gRefs = [];
-      if (prev === 'G') gRefs.push(`L${i} (RRP) above`);
-      if (next === 'G') gRefs.push(`L${num+1} (RRP) below`);
-      desc = gRefs.length ? `PWR. <strong>Paired with ${gRefs.join(' + ')}</strong>.` + (gRefs.length >= 2 ? ' Fully RRP-enclosed.' : '') : 'PWR plane.';
-      if (prev === 'P') desc += ` Adjacent to L${i} (PWR) — center core.`;
-      if (next === 'P') desc += ` Adjacent to L${num+1} (PWR) — center core.`;
-    }
-    rp.push({l:`L${num}`, role:dc, desc});
-  }
-  return rp;
+// ═══ RETURN PATHS ═══
+function genRP(pat){
+  const N=pat.length,rp=[];
+  for(let i=0;i<N;i++){
+    const ch=pat[i],num=i+1,prev=i>0?pat[i-1]:null,next=i<N-1?pat[i+1]:null;
+    const dc=ch==='S'?'s':ch==='G'?'g':'pw';let desc='';
+    if(ch==='S'){const gA=prev==='G',gB=next==='G';if(gA&&gB)desc=`SIG (stripline). <strong>Ref → L${i}+L${num+1} RRP.</strong> Best containment.`;else if(!prev&&gB)desc=`SIG (microstrip). <strong>Ref → L${num+1} RRP.</strong>`;else if(gA&&!next)desc=`SIG (microstrip). <strong>Ref → L${i} RRP.</strong>`;else if(gA)desc=`SIG. <strong>Ref → L${i} RRP.</strong>`+(next==='S'?' <span class="warn">⚠ Adj SIG.</span>':next==='P'?' Adj PWR — ensure solid.':'');else if(gB)desc=`SIG. <strong>Ref → L${num+1} RRP.</strong>`+(prev==='S'?' <span class="warn">⚠ Adj SIG.</span>':'');else desc='SIG. No direct RRP adjacency.';}
+    else if(ch==='G'){const r=[];if(prev==='S')r.push(`L${i} SIG↑`);if(next==='S')r.push(`L${num+1} SIG↓`);if(prev==='P')r.push(`L${i} PWR↑`);if(next==='P')r.push(`L${num+1} PWR↓`);if(prev==='G')r.push(`L${i} RRP—stitch`);if(next==='G')r.push(`L${num+1} RRP—stitch`);desc=r.length?`RRP. Serves: ${r.join('; ')}.`:'RRP. Shielding.';}
+    else{const g=[];if(prev==='G')g.push(`L${i} RRP↑`);if(next==='G')g.push(`L${num+1} RRP↓`);desc=g.length?`PWR. <strong>Paired: ${g.join(' + ')}.</strong>`+(g.length>=2?' Fully enclosed.':''):'PWR.';}
+    rp.push({l:`L${num}`,role:dc,desc});
+  }return rp;
 }
+function rpHTML(pat){return genRP(pat).map(r=>`<div class="rr"><div class="rd ${r.role}"></div><span class="rl">${r.l}</span><span class="rx">${r.desc}</span></div>`).join('')}
 
-// Pre-generate for all entries
-Object.values(DB).flat().forEach(v => {
-  v.layers = genLayers(v.pat, v.grp);
-  v.rp = genRP(v.pat);
-});
-
-// ═══════════════════════════════════════
-//  RENDERING ENGINE
-// ═══════════════════════════════════════
-const LCS=[2,4,6,8,10,12];
-let aL=4, aV=0;
-
-function init(){
-  const r=document.getElementById('selR');
-  LCS.forEach(n=>{const b=document.createElement('button');b.className=`lb${n===aL?' on':''}`;b.innerHTML=`<span>${n}L</span>`;b.onclick=()=>{aL=n;aV=0;rX=20;rZ=-2;zm=1;upd()};r.appendChild(b)});
-  upd();
-}
-
-function upd(){
-  document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('on',b.textContent.trim()===`${aL}L`));
-  rTabs(); rCard();
-}
-
-function rTabs(){
-  const t=document.getElementById('tabs');const vs=DB[aL];
-  if(vs.length<=1){t.innerHTML='';return}
-  t.innerHTML=vs.map((v,i)=>{
-    const sh=v.shielded?'<span class="tag">Shielded</span>':'';
-    return`<button class="vt${i===aV?' on':''}" onclick="aV=${i};rCard()">${v.id}${sh}</button>`
-  }).join('');
-}
-
-function fmtNotation(pat){
-  // Convert pattern to colored notation with separators based on group info
-  return pat.split('').map(c=>{
-    if(c==='S')return'<span class="cs">SIG</span>';
-    if(c==='G')return'<span class="cg">RRP</span>';
-    if(c==='P')return'<span class="cp">PWR</span>';
-    return c;
-  }).join('–');
-}
-
-function rCard(){
-  document.querySelectorAll('.vt').forEach((t,i)=>t.classList.toggle('on',i===aV));
-  const d=DB[aL][aV]; if(!d) return;
-  const c=document.getElementById('ctn');
-  const cu=d.pat.split('');
-  const sC=cu.filter(x=>x==='S').length, gC=cu.filter(x=>x==='G').length, pC=cu.filter(x=>x==='P').length;
-  const bm={e:'<span class="bdg bdg-e">EMI</span>',s:'<span class="bdg bdg-s">SI</span>',p:'<span class="bdg bdg-p">PI</span>'};
-  const badges=(d.badges||[]).map(b=>bm[b]).join('');
-
-  // Build notation with pipe separators
-  let notParts=[];let gi=0;let grpIdx=0;
-  const grps=[...d.grp,d.pat.length];
-  let seg='';
-  for(let i=0;i<d.pat.length;i++){
-    const ch=d.pat[i];
-    const cls=ch==='S'?'cs':ch==='G'?'cg':'cp';
-    const nm=ch==='S'?'SIG':ch==='G'?'RRP':'PWR';
-    seg+=(seg?'–':'')+`<span class="${cls}">${nm}</span>`;
-    if(grps[grpIdx]===i+1){notParts.push(seg);seg='';grpIdx++;}
-  }
-  if(seg)notParts.push(seg);
-  const notation=notParts.join(' <span class="sep">|</span> ');
-
-  const rpR=(d.rp||[]).map(r=>`<div class="rr"><div class="rd ${r.role}"></div><span class="rl">${r.l}</span><span class="rx">${r.desc}</span></div>`).join('');
-
-  const nts=(d.notes||[]).map(n=>`<div class="nt"><span class="ni">${n.icon}</span><span>${n.text}</span></div>`).join('');
-  const tip=TIPS[(aL+aV)%TIPS.length];
-
-  c.innerHTML=`<div class="card">
-    <div class="card-h">
-      <div style="flex:1;min-width:0">
-        <h2><span class="lc">${d.id}</span></h2>
-        <div class="card-nt">${notation}</div>
-        <div class="card-ds">${d.desc}</div>
-      </div>
-      <div class="badges">${badges}</div>
-    </div>
-    <div class="card-body">
-      <div class="vp" id="vp">
-        <button class="vp-rst" onclick="resetView(true)">Reset</button>
-        <canvas id="pcbCanvas"></canvas>
-        <div class="vp-hint">Drag to rotate · Scroll / pinch to zoom · Double-click to reset</div>
-      </div>
-      <div class="ip">
-        <div class="is"><div class="it">Specifications</div>
-          <div class="ig">
-            <div class="ii"><div class="il">Layers</div><div class="iv" style="color:var(--cu)">${aL}</div></div>
-            <div class="ii"><div class="il">SIG</div><div class="iv" style="color:var(--sig)">${sC}</div></div>
-            <div class="ii"><div class="il">RRP</div><div class="iv" style="color:var(--rrp)">${gC}</div></div>
-            ${pC?`<div class="ii"><div class="il">PWR</div><div class="iv" style="color:var(--pwr)">${pC}</div></div>`:''}
-            <div class="ii f"><div class="il">Board Thickness</div><div class="iv">${d.thickness}</div></div>
-            <div class="ii f"><div class="il">Material</div><div class="iv" style="font-size:9.5px">${d.material}</div></div>
-            <div class="ii f"><div class="il">50Ω Ref</div><div class="iv" style="font-size:8.5px">${d.z50}</div></div>
-          </div>
-        </div>
-        <div class="is"><div class="it">Return & Reference Paths</div>${rpR}</div>
-      </div>
-    </div>
-    <div class="card-f"><div class="ng">${nts}</div><div class="etip"><div class="etip-h">⚡ EMI Tip — Fresu Electronics</div>${tip}</div></div>
-  </div>`;
-
-  initCanvas(d);
-}
-
-// ═══════════════════════════════════════
-//  CANVAS ISOMETRIC PCB RENDERER v3
-//  Smooth interaction: momentum, pinch,
-//  animated zoom, double-tap reset
-// ═══════════════════════════════════════
-let cvs,ctx,cvData,_ro=null;
-
-// View state
-const V={
-  aX:0.38, aY:0.52, z:1,         // current angles + zoom
-  tAX:0.38, tAY:0.52, tZ:1,      // targets (for smooth lerp)
-  vx:0, vy:0,                     // velocity for momentum
-  dragging:false,
-  mx:0, my:0,
-  pinchD:0,                       // pinch distance
-  running:false,                  // animation loop active
-  introPhase:0,                   // entrance animation counter
+// ═══ DB ═══
+const DB={
+2:[{id:'2L-A',label:'SIG–RRP',pat:'SG',grp:[],badges:['e'],desc:'Signal with full RRP reference below.',th:'1.6 mm',mat:'FR-4 TG135–150',z50:'~0.30 mm / 1.5 mm',notes:[]},{id:'2L-B',label:'RRP–SIG',pat:'GS',grp:[],badges:['e'],desc:'RRP shield on top. Signal and components on bottom.',th:'1.6 mm',mat:'FR-4 TG135–150',z50:'~0.30 mm / 1.5 mm',notes:[]}],
+4:[{id:'4L-A',label:'SIG–RRP | RRP–SIG',pat:'SGGS',grp:[2],badges:['e','s'],desc:'Classic EMI-optimal 4L. Both signals adj RRP. Power via traces.',th:'1.6 mm',mat:'FR-4 TG155',z50:'~0.11 mm / 0.21 mm PP',notes:[{i:'✅',t:'Symmetric. Stitching vias between L2–L3 create Faraday shield.'}]},{id:'4L-B',label:'RRP–SIG | SIG–RRP',pat:'GSSG',grp:[2],badges:['e'],sh:1,desc:'Signals embedded between outer RRP shields.',th:'1.6 mm',mat:'FR-4 TG155',z50:'~0.10 mm / 0.12 mm PP',notes:[{i:'⚠️',t:'L2–L3 SIG adjacent at center. Route orthogonally.'}]},{id:'4L-C',label:'SIG–RRP | RRP–PWR',pat:'SGGP',grp:[2],badges:['e','p'],desc:'Signal + dedicated power plane paired with RRP.',th:'1.6 mm',mat:'FR-4 TG155',z50:'~0.11 mm / 0.21 mm PP',notes:[{i:'⚠️',t:'Asymmetric — may warp on large boards.'}]}],
+6:[{id:'6L-A',label:'SIG–RRP–SIG | SIG–RRP–SIG',pat:'SGSSGS',grp:[3],badges:['e','s'],desc:'Max 4 SIG on 6L. RRPs serve dual signals via skin effect.',th:'1.6 mm',mat:'FR-4 TG155',z50:'~0.10 mm / 0.12 mm PP',notes:[{i:'⚠️',t:'L3–L4 SIG adj at center. Route orthogonally.'}]},{id:'6L-B',label:'SIG–RRP–PWR | PWR–RRP–SIG',pat:'SGPPGS',grp:[3],badges:['e','s','p'],desc:'2 SIG + 2 PWR with RRP pairing. Best PI for 6L.',th:'1.6 mm',mat:'FR-4 TG155',z50:'~0.11 mm / 0.20 mm PP',notes:[{i:'✅',t:'PWR each paired with RRP. Symmetric.'}]},{id:'6L-C',label:'SIG–RRP | RRP–PWR | RRP–SIG',pat:'SGGPGS',grp:[2,4],badges:['e','p'],desc:'2 SIG + 1 PWR + 3 RRPs. Max shielding.',th:'1.6 mm',mat:'FR-4 TG155',z50:'~0.11 mm / 0.20 mm PP',notes:[{i:'✅',t:'3 RRPs for max shielding. PWR paired with RRP.'}]}],
+8:[{id:'8L-A',label:'SIG–RRP | SIG–RRP | RRP–SIG | RRP–SIG',pat:'SGSGGSGS',grp:[2,4,6],badges:['e','s'],desc:'4 SIG, each adj RRP. Optimal 8L EMI config.',th:'1.6 mm',mat:'FR-4 TG155 / Isola 370HR',z50:'~0.09 mm / 0.075 mm PP',notes:[{i:'✅',t:'All inner signals in stripline. Center RRP pair. Symmetric.'}]},{id:'8L-B',label:'SIG–RRP | PWR–RRP | RRP–PWR | RRP–SIG',pat:'SGPGGPGS',grp:[2,4,6],badges:['e','p'],desc:'2 SIG + 2 PWR + 4 RRP. Dual rails fully enclosed.',th:'1.6 mm',mat:'FR-4 TG155',z50:'~0.11 mm / 0.20 mm PP',notes:[{i:'✅',t:'PWR fully RRP-enclosed. Symmetric.'}]},{id:'8L-C',label:'SIG–RRP–SIG | PWR–RRP | SIG–RRP–SIG',pat:'SGSPGSGS',grp:[3,5],badges:['e','s','p'],desc:'4 SIG + 1 PWR + 3 RRP. High routing + single power.',th:'1.6 mm',mat:'FR-4 TG155',z50:'~0.09 mm / 0.075 mm PP',notes:[{i:'⚠️',t:'SIG(L3) adj PWR(L4). Ensure PWR is solid.'}]},{id:'8L-D',label:'RRP–SIG | RRP–SIG | SIG–RRP | SIG–RRP',pat:'GSGSSGSG',grp:[2,4,6],badges:['e'],sh:1,desc:'Shielded: 4 SIG between outer RRP shields.',th:'1.6 mm',mat:'FR-4 TG155',z50:'~0.10 mm',notes:[{i:'⚠️',t:'L4–L5 SIG adj. Route orthogonally.'}]},{id:'8L-E',label:'RRP–SIG | RRP–PWR | PWR–RRP | SIG–RRP',pat:'GSGPPGSG',grp:[2,4,6],badges:['e','p'],sh:1,desc:'Shielded: 2 SIG + 2 PWR between outer RRP shields.',th:'1.6 mm',mat:'FR-4 TG155',z50:'~0.10 mm',notes:[{i:'✅',t:'Full shielding + dual PWR. Symmetric.'}]}],
+10:[{id:'10L-A',label:'SIG–RRP–SIG | RRP–SIG | SIG–RRP | SIG–RRP–SIG',pat:'SGSGSSGSGS',grp:[3,5,7],badges:['e','s'],desc:'Max 6 SIG on 10L.',th:'1.6 mm',mat:'FR-4 TG170',z50:'~0.085 mm',notes:[{i:'⚠️',t:'L5–L6 SIG adj. Route orthogonally.'}]},{id:'10L-B',label:'SIG–RRP–SIG | RRP–PWR | PWR–RRP | SIG–RRP–SIG',pat:'SGSGPPGSGS',grp:[3,5,7],badges:['e','s','p'],desc:'4 SIG + 2 PWR. Excellent balance.',th:'1.6 mm',mat:'FR-4 TG170',z50:'~0.09 mm',notes:[{i:'✅',t:'Center PWR pair with tight RRP coupling. Symmetric.'}]},{id:'10L-C',label:'SIG–RRP–PWR | RRP–SIG | SIG–RRP | PWR–RRP–SIG',pat:'SGPGSSGPGS',grp:[3,5,7],badges:['e','s','p'],desc:'4 SIG + 2 PWR distributed.',th:'1.6 mm',mat:'FR-4 TG170',z50:'~0.09 mm',notes:[{i:'✅',t:'Distributed PDN. PWR at L3/L8 each paired with RRP.'}]},{id:'10L-D',label:'RRP–SIG | SIG–RRP–PWR | PWR–RRP–SIG | SIG–RRP',pat:'GSSGPPGSSG',grp:[2,5,8],badges:['e','s','p'],sh:1,desc:'Shielded: 4 SIG + 2 PWR between outer RRP shields.',th:'2.0 mm',mat:'Isola 370HR',z50:'~0.09 mm',notes:[{i:'✅',t:'Shielded + dual PWR. Symmetric.'}]}],
+12:[{id:'12L-A',label:'SIG–RRP × 3 | RRP–SIG × 3',pat:'SGSGSGGSGSGS',grp:[2,4,6,8,10],badges:['e','s'],desc:'Max 6 SIG. Every SIG adj RRP. Gold standard 12L.',th:'1.6 mm',mat:'FR-4 TG170 / Isola 370HR',z50:'~0.08 mm',notes:[{i:'✅',t:'Perfect S–G alternation. Center RRP pair. Symmetric.'}]},{id:'12L-B',label:'SIG–RRP | PWR–RRP | SIG–RRP | RRP–SIG | RRP–PWR | RRP–SIG',pat:'SGPGSGGSGPGS',grp:[2,4,6,8,10],badges:['e','s','p'],desc:'4 SIG + 2 PWR + 6 RRP. Dual rails enclosed.',th:'1.6 mm',mat:'Isola 370HR',z50:'~0.08 mm',notes:[{i:'✅',t:'PWR(L3) enclosed L2+L4. PWR(L10) enclosed L9+L11. Symmetric.'}]},{id:'12L-C',label:'SIG–RRP–SIG | RRP–SIG | PWR–RRP | SIG–RRP | SIG–RRP–SIG',pat:'SGSGSPGSGSGS',grp:[3,5,7,9],badges:['e','s','p'],desc:'6 SIG + 1 PWR + 5 RRP.',th:'1.6 mm',mat:'FR-4 TG170',z50:'~0.08 mm',notes:[{i:'⚠️',t:'SIG(L5) adj PWR(L6). Verify with manufacturer.'}]},{id:'12L-D',label:'RRP–SIG | PWR–RRP | SIG–RRP | RRP–SIG | RRP–PWR | SIG–RRP',pat:'GSPGSGGSGPSG',grp:[2,4,6,8,10],badges:['e','s','p'],sh:1,desc:'Shielded: 4 SIG + 2 PWR between outer RRP shields.',th:'2.0 mm',mat:'Isola 370HR',z50:'~0.08 mm',notes:[{i:'✅',t:'Shielded + dual PWR. Symmetric.'}]}]
 };
 
-function resetView(animated){
-  V.tAX=0.38; V.tAY=0.52; V.tZ=1;
-  V.vx=0; V.vy=0;
-  if(!animated){V.aX=V.tAX;V.aY=V.tAY;V.z=V.tZ;drawPCB();}
-  else startLoop();
+// ═══ NOTATION ═══
+function notation(pat,grps){
+  let parts=[],seg='',gi=0;const gs=[...grps,pat.length];
+  for(let i=0;i<pat.length;i++){const ch=pat[i],cls=ch==='S'?'cs':ch==='G'?'cg':'cp',nm=ch==='S'?'SIG':ch==='G'?'RRP':'PWR';seg+=(seg?'–':'')+`<span class="${cls}">${nm}</span>`;if(gs[gi]===i+1){parts.push(seg);seg='';gi++;}}
+  if(seg)parts.push(seg);return parts.join(' <span class="sep">|</span> ');
 }
 
-function startLoop(){
-  if(!V.running){V.running=true;tick();}
+// ═══ TEMPLATES ═══
+const LCS=[2,4,6,8,10,12];let tL=4,tV=0;
+function rTpl(){
+  const P=document.getElementById('p-tpl');
+  const lc=LCS.map(n=>`<button class="lc-btn${n===tL?' on':''}" onclick="tL=${n};tV=0;rTpl()">${n}L</button>`).join('');
+  const vs=DB[tL],d=vs[tV];if(!d)return;
+  const vt=vs.length>1?'<div class="vtabs">'+vs.map((v,i)=>`<button class="vt${i===tV?' on':''}" onclick="tV=${i};rTpl()">${v.id}${v.sh?'  ⛨':''}</button>`).join('')+'</div>':'';
+  const cu=d.pat.split(''),sC=cu.filter(x=>x==='S').length,gC=cu.filter(x=>x==='G').length,pC=cu.filter(x=>x==='P').length;
+  const bm={e:'<span class="bdg bdg-e">EMI</span>',s:'<span class="bdg bdg-s">SI</span>',p:'<span class="bdg bdg-p">PI</span>'};
+  const badges=(d.badges||[]).map(b=>bm[b]).join('');
+  const sc=score(d.pat);
+  const nts=(d.notes||[]).map(n=>`<div class="note"><span>${n.i}</span><span>${n.t}</span></div>`).join('');
+  P.innerHTML=`
+    <div class="sec-lbl">Templates</div>
+    <div style="font-size:13px;color:var(--fg2);line-height:1.7;margin-bottom:20px;max-width:600px">
+      <strong style="color:var(--fg)">How to use:</strong> Select a layer count below, then browse through the available stackup configurations using the variant tabs. Each template shows the layer arrangement, an EMC score with detailed findings, specifications, and a full return-path analysis for every layer. All templates follow strict EMI design rules — configurations marked with ⛨ feature outer RRP shields for maximum external interference rejection.
+    </div>
+    <div class="lc-row">${lc}</div>${vt}
+    <div class="notation">${notation(d.pat,d.grp)}</div>
+    <div class="card-desc">${d.desc}</div>
+    <div class="badges">${badges}</div>
+    <div class="tpl-body">
+      <div>
+        <div class="xsec">${xsecSVG(d.pat)}</div>
+        <div class="spec-grid">
+          <div class="spec"><div class="spec-l">Layers</div><div class="spec-v" style="color:var(--acc)">${tL}</div></div>
+          <div class="spec"><div class="spec-l">SIG</div><div class="spec-v" style="color:var(--sig)">${sC}</div></div>
+          <div class="spec"><div class="spec-l">RRP</div><div class="spec-v" style="color:var(--rrp)">${gC}</div></div>
+          ${pC?`<div class="spec"><div class="spec-l">PWR</div><div class="spec-v" style="color:var(--pwr)">${pC}</div></div>`:''}
+          <div class="spec f"><div class="spec-l">Thickness</div><div class="spec-v">${d.th}</div></div>
+          <div class="spec f"><div class="spec-l">Material</div><div class="spec-v" style="font-size:10px">${d.mat}</div></div>
+          <div class="spec f"><div class="spec-l">50Ω Ref</div><div class="spec-v" style="font-size:9px">${d.z50}</div></div>
+        </div>
+      </div>
+      <div>${scoreHTML(sc)}</div>
+    </div>
+    <div class="rp-sec"><div class="sec-lbl">Return & Reference Paths</div>${rpHTML(d.pat)}</div>
+    ${nts?'<div class="notes-row">'+nts+'</div>':''}`;
 }
 
-function tick(){
-  if(!cvs){V.running=false;return;}
-  let needsFrame=false;
-  const friction=0.92;
-  const lerpSpeed=0.14;
+// ═══ CHECKER ═══
+let ck=['S','G','G','S'];
+function rChk(){
+  const P=document.getElementById('p-chk');
+  const lc=LCS.map(n=>`<button class="lc-btn${n===ck.length?' on':''}" onclick="ckSet(${n})">${n}L</button>`).join('');
+  const rows=ck.map((t,i)=>`<div class="ck-layer"><span class="ck-lnum">Layer ${i+1}</span><select class="ck-sel" onchange="ckCh(${i},this.value)"><option value="S"${t==='S'?' selected':''}>Signal</option><option value="G"${t==='G'?' selected':''}>GND / RRP</option><option value="P"${t==='P'?' selected':''}>Power</option></select><div class="ck-dot ${t}"></div></div>`).join('');
+  const pat=ck.join('');
+  const sc=score(pat);
+  let match=null;Object.values(DB).flat().forEach(v=>{if(v.pat===pat)match=v.id});
+  const mH=match?`<div class="ck-match">✓ Matches template <strong>${match}</strong></div>`:'';
+  P.innerHTML=`
+    <div class="sec-lbl">Stackup Checker</div>
+    <div style="font-size:13px;color:var(--fg2);line-height:1.7;margin-bottom:20px;max-width:600px">
+      <strong style="color:var(--fg)">How to use:</strong> Select the number of layers, then assign each layer as Signal, GND/RRP, or Power using the dropdowns. The tool analyses your stackup in real time — the EMC score and findings update as you change any layer. If your configuration matches one of the curated templates, it will tell you. Use this to validate your own designs or experiment with different arrangements before committing to a stackup.
+    </div>
+    <div class="lc-row">${lc}</div>
+    <div class="xsec">${xsecSVG(pat)}</div>
+    <div class="ck-body">
+      <div><div class="ck-layers">${rows}</div>${mH}</div>
+      <div>${scoreHTML(sc)}</div>
+    </div>
+    <div class="rp-sec"><div class="sec-lbl">Return & Reference Paths</div>${rpHTML(pat)}</div>`;
+}
+function ckSet(n){const d={2:['S','G'],4:['S','G','G','S'],6:['S','G','P','P','G','S'],8:['S','G','S','G','G','S','G','S'],10:['S','G','S','G','P','P','G','S','G','S'],12:['S','G','S','G','S','G','G','S','G','S','G','S']};ck=d[n]||Array(n).fill('S');rChk()}
+function ckCh(i,v){ck[i]=v;rChk()}
 
-  // Apply momentum when not dragging
-  if(!V.dragging){
-    V.vx*=friction; V.vy*=friction;
-    if(Math.abs(V.vx)>0.0001||Math.abs(V.vy)>0.0001){
-      V.tAY+=V.vx; V.tAX+=V.vy;
-      V.tAX=clamp(V.tAX,-1.2,1.2);
-      /* aY: free rotation */;
-      needsFrame=true;
-    }
-  }
-
-  // Lerp current toward target
-  const dAX=V.tAX-V.aX, dAY=V.tAY-V.aY, dZ=V.tZ-V.z;
-  if(Math.abs(dAX)>0.0002||Math.abs(dAY)>0.0002||Math.abs(dZ)>0.002){
-    V.aX+=dAX*lerpSpeed;
-    V.aY+=dAY*lerpSpeed;
-    V.z+=dZ*lerpSpeed;
-    needsFrame=true;
-  }else{
-    V.aX=V.tAX;V.aY=V.tAY;V.z=V.tZ;
-  }
-
-  // Intro animation
-  if(V.introPhase>0){
-    V.introPhase--;
-    V.tAY+=0.003;
-    needsFrame=true;
-  }
-
-  drawPCB();
-  if(needsFrame||V.dragging){
-    requestAnimationFrame(tick);
-  }else{
-    V.running=false;
-  }
+// ═══ REFERENCE ═══
+const TERMS=[
+  {n:'SIG — Signal Layer',d:'Carries signals and routed power traces. Must always be adjacent to an RRP for field containment.',c:'--sig'},
+  {n:'RRP — Return & Reference Plane',d:'Solid, continuous reference plane used as return current path. Not a ground — current returns to source through it.',c:'--rrp'},
+  {n:'PWR — Power Plane',d:'Dedicated, continuous plane assigned to a supply net. Must be paired with an adjacent RRP for decoupling.',c:'--pwr'},
+  {n:'The | Separator',d:'Marks lamination pairs or triplets in the stackup notation — groups bonded by core dielectric.'},
+  {n:'Stitching Via',d:'Via connecting adjacent same-potential RRP layers to maintain equipotentiality. Essential when multiple RRPs are used.'},
+  {n:'Return Via',d:'Via placed immediately adjacent to a signal via at each layer transition. Gives the return current a controlled path.'},
+  {n:'Displacement Current',d:'Current completing loops through capacitive coupling when two planes at different DC voltages cannot be via-connected.'},
+  {n:'Skin Effect',d:'At high frequency, return current concentrates on the conductor surface nearest the signal trace — the path of least inductance.'},
+  {n:'Loop Area',d:'Area enclosed by signal trace and its return path. Minimising loop area is the most effective way to reduce radiated emission.'},
+  {n:'Crosstalk',d:'Unwanted EM coupling between adjacent signal paths. Increases with frequency, amplitude, and proximity.'},
+  {n:'Ground Bounce',d:'Voltage noise on the reference plane caused by impedance in the return current path during fast switching events.'},
+  {n:'Microstrip',d:'A signal trace on an outer layer with an RRP on one side. Fields partially radiate into air — less contained than stripline.'},
+  {n:'Stripline',d:'A signal trace embedded between two RRP layers. Fields fully contained in the dielectric — best EMI performance.'}
+];
+const RULES=[
+  {n:'01',t:'Keep the RRP adjacent to every signal layer.',tag:'critical'},
+  {n:'02',t:'Never split, cut, or void the Return Reference Plane.',tag:'critical'},
+  {n:'03',t:'Place a return via adjacent to every signal via at each layer transition.',tag:'critical'},
+  {n:'04',t:'Use stitching vias to connect same-potential RRP layers.',tag:'critical'},
+  {n:'05',t:'At high frequency, return current follows the path of least inductance — not least resistance.',tag:'info'},
+  {n:'06',t:'Design the layout for the highest significant harmonic, not just the fundamental.',tag:'info'},
+  {n:'07',t:'Physically separate analog and digital — but never split their shared RRP.',tag:'warning'},
+  {n:'08',t:'Energy propagates in EM fields between trace and RRP — not inside the conductor.',tag:'info'},
+  {n:'09',t:'Never remove the RRP under DC/DC converters or switching elements.',tag:'critical'},
+  {n:'10',t:'Use "Return Reference Plane" — not "ground". It is a return path, not a current sink.',tag:'warning'}
+];
+function rRef(){
+  const P=document.getElementById('p-ref');
+  const terms=TERMS.map(t=>`<div class="ref-card"><div class="ref-n"${t.c?' style="color:var('+t.c+')"':''}>${t.n}</div><div class="ref-d">${t.d}</div></div>`).join('');
+  const rules=RULES.map(r=>`<div class="rule-card ${r.tag}"><div class="rule-num">RULE ${r.n}</div><div class="rule-t">${r.t}</div></div>`).join('');
+  P.innerHTML=`
+    <div class="sec-lbl">Reference</div>
+    <div style="font-size:13px;color:var(--fg2);line-height:1.7;margin-bottom:20px;max-width:600px">
+      <strong style="color:var(--fg)">Stackup design reference.</strong> Key terms used throughout this tool, plus the golden rules of EMC-compliant stackup design. Understanding these concepts is essential before selecting or building a stackup — they explain <em>why</em> certain layer arrangements work and others fail EMC testing.
+    </div>
+    <div class="sec-lbl">Key Terms & Notions</div>
+    <div class="ref-grid">${terms}</div>
+    <div class="sec-lbl" style="margin-top:36px">Golden Rules — EMC Stackup Design</div>
+    <div class="ref-grid">${rules}</div>`;
 }
 
-function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
-
-function sizeCanvas(){
-  if(!cvs)return;
-  const vp=cvs.parentElement;
-  const dpr=window.devicePixelRatio||1;
-  const w=vp.clientWidth;
-  const h=vp.clientHeight-26;
-  if(w<10||h<10)return;
-  cvs.width=w*dpr;
-  cvs.height=h*dpr;
-  cvs.style.width=w+'px';
-  cvs.style.height=h+'px';
-  ctx=cvs.getContext('2d');
-  ctx.scale(dpr,dpr);
-  drawPCB();
-}
-
-function initCanvas(data){
-  cvs=document.getElementById('pcbCanvas');
-  if(!cvs)return;
-  cvData=data;
-  sizeCanvas();
-
-  // ResizeObserver
-  if(_ro)_ro.disconnect();
-  _ro=new ResizeObserver(()=>sizeCanvas());
-  _ro.observe(cvs.parentElement);
-
-  // Clean up old listeners
-  const newCvs=cvs.cloneNode(false);
-  cvs.parentElement.replaceChild(newCvs,cvs);
-  cvs=newCvs;
-  cvs.id='pcbCanvas';
-  sizeCanvas();
-
-  // ── MOUSE ──
-  cvs.addEventListener('mousedown',e=>{
-    e.preventDefault();
-    V.dragging=true;
-    V.vx=0;V.vy=0;
-    V.mx=e.clientX;V.my=e.clientY;
-    startLoop();
-  });
-  document.addEventListener('mousemove',e=>{
-    if(!V.dragging)return;
-    const dx=e.clientX-V.mx, dy=e.clientY-V.my;
-    V.vx=dx*0.004; V.vy=dy*0.003;
-    V.tAY+=V.vx;
-    V.tAX+=V.vy;
-    V.tAX=clamp(V.tAX,-1.2,1.2);
-    /* aY: free rotation */;
-    V.mx=e.clientX;V.my=e.clientY;
-  });
-  document.addEventListener('mouseup',()=>{V.dragging=false});
-
-  // ── TOUCH (drag + pinch) ──
-  cvs.addEventListener('touchstart',e=>{
-    e.preventDefault();
-    if(e.touches.length===1){
-      V.dragging=true;V.vx=0;V.vy=0;
-      V.mx=e.touches[0].clientX;V.my=e.touches[0].clientY;
-      startLoop();
-    }else if(e.touches.length===2){
-      V.pinchD=Math.hypot(
-        e.touches[0].clientX-e.touches[1].clientX,
-        e.touches[0].clientY-e.touches[1].clientY
-      );
-    }
-  },{passive:false});
-
-  document.addEventListener('touchmove',e=>{
-    if(e.touches.length===1&&V.dragging){
-      const dx=e.touches[0].clientX-V.mx;
-      const dy=e.touches[0].clientY-V.my;
-      V.vx=dx*0.004;V.vy=dy*0.003;
-      V.tAY+=V.vx;
-      V.tAX+=V.vy;
-      V.tAX=clamp(V.tAX,-1.2,1.2);
-      /* aY: free rotation */;
-      V.mx=e.touches[0].clientX;V.my=e.touches[0].clientY;
-    }else if(e.touches.length===2){
-      const d=Math.hypot(
-        e.touches[0].clientX-e.touches[1].clientX,
-        e.touches[0].clientY-e.touches[1].clientY
-      );
-      if(V.pinchD>0){
-        const scale=d/V.pinchD;
-        V.tZ=clamp(V.tZ*scale,0.35,2.5);
-        startLoop();
-      }
-      V.pinchD=d;
-    }
-  },{passive:true});
-
-  document.addEventListener('touchend',e=>{
-    if(e.touches.length<2)V.pinchD=0;
-    if(e.touches.length===0)V.dragging=false;
-  });
-
-  // ── WHEEL (smooth zoom) ──
-  cvs.addEventListener('wheel',e=>{
-    e.preventDefault();
-    const dir=e.deltaY>0?-1:1;
-    V.tZ=clamp(V.tZ+dir*0.1,0.35,2.5);
-    startLoop();
-  },{passive:false});
-
-  // ── DOUBLE-CLICK / DOUBLE-TAP to reset ──
-  let lastTap=0;
-  cvs.addEventListener('dblclick',e=>{e.preventDefault();resetView(true)});
-  cvs.addEventListener('touchend',e=>{
-    const now=Date.now();
-    if(now-lastTap<300&&e.touches.length===0){resetView(true);}
-    lastTap=now;
-  });
-
-  // Entrance: gentle auto-rotate
-  V.introPhase=40;
-  V.tAY=0.38; // start slightly less, will drift to 0.50
-  startLoop();
-}
-
-function drawPCB(){
-  if(!ctx||!cvData)return;
-  const dpr=window.devicePixelRatio||1;
-  const W=cvs.width/dpr, H=cvs.height/dpr;
-  ctx.clearRect(0,0,W,H);
-
-  const layers=cvData.layers.filter(l=>l.type!=='gsep');
-  const slabs=layers.map(l=>{
-    if(l.type==='mask')return{h:2.5,t:'m',bot:l.bot};
-    if(l.type==='copper')return{h:6,t:'c',role:l.role,name:l.name,thick:l.thickness};
-    if(l.type==='dielectric')return{h:l.thick?14:l.kind==='core'?9:5.5,t:'d',kind:l.kind,name:l.name,thick:l.thickness,dk:l.dk};
-    return{h:2,t:'?'};
-  });
-
-  const rawH=slabs.reduce((a,s)=>a+s.h+1.8,0);
-  const maxBW=W*0.48, maxBH=H*0.75;
-  const sc=V.z*Math.min(maxBH/rawH,1.2);
-  const bw=Math.min(maxBW,W*0.42*V.z);
-  const dep=bw*0.38;
-  // dx,dy can be positive or negative — full rotation
-  const dx=Math.cos(V.aY)*dep;
-  const dy=Math.sin(V.aX)*dep*0.55;
-  const adx=Math.abs(dx), ady=Math.abs(dy);
-
-  const totalH=rawH*sc;
-  // Center: account for the offset in both directions
-  const ox=(W-bw-adx)/2 + (dx<0?adx:0) + 10;
-  let oy=(H-totalH)/2 + ady + 10;
-
-  ctx.save();
-  ctx.textBaseline='middle';
-  ctx.imageSmoothingEnabled=true;
-
-  // Shadow
-  ctx.save();
-  ctx.shadowColor='rgba(0,0,0,0.30)';
-  ctx.shadowBlur=16*V.z;
-  ctx.shadowOffsetX=3*V.z;
-  ctx.shadowOffsetY=6*V.z;
-  ctx.fillStyle='rgba(0,0,0,0.01)';
-  ctx.fillRect(ox,oy,bw,totalH);
-  ctx.restore();
-
-  slabs.forEach(slab=>{
-    const sh=slab.h*sc;
-    const gap=1.8*sc;
-
-    // Colors: [top, front, side, highlight-edge]
-    let tc,fc,sc2,lc='#fff',lb='',rl='';
-    if(slab.t==='m'){
-      tc='#1a5030';fc='#123822';sc2='#16482c';
-    }else if(slab.t==='c'){
-      if(slab.role==='signal'){tc='#e85858';fc='#a83232';sc2='#c04040';lc='#fff';}
-      else if(slab.role==='gnd'){tc='#2cc06e';fc='#1a7848';sc2='#22a060';lc='#041e0c';}
-      else{tc='#9878f0';fc='#6040b0';sc2='#7858d0';lc='#fff';}
-      lb=slab.name||'';rl=slab.thick||'';
-    }else if(slab.t==='d'){
-      if(slab.kind==='core'){tc='#322818';fc='#221a0c';sc2='#2a2010';}
-      else{tc='#2a3422';fc='#1e2816';sc2='#24301c';}
-      lb=(slab.name||'')+(slab.dk?' · Dk '+slab.dk:'');
-      rl=slab.thick||'';
-      lc='rgba(255,255,255,0.55)';
-    }
-
-    // 8 corners of the slab
-    const TFL=[ox,oy],       TFR=[ox+bw,oy];
-    const TBL=[ox+dx,oy-dy], TBR=[ox+bw+dx,oy-dy];
-    const BFL=[ox,oy+sh],    BFR=[ox+bw,oy+sh];
-    const BBL=[ox+dx,oy-dy+sh], BBR=[ox+bw+dx,oy-dy+sh];
-
-    // Helper to draw a face polygon
-    function drawFace(pts, fillColor, overlay){
-      ctx.beginPath();
-      ctx.moveTo(pts[0][0],pts[0][1]);
-      for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
-      ctx.closePath();
-      ctx.fillStyle=fillColor;
-      ctx.fill();
-      if(overlay){ctx.fillStyle=overlay;ctx.fill();}
-      ctx.strokeStyle='rgba(0,0,0,0.10)';
-      ctx.lineWidth=0.5;
-      ctx.stroke();
-    }
-
-    // Specular gradient for copper top faces
-    function copperGrad(pts){
-      if(slab.t!=='c')return null;
-      const g=ctx.createLinearGradient(pts[0][0],pts[0][1],pts[2][0],pts[2][1]);
-      g.addColorStop(0,'rgba(255,255,255,0)');
-      g.addColorStop(0.35,'rgba(255,255,255,0.06)');
-      g.addColorStop(0.5,'rgba(255,255,255,0.18)');
-      g.addColorStop(0.65,'rgba(255,255,255,0.06)');
-      g.addColorStop(1,'rgba(255,255,255,0)');
-      return g;
-    }
-
-    // Determine visible faces and draw back-to-front
-    // 1. Horizontal face (top if dy>0, bottom if dy<0)
-    const horizPts = dy>=0 ? [TFL,TFR,TBR,TBL] : [BFL,BFR,BBR,BBL];
-    const horizCol = tc;
-
-    // 2. Side face (right if dx>0, left if dx<0)
-    const sidePts = dx>=0 ? [TFR,TBR,BBR,BFR] : [TFL,TBL,BBL,BFL];
-    const sideCol = sc2;
-
-    // 3. Front face (always the front edge rectangle)
-    const frontPts = [TFL,TFR,BFR,BFL];
-    const frontCol = fc;
-
-    // Drawing order: horiz (back) → side → front (nearest)
-    drawFace(horizPts, horizCol, copperGrad(horizPts));
-    // Light stroke on horiz
-    if(slab.t==='c'){
-      ctx.strokeStyle='rgba(255,255,255,0.06)';
-      ctx.lineWidth=0.5;
-      ctx.beginPath();ctx.moveTo(horizPts[0][0],horizPts[0][1]);
-      horizPts.forEach(p=>ctx.lineTo(p[0],p[1]));ctx.closePath();ctx.stroke();
-    }
-
-    // Side face with gradient
-    const sg=ctx.createLinearGradient(sidePts[0][0],sidePts[0][1],sidePts[1][0],sidePts[1][1]);
-    sg.addColorStop(0,'rgba(255,255,255,0.05)');
-    sg.addColorStop(1,'rgba(0,0,0,0.08)');
-    drawFace(sidePts, sideCol, sg);
-
-    // Front face with gradient
-    const fg=ctx.createLinearGradient(ox,oy,ox,oy+sh);
-    fg.addColorStop(0,slab.t==='c'?'rgba(255,255,255,0.10)':'rgba(255,255,255,0.03)');
-    fg.addColorStop(1,'rgba(0,0,0,0.12)');
-    drawFace(frontPts, frontCol, fg);
-
-    // Labels on front face
-    const fs=Math.max(6,Math.min(9,8*V.z*(bw/200)));
-    if(lb && sh>3.5){
-      ctx.fillStyle=lc;
-      ctx.font=`600 ${fs}px "JetBrains Mono",monospace`;
-      ctx.textAlign='left';
-      ctx.fillText(lb, ox+5, oy+sh/2+0.5, bw-10);
-    }
-    if(rl && sh>3.5){
-      ctx.fillStyle='rgba(255,255,255,0.40)';
-      ctx.font=`400 ${Math.max(5,fs-1.5)}px "JetBrains Mono",monospace`;
-      ctx.textAlign='right';
-      ctx.fillText(rl, ox+bw-4, oy+sh/2+0.5);
-    }
-    // Gold edge on copper
-    if(slab.t==='c'){
-      ctx.beginPath();
-      ctx.moveTo(horizPts[0][0],horizPts[0][1]);
-      horizPts.forEach(p=>ctx.lineTo(p[0],p[1]));
-      ctx.strokeStyle='rgba(232,180,78,0.20)';
-      ctx.lineWidth=0.8;
-      ctx.stroke();
-    }
-
-    oy+=sh+gap;
-  });
-
-  ctx.restore();
-}
-
-init();
+// Init
+rTpl();
 </script>
 </body>
 </html>
