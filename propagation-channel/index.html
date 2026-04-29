@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Propagation Channel — Fresu EMC Academy</title>
+<meta name="description" content="The foundational framework for EMI control through PCB layout. Energy propagates in the dielectric. Copper acts as boundaries. By Dario Fresu.">
+<link rel="canonical" href="https://tool.fresuelectronics.com/propagation-channel/">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--s1:#111111;--s2:#181818;--brd:#242424;--fg:#ffffff;--fg2:#e8edf5;--lbl:#a0aab8;--dim:#6b7d8f;--acc:#00FF94;--acc-d:rgba(0,255,148,0.08);--acc-b:rgba(0,255,148,0.2);--blue:#6496ff;--blue-d:rgba(100,150,255,0.08);--warn:#ffb400;--warn-d:rgba(255,180,0,0.08);--err:#ff4d4d;--err-d:rgba(255,77,77,0.08)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);color:var(--fg);font-family:'Poppins',sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh}
+a{color:var(--acc);text-decoration:none}
+/* NAV */
+.nav{background:rgba(10,10,10,0.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--brd);padding:10px 0;position:sticky;top:0;z-index:100}
+.nav-in{max-width:900px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo{height:34px;width:auto}
+.nav-title{font-size:12px;font-weight:700;color:var(--fg);line-height:1.2}
+.nav-sub{font-size:9px;color:var(--lbl);font-weight:600;letter-spacing:0.1em;text-transform:uppercase}
+.nav-cta{background:var(--acc);color:#0a0a0a;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:7px 14px;border-radius:2px;text-decoration:none;transition:opacity 0.2s;white-space:nowrap}
+.nav-cta:hover{opacity:0.88}
+/* MAIN */
+.main{max-width:780px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+.kicker{font-size:9px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--acc);margin-bottom:0.625rem;display:flex;align-items:center;gap:8px}
+.kicker::before{content:'';display:block;width:18px;height:1px;background:var(--acc)}
+h1{font-size:clamp(26px,4vw,34px);font-weight:800;line-height:1.15;margin-bottom:0.75rem}
+h1 em{font-style:normal;color:var(--acc)}
+.intro{font-size:15px;color:var(--fg2);line-height:1.75;max-width:600px;margin-bottom:2.5rem}
+/* SEC */
+.sec-lbl{font-size:9px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--acc);margin:2.5rem 0 1.25rem;display:flex;align-items:center;gap:10px}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--brd)}
+/* CHANNEL DIAGRAM */
+.channel-box{background:var(--s1);border:1px solid var(--brd);border-radius:12px;padding:1.75rem;margin-bottom:1.5rem}
+.channel-sub{font-size:11px;color:var(--lbl);text-align:center;margin-bottom:1.5rem;font-style:italic}
+.c-stack{display:flex;flex-direction:column;max-width:520px;margin:0 auto}
+.c-layer{padding:0.875rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border:1px solid}
+.c-layer:first-child{border-radius:10px 10px 0 0}
+.c-layer:last-child{border-radius:0 0 10px 10px}
+.conductor{background:var(--acc-d);border-color:var(--acc-b)}
+.dielectric{background:var(--blue-d);border-color:rgba(100,150,255,0.15);border-top:none}
+.conductor-bot{border-top:none}
+.c-name{font-size:12px;font-weight:600}
+.conductor .c-name{color:var(--acc)}
+.dielectric .c-name{color:var(--blue)}
+.c-desc{font-size:11px;color:var(--lbl);margin-top:1px}
+.c-badge{font-size:9px;font-weight:700;padding:2px 9px;border-radius:999px}
+.conductor .c-badge{background:var(--acc-d);color:var(--acc);border:1px solid var(--acc-b)}
+.dielectric .c-badge{background:var(--blue-d);color:var(--blue);border:1px solid rgba(100,150,255,0.2)}
+.c-insight{background:var(--bg);border-radius:8px;padding:1rem 1.125rem;margin-top:1.25rem;display:flex;gap:10px;align-items:flex-start;border:1px solid var(--brd)}
+.c-insight-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.c-insight p{font-size:12px;color:var(--fg2);line-height:1.65}
+.c-insight strong{color:var(--acc);font-weight:600}
+/* SHIFT */
+.shift-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.shift{background:var(--s1);border-radius:10px;padding:1.125rem;border:1px solid}
+.shift.wrong{border-color:rgba(255,77,77,0.25)}
+.shift.right{border-color:var(--acc-b)}
+.shift-tag{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:2px 8px;border-radius:999px;display:inline-block;margin-bottom:8px}
+.shift.wrong .shift-tag{background:var(--err-d);color:var(--err)}
+.shift.right .shift-tag{background:var(--acc-d);color:var(--acc)}
+.shift h3{font-size:13px;font-weight:700;color:var(--fg);margin-bottom:5px;line-height:1.35}
+.shift p{font-size:12px;color:var(--lbl);line-height:1.6}
+.shift.right p em{color:var(--acc);font-style:normal;font-weight:600}
+/* FAILURES */
+.fail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.5rem}
+.fail{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:1rem 1.125rem}
+.fail-num{font-size:9px;font-weight:700;color:var(--err);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px}
+.fail h3{font-size:13px;font-weight:600;color:var(--fg);margin-bottom:4px;line-height:1.3}
+.fail p{font-size:11px;color:var(--lbl);line-height:1.55}
+.fail-fix{font-size:10px;color:var(--acc);margin-top:6px;font-weight:600}
+/* VOCAB */
+.vocab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:1.5rem}
+.vocab{background:var(--s1);border:1px solid var(--brd);border-radius:8px;padding:0.75rem 0.875rem}
+.v-term{font-size:11px;font-weight:700;color:var(--acc);margin-bottom:3px}
+.v-def{font-size:10px;color:var(--lbl);line-height:1.5}
+/* QUOTE */
+.quote{background:var(--s1);border-left:3px solid var(--acc);border-radius:0 10px 10px 0;padding:1.125rem 1.25rem;margin-bottom:2rem}
+.quote p{font-size:13px;color:var(--fg2);line-height:1.75;font-style:italic}
+.quote-src{font-size:10px;color:var(--lbl);margin-top:8px}
+/* FOOTER */
+.footer{border-top:1px solid var(--brd);padding-top:1.5rem;margin-top:3rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.footer-l{font-size:11px;color:var(--dim)}
+.footer-l span{color:var(--acc)}
+.footer-r{font-size:10px;color:var(--dim);font-style:italic}
+@media(max-width:540px){.shift-grid,.fail-grid,.vocab-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-in">
+    <a class="nav-brand" href="https://tool.fresuelectronics.com">
+      <img class="nav-logo" src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/logo.png" alt="Fresu Electronics">
+      <div>
+        <div class="nav-title">Fresu EMC Academy</div>
+        <div class="nav-sub">Reference Tools</div>
+      </div>
+    </a>
+    <a class="nav-cta" href="https://www.skool.com/pcb-design-mastery-9530" target="_blank">Join the Academy →</a>
+  </div>
+</nav>
+<main class="main">
+  <div class="kicker">Fresu EMC Academy · Reference Card 01</div>
+  <h1>The <em>Propagation<br>Channel</em></h1>
+  <p class="intro">The foundational framework for EMI control through PCB layout. Energy propagates in the dielectric. Copper acts as boundaries. Your job as a designer is to engineer the channel — before the first trace is placed.</p>
+
+  <div class="sec-lbl">What a properly bounded channel looks like</div>
+  <div class="channel-box">
+    <p class="channel-sub">A signal channel requires exactly two paired conducting boundaries with dielectric between them</p>
+    <div class="c-stack">
+      <div class="c-layer conductor">
+        <div><div class="c-name">Signal conductor</div><div class="c-desc">Trace / routing layer — first boundary</div></div>
+        <span class="c-badge">Boundary 1</span>
+      </div>
+      <div class="c-layer dielectric">
+        <div><div class="c-name">Dielectric</div><div class="c-desc">This is where the fields actually propagate — not the copper</div></div>
+        <span class="c-badge">Signal medium</span>
+      </div>
+      <div class="c-layer conductor conductor-bot" style="border-radius:0 0 10px 10px;">
+        <div><div class="c-name">Return Reference Plane (RRP)</div><div class="c-desc">Second boundary — contains and channels the fields back</div></div>
+        <span class="c-badge">Boundary 2</span>
+      </div>
+    </div>
+    <div class="c-insight">
+      <div class="c-insight-icon">⚡</div>
+      <p><strong>"The dielectric is where the fields propagate and the copper acts as the boundaries to contain and channel the fields."</strong> A single layer cannot contain the fields. Two paired boundaries are always required.</p>
+    </div>
+  </div>
+
+  <div class="sec-lbl">The mental shift</div>
+  <div class="shift-grid">
+    <div class="shift wrong">
+      <span class="shift-tag">❌ What we are taught in school</span>
+      <h3>The signal is in the copper</h3>
+      <p>Electrons flow through the conductor. The copper trace carries the signal. Ground is zero volts. Current returns through the ground plane.</p>
+    </div>
+    <div class="shift right">
+      <span class="shift-tag">✓ What actually happens</span>
+      <h3>The signal is in the dielectric</h3>
+      <p>Fields propagate in the space <em>between</em> conductors. Copper is the boundary. The <em>RRP is not a ground</em> — it is the second conductor of the transmission line.</p>
+    </div>
+  </div>
+
+  <div class="sec-lbl">The 4 ways the channel breaks in layout</div>
+  <div class="fail-grid">
+    <div class="fail">
+      <div class="fail-num">Failure 01</div>
+      <h3>Missing or wrong RRP pairing</h3>
+      <p>Signal layer referenced to a power plane instead of a dedicated RRP. The power plane has splits — the channel is broken wherever a split occurs.</p>
+      <div class="fail-fix">→ Always pair: signal with RRP, power with RRP</div>
+    </div>
+    <div class="fail">
+      <div class="fail-num">Failure 02</div>
+      <h3>Splits and gaps in the RRP</h3>
+      <p>Any cut, slot, or gap in the return reference plane forces fields to find an alternative path. The gap becomes a slot antenna. Emissions follow.</p>
+      <div class="fail-fix">→ No splits. No gaps. The RRP must be solid and continuous.</div>
+    </div>
+    <div class="fail">
+      <div class="fail-num">Failure 03</div>
+      <h3>Layer transitions without RRV</h3>
+      <p>When a signal changes layer, the channel must also transition. Without an adjacent Return Reference Via (RRV), the field channel breaks at every layer change.</p>
+      <div class="fail-fix">→ Every signal via needs at least one adjacent RRV</div>
+    </div>
+    <div class="fail">
+      <div class="fail-num">Failure 04</div>
+      <h3>Uncontrolled field environment</h3>
+      <p>Copper pours, polygon islands, nearby conductors — all modify the electric field distribution. They change the impedance the channel sees, creating discontinuities.</p>
+      <div class="fail-fix">→ Every conductor placed affects every nearby channel</div>
+    </div>
+  </div>
+
+  <div class="sec-lbl">The vocabulary</div>
+  <div class="vocab-grid">
+    <div class="vocab"><div class="v-term">Dielectric</div><div class="v-def">The material between conductors where EM fields actually propagate. Not an insulator — the signal medium.</div></div>
+    <div class="vocab"><div class="v-term">Boundary</div><div class="v-def">What copper layers actually are. They contain and channel the fields. They do not carry the signal.</div></div>
+    <div class="vocab"><div class="v-term">RRP</div><div class="v-def">Return Reference Plane. Not a "ground plane" — the second conductor that closes the transmission line.</div></div>
+    <div class="vocab"><div class="v-term">RRV</div><div class="v-def">Return Reference Via. Placed adjacent to every signal via to maintain the channel through layer transitions.</div></div>
+    <div class="vocab"><div class="v-term">Propagation channel</div><div class="v-def">The engineered path — dielectric space bounded by two conductors — where the signal propagates.</div></div>
+    <div class="vocab"><div class="v-term">Cavity</div><div class="v-def">Space between conducting layers with its own resonant frequency. Must be controlled via stitching via density.</div></div>
+  </div>
+
+  <div class="quote">
+    <p>"When you understand the signals as electromagnetic fields rather than just current flow, then everything starts to make sense — you can think about correct layer placement, the importance of dielectric thickness and conductor spacing, and why controlled impedance matters."</p>
+    <div class="quote-src">— Dario Fresu, PCB Design Review for EMC and EMI Control</div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-l">Fresu EMC Academy · <span>fresuelectronics.com</span></div>
+    <div class="footer-r">EMC problems are signal integrity problems in disguise</div>
+  </div>
+</main>
+</body>
+</html>
