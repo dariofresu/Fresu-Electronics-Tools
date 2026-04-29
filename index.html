@@ -4,74 +4,193 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EMC Tools Hub — Fresu Electronics</title>
-<meta name="description" content="Free interactive EMC & PCB engineering tools by Dario Fresu. Top 10 PCB Design Mistakes, Hardware Specification Guide, Stackup Template Tool, and more.">
+<meta name="description" content="Free interactive EMC & PCB engineering tools by Dario Fresu. Top 10 PCB Design Mistakes, Hardware Specification Guide, Pre-Layout Checklist and more.">
 <link rel="canonical" href="https://tool.fresuelectronics.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0a0a0a;--surface:#111111;--surface-2:#181818;
-  --border:#242424;--fg:#ffffff;--fg-secondary:#e8edf5;
-  --label:#a0aab8;--accent:#00FF94;--accent-dim:rgba(0,255,148,.10);
-  --ease:cubic-bezier(0.22,1,0.36,1);
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --border: #383838;
+  --fg: #ffffff;
+  --fg2: #e8edf5;
+  --label: #c8d0dc;
+  --muted: #a0aab8;
+  --accent: #00FF94;
+  --accent-dim: rgba(0,255,148,.10);
+  --ease: cubic-bezier(0.22,1,0.36,1);
 }
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--fg);font-family:'Poppins',sans-serif;line-height:1.7;overflow-x:hidden}
-a{text-decoration:none}
-/* NAV */
-.nav{background:rgba(10,10,10,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:12px 0;position:sticky;top:0;z-index:100}
-.nav-inner{max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.nav-logo img{height:40px;width:auto;display:block}
-.nav-cta{background:var(--accent);color:#0a0a0a;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 20px;border-radius:2px;transition:opacity .2s}
-.nav-cta:hover{opacity:.88}
-/* HERO */
-.hero{max-width:1100px;margin:0 auto;padding:72px 24px 56px;text-align:center}
-.kicker{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:10px;margin-bottom:20px}
-.kicker::before,.kicker::after{content:'';width:24px;height:1px;background:var(--accent)}
-.hero h1{font-size:clamp(32px,7vw,60px);font-weight:800;letter-spacing:-.04em;line-height:1.06;margin-bottom:16px}
-.hero h1 em{font-style:normal;color:var(--accent)}
-.hero-sub{font-size:clamp(15px,2.5vw,18px);color:var(--fg-secondary);max-width:560px;margin:0 auto 40px;line-height:1.7}
-.author-row{display:inline-flex;align-items:center;gap:12px;padding:12px 20px;background:var(--surface);border:1px solid var(--border);border-radius:2px}
-.author-row img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
-.author-row p{margin:0;font-size:12px;font-weight:600;color:var(--fg);text-align:left;line-height:1.3}
-.author-row span{font-size:11px;color:var(--label)}
-/* TOOLS */
-.tools-section{max-width:1100px;margin:0 auto;padding:0 24px 80px}
-.sec-label{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:24px;display:flex;align-items:center;gap:10px}
-.sec-label::before{content:'';width:20px;height:1px;background:var(--accent)}
-.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}.tools-grid.cols-2{grid-template-columns:repeat(2,1fr)}
-.tool-card{background:var(--surface);border:1px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:16px;transition:border-color .2s}
-.tool-card:hover{border-color:rgba(0,255,148,.35)}
-.tool-card.featured{border-left:3px solid var(--accent)}
-.tool-tag{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
-.tool-tag.free::after{content:'FREE';background:rgba(0,255,148,.12);color:var(--accent);font-size:9px;padding:2px 6px;border-radius:2px;margin-left:8px;letter-spacing:.1em}
-.tool-title{font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--fg);line-height:1.25}
-.tool-desc{font-size:14px;color:var(--label);line-height:1.65;flex:1}
-.tool-features{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
-.tool-feat{font-size:11px;color:var(--label);padding:4px 10px;border:1px solid var(--border);border-radius:2px;font-weight:500}
-.tool-btn{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#0a0a0a;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:14px 22px;border-radius:2px;align-self:flex-start;transition:gap .2s var(--ease)}
-.tool-btn:hover{gap:16px}
-.tool-btn.outline{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-.tool-btn.outline:hover{background:var(--accent-dim)}
-/* DIVIDER */
-.divider{max-width:1100px;margin:0 auto;padding:0 24px 40px;display:flex;align-items:center;gap:16px}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.divider-text{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--label);white-space:nowrap}
-/* FOOTER */
-footer{border-top:1px solid var(--border);padding:28px 24px}
-.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.footer-brand{font-size:12px;font-weight:700;color:var(--accent)}
-.footer-nav{display:flex;gap:20px;flex-wrap:wrap}
-.footer-nav a{font-size:12px;color:var(--label);transition:color .2s}
-.footer-nav a:hover{color:var(--fg)}
-.footer-legal{font-size:11px;color:#6b7d8f}
-@media(max-width:600px){
-  .tools-grid,.tools-grid.cols-2{grid-template-columns:1fr}
-  .hero{padding:48px 20px 40px}
-  .tools-section{padding:0 20px 60px}
-  .nav-inner{padding:0 16px}
+
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--fg); font-family: 'Poppins', sans-serif; line-height: 1.7; }
+a { text-decoration: none; }
+img { display: block; }
+
+/* ── NAV ── */
+.nav {
+  background: rgba(10,10,10,.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-inner {
+  max-width: 1100px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo img { height: 38px; width: auto; }
+.nav-cta {
+  background: var(--accent); color: #0a0a0a;
+  font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: 9px 18px; border-radius: 2px;
+  transition: opacity .2s;
+}
+.nav-cta:hover { opacity: .88; }
+
+/* ── HERO ── */
+.hero {
+  max-width: 1100px; margin: 0 auto;
+  padding: 72px 24px 56px; text-align: center;
+}
+.kicker {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 20px;
+}
+.kicker::before, .kicker::after { content: ''; width: 24px; height: 1px; background: var(--accent); }
+.hero h1 {
+  font-size: clamp(30px, 6vw, 56px);
+  font-weight: 800; letter-spacing: -.04em; line-height: 1.08;
+  margin-bottom: 16px;
+}
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero-sub {
+  font-size: clamp(14px, 2vw, 17px); color: var(--label);
+  max-width: 520px; margin: 0 auto 40px; line-height: 1.7;
+}
+.author-pill {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 10px 18px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 2px;
+}
+.author-pill img {
+  width: 38px; height: 38px; border-radius: 50%;
+  object-fit: cover; border: 2px solid var(--accent);
+}
+.author-pill-name { font-size: 13px; font-weight: 600; color: var(--fg); text-align: left; line-height: 1.3; }
+.author-pill-role { font-size: 11px; color: var(--muted); }
+
+/* ── TOOLS SECTION ── */
+.tools-section { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+
+.section-label {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 16px;
+}
+.section-label::before { content: ''; width: 20px; height: 1px; background: var(--accent); }
+
+/* ── CARD GRID — 3 across, never auto-fill ── */
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2px;
+  margin-bottom: 40px;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  padding: 24px;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: border-color .2s;
+}
+.card:hover { border-color: rgba(0,255,148,.4); }
+.card.featured { border-left-color: var(--accent); }
+
+.card-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--accent);
+}
+.card-tag::after {
+  content: 'FREE'; background: rgba(0,255,148,.12); color: var(--accent);
+  font-size: 9px; padding: 2px 6px; border-radius: 2px;
+  margin-left: 8px; letter-spacing: .1em; font-weight: 700;
+}
+.card-title {
+  font-size: 17px; font-weight: 700; letter-spacing: -.02em;
+  color: var(--fg); line-height: 1.3;
+}
+.card-desc {
+  font-size: 13px; color: var(--label); line-height: 1.65; flex: 1;
+}
+.card-features {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.card-feat {
+  font-size: 10px; font-weight: 600; color: var(--muted);
+  padding: 3px 8px; border: 1px solid var(--border); border-radius: 2px;
+}
+.card-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--accent); color: #0a0a0a;
+  font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: 11px 18px; border-radius: 2px; align-self: flex-start;
+  transition: gap .2s var(--ease), opacity .2s;
+}
+.card-btn:hover { gap: 14px; opacity: .9; }
+.card-btn.outline {
+  background: transparent; color: var(--accent);
+  border: 1px solid var(--accent);
+}
+.card-btn.outline:hover { background: var(--accent-dim); }
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 0 32px;
+}
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.divider span {
+  font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--muted); white-space: nowrap;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border); padding: 24px;
+}
+.footer-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-brand { font-size: 12px; font-weight: 700; color: var(--accent); }
+.footer-nav { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-nav a { font-size: 12px; color: var(--muted); transition: color .2s; }
+.footer-nav a:hover { color: var(--fg); }
+.footer-legal { font-size: 11px; color: #555; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 860px) {
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .hero { padding: 48px 20px 40px; }
+  .tools-section { padding: 0 20px 60px; }
+  .nav-inner { padding: 0 16px; }
 }
 </style>
 </head>
@@ -79,8 +198,8 @@ footer{border-top:1px solid var(--border);padding:28px 24px}
 
 <nav class="nav">
   <div class="nav-inner">
-    <a href="https://www.fresuelectronics.com">
-      <img class="nav-logo" src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/logo.png" alt="Fresu Electronics" style="height:40px;width:auto">
+    <a href="https://www.fresuelectronics.com" class="nav-logo">
+      <img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/logo.png" alt="Fresu Electronics">
     </a>
     <a class="nav-cta" href="https://www.fresuelectronics.com/emc-audit">Work with Dario →</a>
   </div>
@@ -90,82 +209,85 @@ footer{border-top:1px solid var(--border);padding:28px 24px}
   <div class="kicker">Engineering Tools</div>
   <h1>Free tools built for<br><em>real hardware engineers.</em></h1>
   <p class="hero-sub">Every tool here solves a problem Dario sees repeatedly in PCB design reviews. No fluff. No email wall. Just use them.</p>
-  <div class="author-row">
+  <div class="author-pill">
     <img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/dario-fresu.jpg" alt="Dario Fresu">
     <div>
-      <p>Dario Fresu</p>
-      <span>Principal EMC Architect · Fresu Electronics</span>
+      <div class="author-pill-name">Dario Fresu</div>
+      <div class="author-pill-role">Principal EMC Architect · Fresu Electronics</div>
     </div>
   </div>
 </header>
 
 <main class="tools-section">
-  <div class="sec-label">Interactive Guides</div>
-  <div class="tools-grid">
 
-    <div class="tool-card featured">
-      <div class="tool-tag free">EMI Control Series</div>
-      <div class="tool-title">Top 10 PCB Design Mistakes for EMI Control</div>
-      <p class="tool-desc">The complete interactive guide — 10 chapters, chapter quizzes, self-audit tool, printable checklist, and a certification exam. Covers every layout mistake that causes EMC test failures.</p>
-      <div class="tool-features">
-        <span class="tool-feat">10 Chapters</span>
-        <span class="tool-feat">Chapter Quizzes</span>
-        <span class="tool-feat">Self-Audit</span>
-        <span class="tool-feat">Roadmap</span>
-        <span class="tool-feat">Certification Exam</span>
-        <span class="tool-feat">Printable Checklist</span>
+  <div class="section-label">Interactive Tools</div>
+
+  <div class="grid-3">
+
+    <div class="card featured">
+      <div class="card-tag">EMI Control Series</div>
+      <div class="card-title">Top 10 PCB Design Mistakes for EMI Control</div>
+      <p class="card-desc">The complete interactive guide. 10 chapters covering every layout mistake that causes EMC test failures — with quizzes, self-audit, roadmap, and a certification exam.</p>
+      <div class="card-features">
+        <span class="card-feat">10 Chapters</span>
+        <span class="card-feat">Quizzes</span>
+        <span class="card-feat">Self-Audit</span>
+        <span class="card-feat">Cert Exam</span>
+        <span class="card-feat">Printable</span>
       </div>
-      <a class="tool-btn" href="/pcb-mistakes/">Read the Guide →</a>
+      <a class="card-btn" href="/pcb-mistakes/">Read the Guide →</a>
     </div>
 
-    <div class="tool-card featured">
-      <div class="tool-tag free">Pre-Design</div>
-      <div class="tool-title">Hardware Specification Guide</div>
-      <p class="tool-desc">Define your product spec before you open your schematic tool. A structured worksheet that turns vague requirements into a clear Product Specification Brief — the step most engineers skip.</p>
-      <div class="tool-features">
-        <span class="tool-feat">4-Step Worksheet</span>
-        <span class="tool-feat">Confidence Ratings</span>
-        <span class="tool-feat">Export Brief</span>
-        <span class="tool-feat">Auto-Save</span>
+    <div class="card featured">
+      <div class="card-tag">Pre-Design</div>
+      <div class="card-title">Hardware Specification Guide</div>
+      <p class="card-desc">Define your product spec before you open your schematic tool. A 5-step interactive worksheet with gate reviews, live brief preview, risk register, and PDF export.</p>
+      <div class="card-features">
+        <span class="card-feat">5 Steps</span>
+        <span class="card-feat">Gate Reviews</span>
+        <span class="card-feat">Risk Register</span>
+        <span class="card-feat">Live Brief</span>
+        <span class="card-feat">PDF Export</span>
       </div>
-      <a class="tool-btn" href="/hardware-spec/">Open the Guide →</a>
+      <a class="card-btn" href="/hardware-spec/">Open the Guide →</a>
     </div>
 
-    <div class="tool-card featured">
-      <div class="tool-tag free">Pre-Layout</div>
-      <div class="tool-title">Pre-Layout Review Checklist</div>
-      <p class="tool-desc">9 categories, 50+ items covering schematic organisation, protection, signal integrity, compliance, and layout readiness. Check off items, add notes per item, and export a progress report — before the first trace is placed.</p>
-      <div class="tool-features">
-        <span class="tool-feat">9 Categories</span>
-        <span class="tool-feat">50+ Items</span>
-        <span class="tool-feat">Notes per Item</span>
-        <span class="tool-feat">Export Progress</span>
-        <span class="tool-feat">Print to PDF</span>
+    <div class="card featured">
+      <div class="card-tag">Pre-Layout</div>
+      <div class="card-title">Pre-Layout Review Checklist</div>
+      <p class="card-desc">9 categories, 50+ items covering schematic organisation, signal integrity, protection, compliance and layout readiness. Check off items, add notes, and export a progress report.</p>
+      <div class="card-features">
+        <span class="card-feat">9 Categories</span>
+        <span class="card-feat">50+ Items</span>
+        <span class="card-feat">Notes</span>
+        <span class="card-feat">Export</span>
+        <span class="card-feat">Print PDF</span>
       </div>
-      <a class="tool-btn" href="/pre-layout-checklist/">Open Checklist →</a>
+      <a class="card-btn" href="/pre-layout-checklist/">Open Checklist →</a>
     </div>
 
   </div>
 
-  <div class="divider" style="margin-top:40px"><span class="divider-text">Also Free on fresuelectronics.com</span></div>
+  <div class="divider"><span>Also available on fresuelectronics.com</span></div>
 
-  <div class="tools-grid cols-2">
+  <div class="grid-2">
 
-    <div class="tool-card">
-      <div class="tool-tag free">Stack-Up Tool</div>
-      <div class="tool-title">EMI-Controlled Stackup Template Tool</div>
-      <p class="tool-desc">Generate correct 2, 4, 6, and 8-layer stackup templates designed for EMI control. Each layer pair validated against Fresu's field-containment rules.</p>
-      <a class="tool-btn outline" href="https://www.fresuelectronics.com/free-tool-1" target="_blank" rel="noopener">Open on Fresu Electronics ↗</a>
+    <div class="card">
+      <div class="card-tag">Stack-Up Tool</div>
+      <div class="card-title">EMI-Controlled Stackup Template Tool</div>
+      <p class="card-desc">Generate 2, 4, 6, and 8-layer stackup templates designed for EMI control. Each layer pair validated against Fresu's field-containment rules.</p>
+      <a class="card-btn outline" href="https://www.fresuelectronics.com/free-tool-1" target="_blank" rel="noopener">Open on fresuelectronics.com ↗</a>
     </div>
 
-    <div class="tool-card">
-      <div class="tool-tag free">Layout Review</div>
-      <div class="tool-title">Pre-Layout Review Checklist</div>
-      <p class="tool-desc">A systematic pre-layout review checklist covering stack-up, component placement, return paths, and filtering — before your first trace is placed.</p>
-      <a class="tool-btn outline" href="https://www.fresuelectronics.com/free-guide-2" target="_blank" rel="noopener">Open on Fresu Electronics ↗</a>
+    <div class="card">
+      <div class="card-tag">Signal Propagation</div>
+      <div class="card-title">PCB Signal Propagation Visualiser</div>
+      <p class="card-desc">Animated visualisation of how signals travel through a PCB transmission line — wavefront, displacement current, E and H fields, live impedance matching.</p>
+      <a class="card-btn outline" href="/pcb-signal-propagation/" target="_blank" rel="noopener">Open the Visualiser ↗</a>
     </div>
 
   </div>
+
 </main>
 
 <footer>
