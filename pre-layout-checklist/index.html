@@ -7,80 +7,152 @@
 <meta name="description" content="60-point pre-layout schematic review checklist by Dario Fresu. Complete before placing the first trace.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 :root {
-  --bg: #0a0a0a; --s: #111111; --s2: #181818; --s3: #222222;
-  --b: #383838; --bf: #555555;
-  --fg: #ffffff; --f2: #e8edf5; --f3: #c8d0dc; --f4: #a0aab8;
-  --ac: #00FF94; --ad: rgba(0,255,148,.10); --am: rgba(0,255,148,.18);
-  --ease: cubic-bezier(0.22,1,0.36,1);
-  --mono: 'JetBrains Mono', monospace;
-  --topbar: 52px;
-  --sidebar: 220px;
+  --bg:           #0a0a0a;
+  --surface:      #111111;
+  --surface-2:    #181818;
+  --border:       #242424;
+  --border-i:     #555555;  /* interactive borders — contrast compliant */
+  --fg:           #ffffff;
+  --fg-secondary: #e8edf5;
+  --label:        #a0aab8;
+  --accent:       #00FF94;
+  --accent-dim:   rgba(0,255,148,0.10);
+  --accent-hover: #00e085;
+  --mono:         'JetBrains Mono', monospace;
+  --topbar-h:     52px;
+  --sidebar-w:    224px;
+  --ease:         cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* ── SAME PATTERN AS ALL OTHER TOOLS ── */
 html, body { height: 100%; overflow: hidden; }
 body {
-  background: var(--bg); color: var(--fg);
-  font-family: 'Poppins', sans-serif; font-size: 14px; line-height: 1.7;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Poppins', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
   display: grid;
-  grid-template-rows: var(--topbar) 1fr;
+  grid-template-rows: var(--topbar-h) 1fr;
 }
-a { text-decoration: none; color: var(--ac); }
+a { color: var(--accent); text-decoration: none; }
+button { font-family: 'Poppins', sans-serif; cursor: pointer; border: none; }
+textarea { font-family: 'Poppins', sans-serif; }
 img { display: block; }
-button { font-family: 'Poppins', sans-serif; cursor: pointer; }
-textarea { font-family: 'Poppins', sans-serif; resize: vertical; }
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--b); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--bf); }
-::selection { background: var(--ac); color: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-i); }
+::selection { background: var(--accent); color: #0a0a0a; }
 
-/* ── TOPBAR ── */
+/* ─── TOPBAR ─── */
 .topbar {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr auto;
+  align-items: stretch;
   background: rgba(10,10,10,.96);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--b);
-  display: grid;
-  grid-template-columns: var(--sidebar) 1fr auto;
-  align-items: center;
-  padding: 0;
-  z-index: 100;
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 200;
   overflow: hidden;
 }
 .topbar-brand {
-  padding: 0 20px;
-  border-right: 1px solid var(--b);
-  height: 100%;
   display: flex;
   align-items: center;
+  padding: 0 20px;
+  border-right: 1px solid var(--border);
+  gap: 10px;
 }
 .topbar-brand img { height: 30px; width: auto; }
-.topbar-center {
-  padding: 0 24px;
+.hamburger {
+  display: none;
+  background: transparent;
+  padding: 4px;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+}
+.hamburger span {
+  display: block;
+  width: 18px;
+  height: 1.5px;
+  background: var(--fg-secondary);
+  border-radius: 1px;
+  transition: all .2s;
+}
+.topbar-mid {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
+  padding: 0 20px;
+  overflow: hidden;
 }
 .topbar-title {
   font-family: var(--mono);
   font-size: 10px;
+  font-weight: 600;
   letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--f4);
+  color: var(--label);
   white-space: nowrap;
 }
-.topbar-bar { flex: 1; height: 2px; background: var(--s3); border-radius: 1px; overflow: hidden; max-width: 280px; }
-.topbar-bar-fill { height: 100%; background: var(--ac); border-radius: 1px; width: 0%; transition: width .4s var(--ease); }
-.topbar-pct { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--ac); min-width: 4ch; }
-.saved-tag { font-family: var(--mono); font-size: 10px; color: var(--ac); opacity: 0; transition: opacity .3s; display: flex; align-items: center; gap: 5px; }
+.topbar-progress {
+  flex: 1;
+  max-width: 260px;
+  height: 2px;
+  background: #333;
+  border-radius: 1px;
+  overflow: hidden;
+}
+.topbar-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 1px;
+  width: 0%;
+  transition: width .4s var(--ease);
+}
+.topbar-pct {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 4ch;
+}
+.saved-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity .3s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  letter-spacing: .06em;
+}
 .saved-tag.show { opacity: 1; }
-.saved-tag::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--ac); }
-.topbar-actions { display: flex; height: 100%; border-left: 1px solid var(--b); }
+.saved-tag::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.topbar-actions {
+  display: flex;
+  align-items: stretch;
+  border-left: 1px solid var(--border);
+}
 .topbar-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   padding: 0 18px;
   font-family: var(--mono);
   font-size: 10px;
@@ -88,139 +160,241 @@ textarea { font-family: 'Poppins', sans-serif; resize: vertical; }
   letter-spacing: .1em;
   text-transform: uppercase;
   background: transparent;
-  border: none;
-  border-left: 1px solid var(--b);
-  color: var(--f4);
-  display: flex;
-  align-items: center;
-  gap: 7px;
+  color: var(--label);
+  border-left: 1px solid var(--border);
   transition: color .18s, background .18s;
+  min-height: 44px;
   white-space: nowrap;
 }
 .topbar-btn:first-child { border-left: none; }
-.topbar-btn:hover { color: var(--fg); background: var(--s2); }
-.topbar-btn.primary { background: var(--ac); color: #0a0a0a; border-left-color: var(--ac); }
-.topbar-btn.primary:hover { opacity: .88; }
-.topbar-btn.danger:hover { color: var(--danger, #ff4d4d); }
+.topbar-btn:hover { color: var(--fg); background: var(--surface); }
+.topbar-btn.primary {
+  background: var(--accent);
+  color: #0a0a0a;
+  border-left-color: var(--accent);
+}
+.topbar-btn.primary:hover { background: var(--accent-hover); color: #0a0a0a; }
+.topbar-btn.ghost:hover { color: #ff4d4d; }
 
-/* ── APP SHELL ── */
+/* ─── APP ─── */
 .app {
   display: grid;
-  grid-template-columns: var(--sidebar) 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr;
   overflow: hidden;
   min-height: 0;
 }
 
-/* ── SIDEBAR ── */
+/* ─── SIDEBAR ─── */
 .sidebar {
-  border-right: 1px solid var(--b);
-  overflow-y: auto;
   background: var(--bg);
-  padding: 20px 0 40px;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
-.sidebar-label {
+.sidebar-inner { padding: 16px 0 32px; flex: 1; }
+.sidebar-section-label {
   font-family: var(--mono);
   font-size: 9px;
+  font-weight: 700;
   letter-spacing: .2em;
   text-transform: uppercase;
-  color: var(--f4);
-  padding: 0 16px 12px;
-  border-bottom: 1px solid var(--b);
-  margin-bottom: 8px;
+  color: var(--label);
+  padding: 0 16px 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
 }
-.nav-item {
+.nav-btn {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 10px 14px;
-  cursor: pointer;
-  border-left: 2px solid transparent;
-  transition: all .18s;
-  background: transparent;
-  border-top: none;
-  border-right: none;
-  border-bottom: none;
   width: 100%;
   text-align: left;
-  color: var(--f4);
+  background: transparent;
+  color: var(--label);
+  border-left: 2px solid transparent;
+  padding: 10px 14px;
+  transition: all .18s;
+  min-height: 44px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
 }
-.nav-item:hover { background: rgba(255,255,255,.03); border-left-color: var(--b); color: var(--f3); }
-.nav-item.active { border-left-color: var(--ac); background: rgba(0,255,148,.04); color: var(--fg); }
-.nav-item.done .nav-dot { background: var(--ac); }
+.nav-btn:hover { color: var(--fg-secondary); border-left-color: var(--border); background: rgba(255,255,255,.02); }
+.nav-btn.active { color: var(--fg); border-left-color: var(--accent); background: rgba(0,255,148,.04); }
+.nav-btn.done .nav-dot { background: var(--accent); }
 .nav-dot {
-  width: 7px; height: 7px; min-width: 7px;
-  border-radius: 1px; background: var(--b);
-  margin-top: 6px; flex-shrink: 0;
+  width: 6px; height: 6px; min-width: 6px;
+  border-radius: 1px;
+  background: var(--border-i);
+  margin-top: 5px;
+  flex-shrink: 0;
   transition: background .2s;
 }
-.nav-item.active .nav-dot { background: var(--ac); }
+.nav-btn.active .nav-dot { background: var(--accent); }
 .nav-num {
   font-family: var(--mono);
   font-size: 9px;
   font-weight: 700;
-  color: var(--ac);
-  flex-shrink: 0;
+  color: var(--accent);
+  min-width: 20px;
   padding-top: 2px;
 }
-.nav-text { font-size: 11px; font-weight: 600; line-height: 1.3; }
-.nav-count { font-family: var(--mono); font-size: 9px; color: var(--f4); margin-top: 2px; }
-.nav-item.active .nav-count { color: var(--ac); }
+.nav-info { flex: 1; min-width: 0; }
+.nav-title { font-size: 11px; font-weight: 600; line-height: 1.3; margin-bottom: 2px; }
+.nav-count {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--label);
+}
 
-/* ── MAIN CONTENT ── */
-.content { overflow-y: auto; min-width: 0; }
-.content-inner { max-width: 760px; margin: 0 auto; padding: 36px 40px 80px; }
-
-/* ── SECTION HEADER ── */
-.section-head { margin-bottom: 28px; }
-.section-kicker {
+/* Sidebar CTA */
+.sidebar-cta {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sidebar-cta-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  padding: 14px 16px;
+}
+.sidebar-cta-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.sidebar-cta-text {
+  font-size: 11px;
+  color: var(--fg-secondary);
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+.sidebar-cta-btn {
+  display: block;
+  background: var(--accent);
+  color: #0a0a0a;
   font-family: var(--mono);
   font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 9px 14px;
+  transition: background .18s;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sidebar-cta-btn:hover { background: var(--accent-hover); color: #0a0a0a; }
+
+/* ─── CONTENT ─── */
+.content { overflow-y: auto; min-width: 0; }
+.content-inner { max-width: 720px; margin: 0 auto; padding: 36px 40px 80px; }
+
+/* ─── SUMMARY ─── */
+.summary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--accent);
+  padding: 24px;
+  margin-bottom: 36px;
+}
+.summary-kicker {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.summary-stat { text-align: center; }
+.summary-num {
+  font-family: var(--mono);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.summary-label { font-size: 11px; color: var(--label); letter-spacing: .04em; }
+
+/* ─── CATEGORY ─── */
+.cat-block { margin-bottom: 44px; }
+.cat-header { margin-bottom: 20px; }
+.cat-kicker {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
   letter-spacing: .2em;
   text-transform: uppercase;
-  color: var(--ac);
+  color: var(--accent);
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
-.section-kicker::before { content: ''; width: 20px; height: 1px; background: var(--ac); }
-.section-title { font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; margin-bottom: 6px; }
-.section-desc { font-size: 13px; color: var(--f3); line-height: 1.65; max-width: 54ch; }
-.section-pips { display: flex; gap: 3px; margin-top: 14px; }
-.pip { height: 2px; flex: 1; background: var(--s3); border-radius: 1px; transition: background .35s; }
-.pip.done { background: var(--ac); }
+.cat-kicker::before { content: ''; width: 20px; height: 1px; background: var(--accent); }
+.cat-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--fg);
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+.cat-desc {
+  font-size: 13px;
+  color: var(--fg-secondary);
+  line-height: 1.65;
+  max-width: 54ch;
+  margin-bottom: 14px;
+}
+.cat-pips { display: flex; gap: 3px; }
+.pip { height: 2px; flex: 1; background: #333; border-radius: 1px; transition: background .35s; }
+.pip.done { background: var(--accent); }
 .pip.partial { background: rgba(0,255,148,.4); }
 
-/* ── CHECKLIST ITEM ── */
+/* ─── ITEM ─── */
 .item {
-  background: var(--s);
-  border: 1px solid var(--b);
-  border-left: 3px solid var(--b);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
   margin-bottom: 8px;
   transition: border-color .18s;
 }
-.item.checked { border-left-color: var(--ac); }
-.item:focus-within { border-color: var(--bf); }
-.item-top {
+.item:focus-within { border-color: var(--border-i); }
+.item.is-checked { border-left-color: var(--accent); }
+.item-row {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   padding: 14px 16px;
   cursor: pointer;
+  min-height: 44px;
 }
 .checkbox {
   width: 18px; height: 18px; min-width: 18px;
-  border: 1.5px solid var(--bf);
+  border: 1.5px solid var(--border-i);
   border-radius: 2px;
   background: transparent;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
   margin-top: 2px;
   transition: all .18s;
-  cursor: pointer;
 }
-.checkbox.checked { background: var(--ac); border-color: var(--ac); }
-.checkbox.checked::after {
+.checkbox.is-checked { background: var(--accent); border-color: var(--accent); }
+.checkbox.is-checked::after {
   content: '';
   width: 5px; height: 9px;
   border: 2px solid #0a0a0a;
@@ -229,119 +403,181 @@ textarea { font-family: 'Poppins', sans-serif; resize: vertical; }
   margin-top: -2px;
   display: block;
 }
-.item-label { font-size: 13px; color: var(--f2); line-height: 1.5; flex: 1; user-select: none; }
-.item.checked .item-label { color: var(--f4); }
-
+.item-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg-secondary);
+  line-height: 1.55;
+  flex: 1;
+  user-select: none;
+}
+.item.is-checked .item-label { color: var(--label); text-decoration: line-through; text-decoration-color: rgba(160,170,184,.4); }
+.item-meta {
+  padding: 0 16px 12px 46px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 .info-toggle {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-family: var(--mono);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--ac);
+  color: var(--accent);
   background: transparent;
-  border: none;
-  padding: 0 16px 10px 46px;
-  cursor: pointer;
-  opacity: .7;
+  padding: 0;
+  opacity: .65;
   transition: opacity .18s;
+  min-height: 44px;
 }
 .info-toggle:hover { opacity: 1; }
-.info-toggle::before {
-  content: 'ℹ';
+.info-icon {
   width: 14px; height: 14px;
-  background: var(--ac);
+  background: var(--accent);
   color: #0a0a0a;
   border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 9px; font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 900;
   font-style: normal;
+  flex-shrink: 0;
 }
 .info-body {
   display: none;
-  padding: 10px 16px 14px 46px;
+  padding: 12px 16px 14px 46px;
   font-size: 12px;
-  color: var(--f3);
+  color: var(--fg-secondary);
   line-height: 1.65;
-  border-top: 1px solid var(--s3);
-  background: var(--s2);
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
 }
 .info-body.open { display: block; }
-
-.notes-area {
-  padding: 0 16px 14px 46px;
-}
+.notes-wrap { padding: 0 16px 14px 46px; }
 .notes-input {
   width: 100%;
-  background: var(--s2);
-  border: 1px solid var(--b);
-  border-radius: 2px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   color: var(--fg);
-  font-size: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
   padding: 8px 10px;
-  min-height: 56px;
+  min-height: 52px;
   outline: none;
   line-height: 1.6;
+  resize: vertical;
   transition: border-color .18s;
 }
 .notes-input::placeholder { color: #555; font-style: italic; }
-.notes-input:focus { border-color: var(--ac); }
+.notes-input:focus { border-color: var(--accent); }
 
-/* ── SUMMARY BOX ── */
-.summary-box {
-  background: var(--s);
-  border: 1px solid var(--b);
-  border-top: 2px solid var(--ac);
-  padding: 24px;
-  margin-bottom: 32px;
+/* ─── FOOTER ─── */
+.content-footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 0 0;
+  margin-top: 8px;
 }
-.summary-title {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: var(--ac);
+.author-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.author-row img {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+  flex-shrink: 0;
+}
+.author-name { font-size: 13px; font-weight: 600; color: var(--fg); line-height: 1.3; }
+.author-role { font-size: 11px; color: var(--label); }
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
   margin-bottom: 16px;
 }
-.summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.summary-stat { text-align: center; }
-.summary-num {
+.footer-links a {
   font-family: var(--mono);
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--ac);
-  line-height: 1;
-  margin-bottom: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--label);
+  transition: color .18s;
 }
-.summary-label { font-size: 10px; color: var(--f4); letter-spacing: .04em; }
+.footer-links a:hover { color: var(--accent); }
+.footer-legal { font-size: 11px; color: #555; }
 
-/* ── PRINT ── */
+/* ─── MOBILE OVERLAY ─── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 150;
+}
+.sidebar-overlay.open { display: block; }
+
+/* ─── PRINT ─── */
 @media print {
   html, body { height: auto; overflow: visible; }
   body { display: block; }
-  .topbar, .sidebar, .info-toggle, .notes-area, .topbar-btn { display: none !important; }
+  .topbar, .sidebar, .sidebar-overlay,
+  .info-toggle, .notes-wrap, .topbar-actions,
+  .content-footer, .summary { display: none !important; }
   .app { display: block; }
   .content { overflow: visible; }
   .content-inner { padding: 0; max-width: none; }
   .item { page-break-inside: avoid; border: 1pt solid #ccc; background: #fff; margin-bottom: 4pt; }
-  .item-label { color: #000; }
-  .section-title { color: #000; }
-  .section-kicker { color: #006644; }
-  .section-kicker::before { background: #006644; }
-  .section-head { page-break-after: avoid; }
+  .item.is-checked .item-label { color: #999; }
+  .item-label { color: #000; font-size: 11pt; }
+  .cat-title { color: #000; font-size: 16pt; }
+  .cat-kicker { color: #006644; }
+  .cat-kicker::before { background: #006644; }
 }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 700px) {
-  :root { --sidebar: 0px; }
-  .sidebar { display: none; }
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 280px; }
+
+  .hamburger { display: flex; }
+  .topbar { grid-template-columns: 1fr auto; }
+  .topbar-brand { border-right: none; order: 1; }
+  .topbar-mid { display: none; }
+  .topbar-actions { order: 2; }
+
   .app { grid-template-columns: 1fr; }
-  .content-inner { padding: 24px 16px 60px; }
-  .topbar { grid-template-columns: auto 1fr auto; }
-  .topbar-brand { padding: 0 14px; }
+
+  .sidebar {
+    position: fixed;
+    top: var(--topbar-h);
+    left: 0;
+    height: calc(100% - var(--topbar-h));
+    width: min(280px, 85vw);
+    transform: translateX(-100%);
+    transition: transform .3s var(--ease);
+    z-index: 160;
+    border-right: 1px solid var(--border);
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  .content-inner { padding: 24px 20px 60px; }
+
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .sidebar { padding-bottom: env(safe-area-inset-bottom); }
+  }
+}
+
+@media (max-width: 390px) {
+  .content-inner { padding: 20px 16px 48px; }
+  .summary-num { font-size: 24px; }
 }
 </style>
 </head>
@@ -350,49 +586,65 @@ textarea { font-family: 'Poppins', sans-serif; resize: vertical; }
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="topbar-brand">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
     <a href="https://www.fresuelectronics.com">
-      <img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/logo.png" alt="Fresu Electronics">
+      <img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/logo.png" alt="Fresu Electronics" style="height:30px;width:auto;">
     </a>
   </div>
-  <div class="topbar-center">
+  <div class="topbar-mid">
     <span class="topbar-title">Pre-Layout Checklist</span>
-    <div class="topbar-bar"><div class="topbar-bar-fill" id="bar-fill"></div></div>
-    <span class="topbar-pct" id="bar-pct">0%</span>
+    <div class="topbar-progress"><div class="topbar-progress-fill" id="prog-fill"></div></div>
+    <span class="topbar-pct" id="prog-pct">0%</span>
     <span class="saved-tag" id="saved-tag">Saved</span>
   </div>
   <div class="topbar-actions">
     <button class="topbar-btn primary" onclick="window.print()">Export PDF</button>
-    <button class="topbar-btn" onclick="resetAll()" style="color:#666">Reset</button>
+    <button class="topbar-btn ghost" onclick="confirmReset()">Reset</button>
   </div>
 </div>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <!-- APP -->
 <div class="app">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-label">Categories</div>
-    <div id="sidebar-nav"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-inner">
+      <div class="sidebar-section-label">Categories</div>
+      <div id="sidebar-nav"></div>
+    </div>
+    <div class="sidebar-cta">
+      <div class="sidebar-cta-box">
+        <div class="sidebar-cta-label">Work with Dario</div>
+        <div class="sidebar-cta-text">Catch EMC problems before layout — not after failed certification.</div>
+        <a class="sidebar-cta-btn" href="https://www.fresuelectronics.com/emc-audit" target="_blank" rel="noopener">EMC Design Audit →</a>
+      </div>
+    </div>
   </aside>
 
   <!-- CONTENT -->
-  <main class="content" id="main-content">
+  <main class="content" id="main">
     <div class="content-inner" id="content-inner"></div>
   </main>
 
 </div>
 
 <script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
 var DATA = [
   {
     id: 'cat1', n: '01',
     title: 'Project Identification & Overview',
-    desc: 'Confirm all project metadata is complete and consistent before the schematic is handed off for layout.',
+    desc: 'Confirm all project metadata is complete and consistent before handing off for layout.',
     items: [
-      { id: 'i01', text: 'My Overview Page has a clear title that illustrates the name of the project', info: 'The title page is the first thing a reviewer sees. A clear, descriptive title avoids confusion between design versions or projects.' },
-      { id: 'i02', text: 'I have added a revision number to identify the project version I am working with', info: 'Revision control prevents layout teams from working from the wrong schematic version — a common and costly mistake.' },
-      { id: 'i03', text: 'Other project details are updated, including the title, revision, version number and file name', info: 'Consistent metadata across all pages ensures traceability throughout the design and manufacturing process.' },
-      { id: 'i04', text: 'My contact details are displayed on each page', info: 'In a multi-person or multi-team environment, clear ownership information prevents wasted time tracking down the responsible engineer.' },
+      { id: 'i01', label: 'My Overview Page has a clear title that illustrates the name of the project', info: 'The title page is the first thing a reviewer sees. A clear, descriptive title avoids confusion between design versions or projects.' },
+      { id: 'i02', label: 'I have added a revision number to identify the project version I am working with', info: 'Revision control prevents layout teams from working from the wrong schematic version — a common and costly mistake.' },
+      { id: 'i03', label: 'Other project details are updated, including the title, revision, version number and file name', info: 'Consistent metadata across all pages ensures traceability throughout the design and manufacturing process.' },
+      { id: 'i04', label: 'My contact details are displayed on each page', info: 'In a multi-person or multi-team environment, clear ownership information prevents wasted time tracking down the responsible engineer.' },
     ]
   },
   {
@@ -400,12 +652,12 @@ var DATA = [
     title: 'Schematic Organisation & Clarity',
     desc: 'A well-organised schematic reduces layout errors and speeds up design review.',
     items: [
-      { id: 'i05', text: 'I confirm that I have included a block diagram of the connections between components and systems', info: 'A block diagram gives the layout engineer a high-level map of the design — critical for understanding signal flow and partitioning.' },
-      { id: 'i06', text: 'I confirm the title is displayed on each page and is descriptive of the functional block', info: 'Each page should describe its content clearly — "Power Management" is better than "Sheet 3".' },
-      { id: 'i07', text: 'The pages of the schematics are numbered for easy block location', info: 'Page numbers allow quick cross-referencing during layout and review.' },
-      { id: 'i08', text: 'Each block has an intuitive name and a page number for easy identification', info: 'Layout engineers need to quickly locate specific blocks. Intuitive names reduce back-and-forth communication.' },
-      { id: 'i09', text: 'The status of the schematic is clearly reported', info: 'Status labels (Draft / Under Review / Released) prevent layout starting on an unfinished schematic.' },
-      { id: 'i10', text: 'The date of the last update is clearly visible on each page', info: 'Date stamps are essential for version control and for resolving disputes about which revision was used.' },
+      { id: 'i05', label: 'I have included a block diagram of the connections between components and systems', info: 'A block diagram gives the layout engineer a high-level map of the design — critical for understanding signal flow and partitioning.' },
+      { id: 'i06', label: 'I confirm the title is displayed on each page and is descriptive of the functional block', info: 'Each page should describe its content clearly. "Power Management" is better than "Sheet 3".' },
+      { id: 'i07', label: 'The pages of the schematics are numbered for easy block location', info: 'Page numbers allow quick cross-referencing during layout and review.' },
+      { id: 'i08', label: 'Each block has an intuitive name and a page number for easy identification', info: 'Layout engineers need to quickly locate specific blocks. Intuitive names reduce back-and-forth communication.' },
+      { id: 'i09', label: 'The status of the schematic is clearly reported', info: 'Status labels (Draft / Under Review / Released) prevent layout starting on an unfinished schematic.' },
+      { id: 'i10', label: 'The date of the last update is clearly visible on each page', info: 'Date stamps are essential for version control and for resolving disputes about which revision was used.' },
     ]
   },
   {
@@ -413,10 +665,10 @@ var DATA = [
     title: 'Design Details & Annotations',
     desc: 'Proper annotations guide the layout engineer and reduce interpretation errors.',
     items: [
-      { id: 'i11', text: 'I confirm that each module of my schematic is subdivided into clear blocks', info: 'Clear functional blocks allow the layout engineer to partition the board logically, minimising crosstalk and EMI.' },
-      { id: 'i12', text: 'I confirm that each net has a net label assigned for easy identification', info: 'Named nets make ERC checks meaningful and allow layout rules to be assigned per net class.' },
-      { id: 'i13', text: 'I confirm that each symbol has consistent directionality to avoid confusion', info: 'Inconsistent symbol orientation (inputs on the right, outputs on the left) is a frequent cause of connection errors.' },
-      { id: 'i14', text: 'I confirm that sensitive traces are labelled for attention during the layout phase', info: 'High-speed, differential, or noise-sensitive nets must be flagged so the layout engineer applies the correct rules.' },
+      { id: 'i11', label: 'Each module of my schematic is subdivided into clear blocks', info: 'Clear functional blocks allow the layout engineer to partition the board logically, minimising crosstalk and EMI.' },
+      { id: 'i12', label: 'Each net has a net label assigned for easy identification', info: 'Named nets make ERC checks meaningful and allow layout rules to be assigned per net class.' },
+      { id: 'i13', label: 'Each symbol has consistent directionality to avoid confusion', info: 'Inconsistent symbol orientation (inputs on the right, outputs on the left) is a frequent cause of connection errors.' },
+      { id: 'i14', label: 'Sensitive traces are labelled for attention during the layout phase', info: 'High-speed, differential, or noise-sensitive nets must be flagged so the layout engineer applies the correct rules.' },
     ]
   },
   {
@@ -424,34 +676,34 @@ var DATA = [
     title: 'Protection & Debugging Features',
     desc: 'Design for testability and protection before layout — adding these after is expensive.',
     items: [
-      { id: 'i15', text: 'I confirm that each input and output connector has appropriate protections and/or filters', info: 'ESD, TVS, common-mode chokes, and RC filters must be present on all external interfaces before layout starts.' },
-      { id: 'i16', text: 'I confirm that I added test points and debug tools for easy bring-up where necessary', info: 'Test points not added at schematic stage are almost never added at layout stage. Plan for them now.' },
-      { id: 'i17', text: 'I confirm that each IC has bypass capacitors', info: 'Every IC power pin needs a local bypass capacitor. Missing decoupling is a leading cause of EMC failures and instability.' },
-      { id: 'i18', text: 'I confirm that all unused pins are terminated', info: 'Floating inputs cause unpredictable logic states and can be a source of radiated emissions.' },
-      { id: 'i19', text: 'I confirm that polarised components are placed correctly according to their polarity', info: 'A reversed electrolytic capacitor or diode is not caught by ERC. This must be verified manually.' },
-      { id: 'i20', text: 'I confirm that the design includes necessary safety features such as overvoltage, overcurrent, and thermal protection', info: 'Safety features defined at schematic stage ensure they are budgeted in the BOM and given proper PCB real estate.' },
-      { id: 'i21', text: 'I confirm that the design adheres to relevant industry standards and regulatory requirements', info: 'Standard compliance requirements (IEC, UL, CE) affect component selection, clearances, and creepage — all layout inputs.' },
-      { id: 'i22', text: 'I confirm that all necessary power decoupling and filtering strategies are incorporated', info: 'PDN filtering strategy must be finalised before layout. Moving capacitors after placement is costly and often not done correctly.' },
-      { id: 'i23', text: 'I confirm that user interface elements (LEDs, switches, display interfaces) are correctly implemented and documented', info: 'UI elements often have layout constraints (edge-mount, panel cutout) that must be defined before the layout engineer starts.' },
-      { id: 'i24', text: 'I confirm that ESD protection measures are in place for all sensitive components and interfaces', info: 'ESD protection must be at the connector entry point. This placement constraint must be visible on the schematic.' },
-      { id: 'i25', text: 'I confirm that RF components and circuits (if any) have been reviewed for frequency, impedance matching, and interference', info: 'RF sections require controlled-impedance routing and specific keep-out zones. These must be flagged before layout.' },
-      { id: 'i26', text: 'I confirm that provisions for calibration, if required, are incorporated into the design', info: 'Calibration interfaces (trim pots, DAC references) need accessible test points and physical space on the board.' },
-      { id: 'i27', text: 'I confirm that each subsystem has been individually verified for its functionality', info: 'Subsystem-level verification before layout prevents the layout engineer from implementing a circuit that does not work.' },
-      { id: 'i28', text: 'I confirm that any identified issues from previous design reviews have been addressed', info: 'Carrying forward known issues into layout guarantees they become more expensive to fix.' },
+      { id: 'i15', label: 'Each input and output connector has appropriate protections and/or filters', info: 'ESD, TVS, common-mode chokes, and RC filters must be present on all external interfaces before layout starts.' },
+      { id: 'i16', label: 'I added test points and debug tools for easy bring-up where necessary', info: 'Test points not added at schematic stage are almost never added at layout stage. Plan for them now.' },
+      { id: 'i17', label: 'Each IC has bypass capacitors', info: 'Every IC power pin needs a local bypass capacitor. Missing decoupling is a leading cause of EMC failures and instability.' },
+      { id: 'i18', label: 'All unused pins are terminated', info: 'Floating inputs cause unpredictable logic states and can be a source of radiated emissions.' },
+      { id: 'i19', label: 'Polarised components are placed correctly according to their polarity', info: 'A reversed electrolytic capacitor or diode is not caught by ERC. This must be verified manually.' },
+      { id: 'i20', label: 'The design includes overvoltage, overcurrent, and thermal protection features', info: 'Safety features defined at schematic stage ensure they are budgeted in the BOM and given proper PCB real estate.' },
+      { id: 'i21', label: 'The design adheres to relevant industry standards and regulatory requirements', info: 'Standard compliance requirements (IEC, UL, CE) affect component selection, clearances, and creepage — all layout inputs.' },
+      { id: 'i22', label: 'All necessary power decoupling and filtering strategies are incorporated', info: 'PDN filtering strategy must be finalised before layout. Moving capacitors after placement is costly.' },
+      { id: 'i23', label: 'User interface elements (LEDs, switches, display interfaces) are correctly implemented and documented', info: 'UI elements often have layout constraints (edge-mount, panel cutout) that must be defined before the layout engineer starts.' },
+      { id: 'i24', label: 'ESD protection measures are in place for all sensitive components and interfaces', info: 'ESD protection must be at the connector entry point. This placement constraint must be visible on the schematic.' },
+      { id: 'i25', label: 'RF components and circuits (if any) have been reviewed for frequency, impedance matching, and interference', info: 'RF sections require controlled-impedance routing and specific keep-out zones. These must be flagged before layout.' },
+      { id: 'i26', label: 'Provisions for calibration, if required, are incorporated into the design', info: 'Calibration interfaces (trim pots, DAC references) need accessible test points and physical space on the board.' },
+      { id: 'i27', label: 'Each subsystem has been individually verified for its functionality', info: 'Subsystem-level verification before layout prevents the layout engineer from implementing a circuit that does not work.' },
+      { id: 'i28', label: 'Any identified issues from previous design reviews have been addressed', info: 'Carrying forward known issues into layout guarantees they become more expensive to fix.' },
     ]
   },
   {
     id: 'cat5', n: '05',
     title: 'Power & Signal Integrity',
-    desc: 'Signal integrity and power integrity decisions made at schematic stage constrain and guide the layout.',
+    desc: 'Signal and power integrity decisions made at schematic stage constrain and guide the layout.',
     items: [
-      { id: 'i29', text: 'I confirm that each power net has its voltage value and polarity clearly indicated', info: 'Voltage labels on power nets allow the layout engineer to assign net classes and apply appropriate trace widths.' },
-      { id: 'i30', text: 'I confirm that signal traces with high harmonic content have a series zero-ohm resistor for prompt replacement if necessary', info: 'A zero-ohm resistor at a high-frequency signal source is a cost-free future option to add series damping without respinning the board.' },
-      { id: 'i31', text: 'I confirm that I added terminations where necessary for impedance matching', info: 'Series, parallel, and AC terminations affect trace routing. They must be defined before layout so the layout engineer routes accordingly.' },
-      { id: 'i32', text: 'I confirm that power components have the correct power ratings', info: 'Power ratings determine component package size, which determines PCB real estate and thermal management requirements.' },
-      { id: 'i33', text: 'I confirm that there are no crossing nets or wires on the schematics', info: 'Net crossings on the schematic are almost always errors. ERC cannot catch them — manual review is required.' },
-      { id: 'i34', text: 'I confirm that all external interfaces have been correctly defined and meet requirements for signal, power, and mechanical robustness', info: 'Connector pin assignments, mating forces, and locking requirements must be resolved before layout.' },
-      { id: 'i35', text: 'I confirm that inter-board and intra-board communication protocols are correctly implemented', info: 'Protocol mismatches (SPI mode, I2C address conflicts, CAN termination) are far cheaper to fix at schematic stage.' },
+      { id: 'i29', label: 'Each power net has its voltage value and polarity clearly indicated', info: 'Voltage labels on power nets allow the layout engineer to assign net classes and apply appropriate trace widths.' },
+      { id: 'i30', label: 'Signal traces with high harmonic content have a series zero-ohm resistor for prompt replacement if necessary', info: 'A zero-ohm resistor at a high-frequency signal source is a cost-free future option to add series damping without a board respin.' },
+      { id: 'i31', label: 'I added terminations where necessary for impedance matching', info: 'Series, parallel, and AC terminations affect trace routing. They must be defined before layout.' },
+      { id: 'i32', label: 'Power components have the correct power ratings', info: 'Power ratings determine component package size, which determines PCB real estate and thermal management requirements.' },
+      { id: 'i33', label: 'There are no crossing nets or wires on the schematics', info: 'Net crossings on the schematic are almost always errors. ERC cannot catch them — manual review is required.' },
+      { id: 'i34', label: 'All external interfaces have been correctly defined and meet requirements for signal, power, and mechanical robustness', info: 'Connector pin assignments, mating forces, and locking requirements must be resolved before layout.' },
+      { id: 'i35', label: 'Inter-board and intra-board communication protocols and connections are correctly implemented', info: 'Protocol mismatches (SPI mode, I2C address conflicts, CAN termination) are far cheaper to fix at schematic stage.' },
     ]
   },
   {
@@ -459,14 +711,14 @@ var DATA = [
     title: 'Component & Connection Verification',
     desc: 'Verify every component connection before layout — finding errors here costs minutes, not weeks.',
     items: [
-      { id: 'i36', text: 'I confirm that all components are from reliable suppliers and are not at risk of obsolescence', info: 'Components discontinued during or after layout require a costly respin. Check availability and lifetime at schematic stage.' },
-      { id: 'i37', text: 'I confirm that all components used have identified substitutes to avoid supply chain issues', info: 'Second-source components should be footprint-compatible. Verify before layout — footprint changes require re-routing.' },
-      { id: 'i38', text: 'I confirm that I double-checked each pin of major components for correct connections', info: 'Datasheet pin verification is the single most effective error-prevention step. Power, enable, and clock pins are most commonly wrong.' },
-      { id: 'i39', text: 'I confirm that RX and TX pins are connected to the correct pins', info: 'UART, RS-485, and other serial interface TX/RX swaps are extremely common and not caught by ERC. Verify manually against the datasheet.' },
-      { id: 'i40', text: 'I confirm that I added net ties for tracks with the same voltages but different roles', info: 'Net ties make intentional connections explicit and allow separate net classes to be assigned for layout rules.' },
-      { id: 'i41', text: 'I confirm that each block is interconnected to the right block on the block diagram', info: 'Verify connectivity against the block diagram — not just against the datasheet.' },
-      { id: 'i42', text: 'I confirm that the design has been checked for interoperability with other systems it will interface with', info: 'Voltage level compatibility, logic family matching, and protocol handshaking must be confirmed before layout.' },
-      { id: 'i43', text: 'I confirm that key components have been correctly implemented as per their datasheets', info: 'Application circuits, reference designs, and errata files must all be cross-checked. Pay particular attention to power sequencing.' },
+      { id: 'i36', label: 'All components are from reliable suppliers and are not at risk of obsolescence', info: 'Components discontinued during or after layout require a costly respin. Check availability and lifetime at schematic stage.' },
+      { id: 'i37', label: 'All components have identified substitutes to avoid supply chain issues', info: 'Second-source components should be footprint-compatible. Verify before layout — footprint changes require re-routing.' },
+      { id: 'i38', label: 'I double-checked each pin of major components for correct connections', info: 'Datasheet pin verification is the single most effective error-prevention step. Power, enable, and clock pins are most commonly wrong.' },
+      { id: 'i39', label: 'RX and TX pins are connected to the correct pins', info: 'UART, RS-485, and other serial interface TX/RX swaps are extremely common and not caught by ERC. Verify manually against the datasheet.' },
+      { id: 'i40', label: 'I added net ties for tracks with the same voltages but different roles', info: 'Net ties make intentional connections explicit and allow separate net classes to be assigned for layout rules.' },
+      { id: 'i41', label: 'Each block is interconnected to the right block on the block diagram', info: 'Verify connectivity against the block diagram — not just against the datasheet.' },
+      { id: 'i42', label: 'The design has been checked for interoperability with other systems it will interface with', info: 'Voltage level compatibility, logic family matching, and protocol handshaking must be confirmed before layout.' },
+      { id: 'i43', label: 'Key components have been correctly implemented as per their datasheets and errata', info: 'Application circuits, reference designs, and errata files must all be cross-checked. Pay particular attention to power sequencing.' },
     ]
   },
   {
@@ -474,11 +726,11 @@ var DATA = [
     title: 'Layout & Mechanical Considerations',
     desc: 'Layout constraints defined at schematic stage prevent mechanical conflicts and rework.',
     items: [
-      { id: 'i44', text: 'I confirm that the input and output ports are designed according to the left-to-right convention', info: 'Consistent port orientation on the schematic maps to predictable connector placement on the PCB edge.' },
-      { id: 'i45', text: 'I confirm that I added extra footprint between mounting holes and board return plane', info: 'Mounting hole clearance from the return plane prevents shorts and defines the chassis ground connection strategy.' },
-      { id: 'i46', text: 'I confirm that I added fiducials and mounting holes to the mechanical page', info: 'Fiducials are required for automated assembly. Missing them is not caught until the CM flags it — after layout is complete.' },
-      { id: 'i47', text: 'I confirm that a component represents the PCB in the Bill of Material', info: 'The PCB itself must appear in the BOM with its part number, dimensions, and layer count for procurement and costing.' },
-      { id: 'i48', text: 'I confirm that I added symbols for labels such as CE, ESD, Hot Surface, High-Voltage, UL, RoHS', info: 'Regulatory marking symbols must be on the silkscreen. Their placement and size are layout inputs that must be defined.' },
+      { id: 'i44', label: 'Input and output ports are designed according to the left-to-right convention', info: 'Consistent port orientation on the schematic maps to predictable connector placement on the PCB edge.' },
+      { id: 'i45', label: 'I added extra footprint between mounting holes and board return plane', info: 'Mounting hole clearance from the return plane prevents shorts and defines the chassis ground connection strategy.' },
+      { id: 'i46', label: 'I added fiducials and mounting holes to the mechanical page', info: 'Fiducials are required for automated assembly. Missing them is not caught until the CM flags it — after layout is complete.' },
+      { id: 'i47', label: 'A component represents the PCB in the Bill of Material', info: 'The PCB itself must appear in the BOM with its part number, dimensions, and layer count for procurement and costing.' },
+      { id: 'i48', label: 'I added symbols for CE, ESD, Hot Surface, High-Voltage, UL, and RoHS labels', info: 'Regulatory marking symbols must be on the silkscreen. Their placement and size are layout inputs that must be defined.' },
     ]
   },
   {
@@ -486,12 +738,12 @@ var DATA = [
     title: 'Compliance & Documentation',
     desc: 'Documentation and compliance checks that must be complete before layout begins.',
     items: [
-      { id: 'i49', text: 'I confirm that differential nets are labelled and annotated accordingly', info: 'Differential pairs must be identified as such so the layout engineer applies differential routing rules.' },
-      { id: 'i50', text: 'I confirm that the schematic looks clean and orderly', info: 'A messy schematic produces a messy layout. Neatness is a proxy for design correctness.' },
-      { id: 'i51', text: 'I have confirmed that I studied the datasheet of each IC and checked the errata files', info: 'Errata files contain silicon bugs that require workarounds. Missing them means designing the workaround into the layout — or not at all.' },
-      { id: 'i52', text: 'I confirm that all critical signal paths are optimised for minimal interference and delay', info: 'Critical paths must be identified and annotated with length-matching or delay constraints before layout.' },
-      { id: 'i53', text: 'I confirm that a basic FMEA has been performed to identify potential failure modes', info: 'A basic FMEA at schematic stage identifies which single component failures lead to safety issues — required for IEC 62368, ISO 26262, and IEC 60601.' },
-      { id: 'i54', text: 'I confirm that I added notes for quick understanding or debugging where necessary', info: 'Inline notes on the schematic reduce layout engineer questions and speed up design reviews.' },
+      { id: 'i49', label: 'Differential nets are labelled and annotated accordingly', info: 'Differential pairs must be identified as such so the layout engineer applies differential routing rules.' },
+      { id: 'i50', label: 'The schematic looks clean and orderly', info: 'A messy schematic produces a messy layout. Neatness is a proxy for design correctness.' },
+      { id: 'i51', label: 'I studied the datasheet of each IC and checked the errata files', info: 'Errata files contain silicon bugs that require workarounds. Missing them means designing the workaround into the layout — or not at all.' },
+      { id: 'i52', label: 'All critical signal paths are optimised for minimal interference and delay', info: 'Critical paths must be identified and annotated with length-matching or delay constraints before layout.' },
+      { id: 'i53', label: 'A basic FMEA has been performed to identify potential failure modes and their impact', info: 'A basic FMEA at schematic stage identifies which single component failures lead to safety issues — required for IEC 62368, ISO 26262, and IEC 60601.' },
+      { id: 'i54', label: 'I added notes for quick understanding or debugging where necessary', info: 'Inline notes on the schematic reduce layout engineer questions and speed up design reviews.' },
     ]
   },
   {
@@ -499,164 +751,226 @@ var DATA = [
     title: 'Final Checks',
     desc: 'The last gate before the schematic is released for layout.',
     items: [
-      { id: 'i55', text: 'I confirm that modifications from previous versions are reported with special notes included', info: 'Change notes between revisions allow reviewers to focus on what changed, not review the entire schematic from scratch.' },
-      { id: 'i56', text: 'I confirm that I followed all signals and checked the entire connection path', info: 'Trace every critical signal from source to load. ERC does not check for logical correctness — only electrical rules.' },
-      { id: 'i57', text: 'I confirm that the ERC rules are set according to the project and manufacturing requirements', info: 'Default ERC rules are generic. Project-specific rules (e.g., allowed pin conflicts, net class assignments) must be configured.' },
-      { id: 'i58', text: 'I confirm that I have reserved space for either a PCB model or real photos post-completion', info: 'A dedicated documentation section for as-built photos supports future design reviews and failure analysis.' },
-      { id: 'i59', text: 'I confirm that a detailed Bill of Materials is prepared and includes specifications for all components', info: 'A complete BOM with manufacturer part numbers, alternates, and quantities is required before layout can generate a cost estimate.' },
-      { id: 'i60', text: 'I confirm that the Electrical Rule Checker complies without errors or warnings', info: 'ERC must pass cleanly. Suppressed warnings must be documented with a reason. A clean ERC is a layout release prerequisite.' },
+      { id: 'i55', label: 'Modifications from previous versions are reported with special notes included', info: 'Change notes between revisions allow reviewers to focus on what changed, not review the entire schematic from scratch.' },
+      { id: 'i56', label: 'I followed all signals and checked the entire connection path', info: 'Trace every critical signal from source to load. ERC does not check for logical correctness — only electrical rules.' },
+      { id: 'i57', label: 'The ERC rules are set according to the project and manufacturing requirements', info: 'Default ERC rules are generic. Project-specific rules must be configured before running a final check.' },
+      { id: 'i58', label: 'I have reserved space for either a PCB model or real photos post-completion', info: 'A dedicated documentation section for as-built photos supports future design reviews and failure analysis.' },
+      { id: 'i59', label: 'A detailed Bill of Materials is prepared and includes specifications for all components', info: 'A complete BOM with manufacturer part numbers, alternates, and quantities is required before layout can generate a cost estimate.' },
+      { id: 'i60', label: 'The Electrical Rule Checker complies without errors or warnings', info: 'ERC must pass cleanly. Suppressed warnings must be documented with a reason. A clean ERC is a layout release prerequisite.' },
     ]
   }
 ];
 
-var TOTAL = DATA.reduce(function(n, s) { return n + s.items.length; }, 0);
+var TOTAL = DATA.reduce(function(n,s){ return n + s.items.length; }, 0);
+var KEY = 'fresu_prelayout_v3';
 var state = {};
-var KEY = 'fresu_prelayout_v2';
 
-function load() {
+// ─── STATE ──────────────────────────────────────────────────────────────────
+function loadState() {
   try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e) { state = {}; }
 }
-function save() {
+function saveState() {
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
   var el = document.getElementById('saved-tag');
   if (el) { el.classList.add('show'); clearTimeout(window._st); window._st = setTimeout(function(){ el.classList.remove('show'); }, 2000); }
 }
-function getItem(id) { return state[id] || { checked: false, notes: '', infoOpen: false }; }
+function getS(id) { return state[id] || { checked: false, notes: '', infoOpen: false }; }
 
-// ── RENDER SIDEBAR ──────────────────────────────────────────────────────────
+// ─── RENDER ─────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderSidebar();
+  renderContent();
+  updateProgress();
+}
+
 function renderSidebar() {
   var h = '';
   DATA.forEach(function(cat) {
-    var done = cat.items.every(function(it){ return getItem(it.id).checked; });
-    var any = cat.items.some(function(it){ return getItem(it.id).checked; });
-    h += '<button class="nav-item' + (done ? ' done' : '') + '" onclick="scrollTo(\'' + cat.id + '\')">';
+    var checked = cat.items.filter(function(it){ return getS(it.id).checked; }).length;
+    var done = checked === cat.items.length;
+    h += '<button class="nav-btn' + (done ? ' done' : '') + '" onclick="jumpTo(\'' + cat.id + '\')">';
     h += '<div class="nav-dot"></div>';
-    h += '<div>';
+    h += '<div class="nav-info">';
     h += '<div class="nav-num">CAT ' + cat.n + '</div>';
-    h += '<div class="nav-text">' + cat.title + '</div>';
-    var checked = cat.items.filter(function(it){ return getItem(it.id).checked; }).length;
-    h += '<div class="nav-count">' + checked + ' / ' + cat.items.length + '</div>';
+    h += '<div class="nav-title">' + cat.title + '</div>';
+    h += '<div class="nav-count">' + checked + ' / ' + cat.items.length + ' done</div>';
     h += '</div></button>';
   });
   document.getElementById('sidebar-nav').innerHTML = h;
 }
 
-// ── RENDER CONTENT ──────────────────────────────────────────────────────────
 function renderContent() {
   var totalChecked = 0;
-  DATA.forEach(function(s){ s.items.forEach(function(it){ if(getItem(it.id).checked) totalChecked++; }); });
+  DATA.forEach(function(s){ s.items.forEach(function(it){ if(getS(it.id).checked) totalChecked++; }); });
+  var pct = Math.round(totalChecked / TOTAL * 100);
 
   var h = '';
 
   // Summary
-  var pct = Math.round(totalChecked / TOTAL * 100);
-  h += '<div class="summary-box">';
-  h += '<div class="summary-title">Schematic Readiness</div>';
+  h += '<div class="summary">';
+  h += '<div class="summary-kicker">Schematic Readiness</div>';
   h += '<div class="summary-grid">';
-  h += '<div class="summary-stat"><div class="summary-num" id="stat-done">' + totalChecked + '</div><div class="summary-label">Checked</div></div>';
+  h += '<div class="summary-stat"><div class="summary-num" id="stat-checked">' + totalChecked + '</div><div class="summary-label">Items Checked</div></div>';
   h += '<div class="summary-stat"><div class="summary-num">' + (TOTAL - totalChecked) + '</div><div class="summary-label">Remaining</div></div>';
-  h += '<div class="summary-stat"><div class="summary-num" style="color:' + (pct === 100 ? 'var(--ac)' : 'var(--f2)') + '">' + pct + '%</div><div class="summary-label">Complete</div></div>';
+  h += '<div class="summary-stat"><div class="summary-num" style="color:' + (pct === 100 ? 'var(--accent)' : 'var(--fg)') + '">' + pct + '%</div><div class="summary-label">Complete</div></div>';
   h += '</div></div>';
 
+  // Categories
   DATA.forEach(function(cat) {
-    var checkedCount = cat.items.filter(function(it){ return getItem(it.id).checked; }).length;
-    h += '<div id="' + cat.id + '" style="margin-bottom:40px">';
-    h += '<div class="section-head">';
-    h += '<div class="section-kicker">Category ' + cat.n + ' of 09</div>';
-    h += '<div class="section-title">' + cat.title + '</div>';
-    h += '<div class="section-desc">' + cat.desc + '</div>';
-    h += '<div class="section-pips">';
+    h += '<div class="cat-block" id="' + cat.id + '">';
+    h += '<div class="cat-header">';
+    h += '<div class="cat-kicker">Category ' + cat.n + ' of 09</div>';
+    h += '<h2 class="cat-title">' + cat.title + '</h2>';
+    h += '<p class="cat-desc">' + cat.desc + '</p>';
+    h += '<div class="cat-pips">';
     cat.items.forEach(function(it){
-      var c = getItem(it.id).checked;
-      h += '<div class="pip' + (c ? ' done' : '') + '" id="pip-' + it.id + '"></div>';
+      var checked = getS(it.id).checked;
+      h += '<div class="pip' + (checked ? ' done' : '') + '" id="pip-' + it.id + '"></div>';
     });
     h += '</div></div>';
 
+    // Items
     cat.items.forEach(function(it) {
-      var s = getItem(it.id);
-      h += '<div class="item' + (s.checked ? ' checked' : '') + '" id="item-' + it.id + '">';
-      h += '<div class="item-top" onclick="toggle(\'' + it.id + '\')">';
-      h += '<div class="checkbox' + (s.checked ? ' checked' : '') + '" id="cb-' + it.id + '"></div>';
-      h += '<div class="item-label">' + it.text + '</div>';
+      var s = getS(it.id);
+      h += '<div class="item' + (s.checked ? ' is-checked' : '') + '" id="item-' + it.id + '">';
+      h += '<div class="item-row" onclick="toggleCheck(\'' + it.id + '\')">';
+      h += '<div class="checkbox' + (s.checked ? ' is-checked' : '') + '" id="cb-' + it.id + '"></div>';
+      h += '<div class="item-label">' + it.label + '</div>';
       h += '</div>';
       if (it.info) {
-        h += '<button class="info-toggle" onclick="toggleInfo(\'' + it.id + '\')">' + (s.infoOpen ? 'Hide detail' : 'Why this matters') + '</button>';
+        h += '<div class="item-meta">';
+        h += '<button class="info-toggle" onclick="toggleInfo(\'' + it.id + '\')">';
+        h += '<span class="info-icon">i</span>';
+        h += '<span id="itoggle-' + it.id + '">' + (s.infoOpen ? 'Hide' : 'Why this matters') + '</span>';
+        h += '</button>';
+        h += '</div>';
         h += '<div class="info-body' + (s.infoOpen ? ' open' : '') + '" id="info-' + it.id + '">' + it.info + '</div>';
       }
-      h += '<div class="notes-area">';
-      h += '<textarea class="notes-input" placeholder="Add note…" oninput="setNote(\'' + it.id + '\',this.value)">' + (s.notes || '') + '</textarea>';
+      h += '<div class="notes-wrap">';
+      h += '<textarea class="notes-input" placeholder="Add a note…" oninput="setNote(\'' + it.id + '\',this.value)">' + (s.notes || '') + '</textarea>';
       h += '</div>';
       h += '</div>';
     });
 
-    h += '</div>';
+    h += '</div>'; // cat-block
   });
 
+  // Footer
+  h += '<div class="content-footer">';
+  h += '<div class="author-row">';
+  h += '<img src="https://raw.githubusercontent.com/dariofresu/Fresu-Electronics-Blog/main/assets/dario-fresu.jpg" alt="Dario Fresu">';
+  h += '<div><div class="author-name">Dario Fresu</div><div class="author-role">Principal EMC Architect · Fresu Electronics</div></div>';
+  h += '</div>';
+  h += '<div class="footer-links">';
+  h += '<a href="https://www.fresuelectronics.com" target="_blank" rel="noopener">fresuelectronics.com</a>';
+  h += '<a href="https://www.fresuelectronics.com/emc-audit" target="_blank" rel="noopener">EMC Design Audit</a>';
+  h += '<a href="https://blog.fresuelectronics.com" target="_blank" rel="noopener">Blog</a>';
+  h += '<a href="https://www.youtube.com/@dario_fresu" target="_blank" rel="noopener">YouTube</a>';
+  h += '<a href="https://tool.fresuelectronics.com" target="_blank" rel="noopener">All Tools</a>';
+  h += '</div>';
+  h += '<p class="footer-legal">© 2026 Fresu Electronics SRL · All rights reserved · 80,000+ engineers in the community</p>';
+  h += '</div>';
+
   document.getElementById('content-inner').innerHTML = h;
-  updateProgress();
 }
 
-// ── ACTIONS ─────────────────────────────────────────────────────────────────
-function toggle(id) {
-  var s = getItem(id);
+// ─── ACTIONS ────────────────────────────────────────────────────────────────
+function toggleCheck(id) {
+  var s = getS(id);
   state[id] = Object.assign({}, s, { checked: !s.checked });
-  save();
-  // Update DOM
+  saveState();
   var cb = document.getElementById('cb-' + id);
   var item = document.getElementById('item-' + id);
   var pip = document.getElementById('pip-' + id);
-  if (cb) cb.className = 'checkbox' + (state[id].checked ? ' checked' : '');
-  if (item) item.className = 'item' + (state[id].checked ? ' checked' : '');
+  if (cb) cb.className = 'checkbox' + (state[id].checked ? ' is-checked' : '');
+  if (item) item.className = 'item' + (state[id].checked ? ' is-checked' : '');
   if (pip) pip.className = 'pip' + (state[id].checked ? ' done' : '');
   updateProgress();
-  renderSidebar();
+  updateSidebarCount(id);
 }
 
 function toggleInfo(id) {
-  var s = getItem(id);
+  var s = getS(id);
   state[id] = Object.assign({}, s, { infoOpen: !s.infoOpen });
-  save();
+  saveState();
   var el = document.getElementById('info-' + id);
-  var btn = el ? el.previousElementSibling : null;
+  var lbl = document.getElementById('itoggle-' + id);
   if (el) el.className = 'info-body' + (state[id].infoOpen ? ' open' : '');
-  if (btn) btn.textContent = state[id].infoOpen ? 'Hide detail' : 'Why this matters';
+  if (lbl) lbl.textContent = state[id].infoOpen ? 'Hide' : 'Why this matters';
 }
 
 function setNote(id, val) {
-  var s = getItem(id);
+  var s = getS(id);
   state[id] = Object.assign({}, s, { notes: val });
-  save();
-}
-
-function scrollTo(id) {
-  var el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  saveState();
 }
 
 function updateProgress() {
   var done = 0;
-  DATA.forEach(function(s){ s.items.forEach(function(it){ if(getItem(it.id).checked) done++; }); });
+  DATA.forEach(function(s){ s.items.forEach(function(it){ if(getS(it.id).checked) done++; }); });
   var pct = Math.round(done / TOTAL * 100);
-  var fill = document.getElementById('bar-fill');
-  var pctEl = document.getElementById('bar-pct');
-  var stat = document.getElementById('stat-done');
+  var fill = document.getElementById('prog-fill');
+  var pctEl = document.getElementById('prog-pct');
+  var stat = document.getElementById('stat-checked');
   if (fill) fill.style.width = pct + '%';
   if (pctEl) pctEl.textContent = pct + '%';
   if (stat) stat.textContent = done;
 }
 
-function resetAll() {
+function updateSidebarCount(itemId) {
+  // Find which cat this item belongs to and refresh just that nav button
+  DATA.forEach(function(cat, ci) {
+    var hasItem = cat.items.some(function(it){ return it.id === itemId; });
+    if (!hasItem) return;
+    var checked = cat.items.filter(function(it){ return getS(it.id).checked; }).length;
+    var done = checked === cat.items.length;
+    var btns = document.querySelectorAll('.nav-btn');
+    if (btns[ci]) {
+      btns[ci].className = 'nav-btn' + (done ? ' done' : '');
+      var countEl = btns[ci].querySelector('.nav-count');
+      if (countEl) countEl.textContent = checked + ' / ' + cat.items.length + ' done';
+      var dotEl = btns[ci].querySelector('.nav-dot');
+      if (dotEl) dotEl.style.background = done ? 'var(--accent)' : '';
+    }
+  });
+}
+
+function jumpTo(id) {
+  var el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  closeSidebar();
+}
+
+function confirmReset() {
   if (!confirm('Reset all progress and notes?')) return;
   state = {};
   try { localStorage.removeItem(KEY); } catch(e) {}
-  renderContent();
-  renderSidebar();
+  renderAll();
 }
 
-// ── INIT ────────────────────────────────────────────────────────────────────
-load();
-renderContent();
-renderSidebar();
+// ─── MOBILE SIDEBAR ─────────────────────────────────────────────────────────
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('sidebar-overlay');
+  var isOpen = sb.classList.contains('open');
+  if (isOpen) { closeSidebar(); }
+  else {
+    sb.classList.add('open');
+    ov.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ─── INIT ───────────────────────────────────────────────────────────────────
+loadState();
+renderAll();
 </script>
 </body>
 </html>
